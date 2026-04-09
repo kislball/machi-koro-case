@@ -21,6 +21,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@main
+        with:
+          generateWrapper: true
 
       - name: Check formatting with ktfmt
         run: ./gradlew spotlessCheck
