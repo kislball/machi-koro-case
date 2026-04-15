@@ -3,28 +3,23 @@
  */
 
 plugins {
-    id("buildlogic.kotlin-application-conventions")
-    id("com.diffplug.spotless")
-    id("io.gitlab.arturbosch.detekt") version "1.23.7"
+  id("buildlogic.kotlin-application-conventions")
+  id("com.diffplug.spotless")
+  id("io.gitlab.arturbosch.detekt") version "1.23.7"
 }
 
 spotless {
-    kotlin {
-        target("**/*.kt")
-        ktfmt()
-    }
+  kotlin {
+    target("**/*.kt")
+    ktfmt()
+  }
 }
 
-detekt {
-    toolVersion = "1.23.7"
-}
+detekt { toolVersion = "1.23.7" }
 
-dependencies {
-    implementation("org.apache.commons:commons-text")
-    implementation(project(":utilities"))
-}
+dependencies { implementation("org.apache.commons:commons-text") }
 
 application {
-    // Define the main class for the application.
-    mainClass = "org.example.app.AppKt"
+  // Define the main class for the application.
+  mainClass = "ru.kislball.machikoro.App"
 }
