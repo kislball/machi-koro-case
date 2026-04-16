@@ -6,6 +6,6 @@ import ru.kislball.machikoro.game.Step
 import ru.kislball.machikoro.game.DiceRolledStep
 
 abstract class PlayerAction(val player: Player) {
-    abstract fun checkValid(s: DiceRolledStep)
+    abstract fun checkValid(s: Step)
     abstract fun getEffect(s: Step): Effect
 }
