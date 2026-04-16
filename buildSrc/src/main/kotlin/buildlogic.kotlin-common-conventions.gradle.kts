@@ -31,6 +31,10 @@ java {
     }
 }
 
+kotlin {
+    jvmToolchain(21)
+}
+
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
