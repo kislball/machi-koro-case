@@ -1,6 +1,7 @@
 package ru.kislball.machikoro.game
 
 import ru.kislball.machikoro.cards.Card
+import ru.kislball.machikoro.cards.CardKind
 
 class Game(val players: List<Player>) {
     private var stepNumber: Int = 0
@@ -17,6 +18,10 @@ class Game(val players: List<Player>) {
 
     fun getTriggerables(): Sequence<Triggerable> {
         return players.asSequence().flatMap { it.cards.asSequence() }
+    }
+
+    fun countCardsOfKind(kind: CardKind): Int {
+        return players.asSequence().flatMap { player -> player.cards.asSequence().filter { it.kind == kind }  }.count()
     }
 
     fun nextStep(): Step {
