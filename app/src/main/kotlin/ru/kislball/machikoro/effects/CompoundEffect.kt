@@ -13,6 +13,6 @@ class CompoundEffect(val effects: List<Effect>) : Effect() {
   }
 
   companion object {
-    fun combineEffects(vararg effects: Effect) = effects
+    fun combineEffects(vararg effects: Effect) = CompoundEffect(effects.asList())
   }
 }
