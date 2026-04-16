@@ -1,10 +1,16 @@
 package ru.kislball.machikoro.cards
 
-class CardFactory(private val creators: Map<CardKind, () -> Card> = emptyMap()) {
-    fun canCreate(kind: CardKind): Boolean = creators.containsKey(kind)
+object CardFactory {
+    fun canCreate(kind: CardKind): Boolean {
+        return CardCatalog.contains(kind) && CardCatalog.getCreator(kind) != null
+    }
 
     fun create(kind: CardKind): Card {
-        return creators[kind]?.invoke()
+        if (!CardCatalog.contains(kind)) {
+            throw IllegalArgumentException("Unknown card kind: $kind")
+        }
+
+        return CardCatalog.getCreator(kind)?.invoke()
             ?: throw IllegalArgumentException("No card creator is registered for kind: $kind")
     }
 }
