@@ -59,7 +59,7 @@ class BuyCardActionTest {
     val player = Player("p1")
     player.balance = 10
     val game = Game(listOf(player))
-    val invalidStep = Step(game, player, 1)
+    val invalidStep = object : Step(game, player, 1) {}
     val action = BuyCardAction(player, CardKind.BAKERY)
 
     assertFailsWith<IllegalArgumentException> { action.getEffect(invalidStep) }

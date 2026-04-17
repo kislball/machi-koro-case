@@ -10,9 +10,10 @@ import ru.kislball.machikoro.game.WaitingDiceStep
 class GameDriver(val game: Game) {
   fun nextStep(): WaitingDiceStep {
     val nextStep = game.nextStep()
-    return nextStep as? WaitingDiceStep
-        ?: throw IllegalStateException(
-            "Expected WaitingDiceStep, got ${nextStep::class.simpleName}")
+    check(nextStep is WaitingDiceStep) {
+      "Expected WaitingDiceStep, got ${nextStep::class.simpleName}"
+    }
+    return nextStep
   }
 
   fun rollDice(player: Player, numDice: Int): DiceRolledStep {
@@ -20,7 +21,7 @@ class GameDriver(val game: Game) {
         when (val step = game.currentStep) {
           null -> nextStep()
           is WaitingDiceStep -> step
-          else -> throw IllegalStateException("Current step is not waiting for dice roll")
+          else -> error("Current step is not waiting for dice roll")
         }
 
     require(waitingStep.currentPlayer == player) { "Only current player can roll dice" }
@@ -33,7 +34,7 @@ class GameDriver(val game: Game) {
   fun finishStep(action: PlayerAction): FinishedActionStep {
     val current =
         game.currentStep as? DiceRolledStep
-            ?: throw IllegalStateException("Current step is not ready for player action")
+            ?: error("Current step is not ready for player action")
     require(current.currentPlayer == action.player) { "Only current player can submit action" }
     val finishedStep = current.finish(action)
     game.steps.add(finishedStep)

@@ -1,5 +1,6 @@
 package ru.kislball.machikoro.facility
 
+import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import ru.kislball.machikoro.cards.CardFactory
@@ -15,7 +16,7 @@ class JSONImporter : GameImporter {
       val parsed: GameJson = mapper.readValue(content)
       val players = parsed.players.map(::parsePlayer)
       Game(players)
-    } catch (exception: Exception) {
+    } catch (exception: JsonProcessingException) {
       throw IllegalArgumentException("Invalid JSON content", exception)
     }
   }

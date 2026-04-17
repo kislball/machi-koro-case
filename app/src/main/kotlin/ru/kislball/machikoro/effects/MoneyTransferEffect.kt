@@ -10,8 +10,7 @@ class MoneyTransferEffect(val from: Player?, val to: Player?, val amount: Int) :
 
   override fun apply(step: Step) {
     if (from != null) {
-      // TODO: add custom exception
-      if (from.balance < amount) throw Exception("Not enough balance")
+      check(from.balance >= amount) { "Not enough balance" }
       from.balance -= amount
     }
     to?.balance += amount

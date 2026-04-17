@@ -11,6 +11,9 @@ import ru.kislball.machikoro.game.Step
 import ru.kislball.machikoro.game.WaitingDiceStep
 
 class TriggerTest {
+  private fun testStep(game: Game, player: Player, number: Int): Step =
+      object : Step(game, player, number) {}
+
   @Test
   fun `any dice trigger fires for matching rolled value`() {
     val player = Player("p1")
@@ -26,7 +29,7 @@ class TriggerTest {
   fun `any dice trigger ignores non dice step`() {
     val player = Player("p1")
     val game = Game(listOf(player))
-    val step = Step(game, player, 1)
+    val step = testStep(game, player, 1)
 
     assertFalse(AnyDiceTrigger(listOf(1)).isTriggered(step))
   }
@@ -45,7 +48,7 @@ class TriggerTest {
 
   @Test
   fun `and trigger requires all nested triggers`() {
-    val step = Step(Game(listOf(Player("p1"))), Player("p1"), 1)
+    val step = testStep(Game(listOf(Player("p1"))), Player("p1"), 1)
 
     assertTrue(AndTrigger(listOf(StubTrigger(true), StubTrigger(true))).isTriggered(step))
     assertFalse(AndTrigger(listOf(StubTrigger(true), StubTrigger(false))).isTriggered(step))
@@ -53,7 +56,7 @@ class TriggerTest {
 
   @Test
   fun `or trigger requires at least one nested trigger`() {
-    val step = Step(Game(listOf(Player("p1"))), Player("p1"), 1)
+    val step = testStep(Game(listOf(Player("p1"))), Player("p1"), 1)
 
     assertTrue(OrTrigger(listOf(StubTrigger(false), StubTrigger(true))).isTriggered(step))
     assertFalse(OrTrigger(listOf(StubTrigger(false), StubTrigger(false))).isTriggered(step))

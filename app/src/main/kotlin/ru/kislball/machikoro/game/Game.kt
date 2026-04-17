@@ -28,18 +28,17 @@ class Game(val players: List<Player>) {
   }
 
   fun nextStep(): Step {
-    if (currentStep != null && currentStep is FinishedActionStep || currentStep == null) {
-      stepNumber++
-      val nextStep =
-          WaitingDiceStep(
-              game = this,
-              currentPlayer = players[(stepNumber - 1) % players.size],
-              stepNumber = stepNumber,
-          )
-      steps.add(nextStep)
-      return nextStep
-    } else {
-      throw Exception("Step has not been finished")
-    }
+    val canAdvance = currentStep == null || currentStep is FinishedActionStep
+    check(canAdvance) { "Step has not been finished" }
+
+    stepNumber++
+    val nextStep =
+        WaitingDiceStep(
+            game = this,
+            currentPlayer = players[(stepNumber - 1) % players.size],
+            stepNumber = stepNumber,
+        )
+    steps.add(nextStep)
+    return nextStep
   }
 }
