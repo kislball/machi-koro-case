@@ -17,7 +17,10 @@ spotless {
 
 detekt { toolVersion = "1.23.7" }
 
-dependencies { implementation("org.apache.commons:commons-text") }
+dependencies {
+  implementation("org.apache.commons:commons-text")
+  testImplementation(kotlin("test"))
+}
 
 application {
   // Define the main class for the application.
