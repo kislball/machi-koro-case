@@ -27,11 +27,12 @@ class Game(val players: List<Player>) {
     fun nextStep(): Step {
         if (currentStep != null && currentStep is FinishedActionStep || currentStep == null) {
             stepNumber++
-            val nextStep = Step(
+            val nextStep = WaitingDiceStep(
                 game = this,
-                currentPlayer = players[stepNumber % players.size],
+                currentPlayer = players[(stepNumber - 1) % players.size],
                 stepNumber = stepNumber,
             )
+            steps.add(nextStep)
             return nextStep
         } else {
             throw Exception("Step has not been finished")
