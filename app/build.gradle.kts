@@ -19,6 +19,7 @@ detekt { toolVersion = "1.23.7" }
 
 dependencies {
   implementation("org.apache.commons:commons-text")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
   testImplementation(kotlin("test"))
 }
 
