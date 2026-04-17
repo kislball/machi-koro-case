@@ -33,8 +33,7 @@ class GameDriver(val game: Game) {
 
   fun finishStep(action: PlayerAction): FinishedActionStep {
     val current =
-        game.currentStep as? DiceRolledStep
-            ?: error("Current step is not ready for player action")
+        game.currentStep as? DiceRolledStep ?: error("Current step is not ready for player action")
     require(current.currentPlayer == action.player) { "Only current player can submit action" }
     val finishedStep = current.finish(action)
     game.steps.add(finishedStep)
