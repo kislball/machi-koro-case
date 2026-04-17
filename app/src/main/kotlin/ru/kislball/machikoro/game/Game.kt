@@ -20,7 +20,7 @@ class Game(val players: List<Player>) {
     }
 
     fun countCardsOfKind(kind: CardKind): Int {
-        return players.asSequence().flatMap { player -> player.cards.asSequence().filter { it.kind == kind }  }.count()
+        return players.asSequence().flatMap { player -> player.cards.asSequence().filter { it.kind == kind } }.count()
     }
 
     fun nextStep(): Step {
