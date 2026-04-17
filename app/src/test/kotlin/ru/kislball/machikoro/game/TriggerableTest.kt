@@ -22,4 +22,3 @@ class TriggerableTest {
     assertEquals(1, effect.appliedCount)
   }
 }
-

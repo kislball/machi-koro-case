@@ -31,9 +31,10 @@ class GameFactoryAndDriverTest {
   @Test
   fun `export delegates to provided exporter`() {
     val game = Game(listOf(Player("p1")))
-    val exporter = object : GameExporter {
-      override fun export(game: Game): String = "ok"
-    }
+    val exporter =
+        object : GameExporter {
+          override fun export(game: Game): String = "ok"
+        }
 
     val exported = GameFactory.export(game, exporter)
 
@@ -42,9 +43,10 @@ class GameFactoryAndDriverTest {
 
   @Test
   fun `import delegates to provided importer`() {
-    val importer = object : GameImporter {
-      override fun import(content: String): Game = Game(listOf(Player(content)))
-    }
+    val importer =
+        object : GameImporter {
+          override fun import(content: String): Game = Game(listOf(Player(content)))
+        }
 
     val driver = GameFactory.import("alex", importer)
 
@@ -99,4 +101,3 @@ class GameFactoryAndDriverTest {
     assertTrue(game.steps.size >= 3)
   }
 }
-

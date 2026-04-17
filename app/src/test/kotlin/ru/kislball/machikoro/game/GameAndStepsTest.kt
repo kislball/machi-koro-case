@@ -112,6 +112,3 @@ class GameAndStepsTest {
     assertEquals(1, effect.appliedCount)
   }
 }
-
-
-

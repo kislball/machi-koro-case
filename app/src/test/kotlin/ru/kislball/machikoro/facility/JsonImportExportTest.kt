@@ -57,6 +57,3 @@ class JsonImportExportTest {
     assertFailsWith<IllegalArgumentException> { JSONImporter().import("{}") }
   }
 }
-
-
-

@@ -38,7 +38,8 @@ class StubCard(
   override fun isTriggered(step: Step): Boolean = triggered
 }
 
-class StubAction(player: Player, private val effect: Effect = CountingEffect()) : PlayerAction(player) {
+class StubAction(player: Player, private val effect: Effect = CountingEffect()) :
+    PlayerAction(player) {
   var checkValidCalled = 0
 
   override fun checkValid(s: Step) {
@@ -56,5 +57,3 @@ class StubTrigger(private val triggered: Boolean) : Trigger() {
 }
 
 fun createGame(vararg playerNames: String): Game = Game(playerNames.map(::Player))
-
-

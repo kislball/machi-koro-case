@@ -62,4 +62,3 @@ class EffectsTest {
     assertEquals(CardKind.CAFE, player.cards.first().kind)
   }
 }
-

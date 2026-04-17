@@ -36,5 +36,3 @@ class CardFactoryTest {
     assertTrue(error.message!!.contains("No card creator is registered"))
   }
 }
-
-

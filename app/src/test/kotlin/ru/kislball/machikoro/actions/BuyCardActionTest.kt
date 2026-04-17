@@ -65,5 +65,3 @@ class BuyCardActionTest {
     assertFailsWith<IllegalArgumentException> { action.getEffect(invalidStep) }
   }
 }
-
-

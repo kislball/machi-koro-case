@@ -47,5 +47,3 @@ class CardCatalogTest {
     assertNotNull(CardCatalog.getCreator(CardKind.CAFE))
   }
 }
-
-

@@ -59,5 +59,3 @@ class TriggerTest {
     assertFalse(OrTrigger(listOf(StubTrigger(false), StubTrigger(false))).isTriggered(step))
   }
 }
-
-
