@@ -15,7 +15,11 @@ spotless {
   }
 }
 
-detekt { toolVersion = "1.23.7" }
+detekt {
+  toolVersion = "1.23.7"
+  buildUponDefaultConfig = true
+  config.setFrom(files("${rootProject.projectDir}/config/detekt/detekt.yml"))
+}
 
 dependencies {
   implementation("org.apache.commons:commons-text")
