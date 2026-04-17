@@ -1,6 +1,5 @@
 package ru.kislball.machikoro.game
 
-import ru.kislball.machikoro.cards.Card
 import ru.kislball.machikoro.cards.CardKind
 
 class Game(val players: List<Player>) {
