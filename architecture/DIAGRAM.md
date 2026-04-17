@@ -1,172 +1,197 @@
 ```mermaid
 classDiagram
-    namespace Triggers { class Trigger {
-	    String +triggerDescriptionKey$;
-	    String +triggerNameKey$;
-	    +isTriggered(StepContext sc) void*;
+    namespace Triggers {
+        class Trigger {
+            <<abstract>>
+            +triggerDescriptionKey: String
+            +triggerNameKey: String
+            +isTriggered(step: Step) Boolean
+        }
+        class AnyDiceTrigger {
+            +dice: List~Int~
+        }
+        class PlayerDiceTrigger {
+            +player: Player
+            +dice: List~Int~
+        }
+        class AndTrigger {
+            +triggers: List~Trigger~
+        }
+        class OrTrigger {
+            +triggers: List~Trigger~
+        }
     }
-    
-    class AnyDiceTrigger {
-	    List~int~ +diceValues;
-    }
-    class PlayerDiceTrigger {
-	    List~int~ +diceValues;
-	    Player +player;
-    }
-	class AndTrigger {
-		List~Trigger~ +triggers;
-	}
-	class OrTrigger {
-		List~Trigger~ +triggers;
-	} }
-    
-    AnyDiceTrigger ..|> Trigger
-    AndTrigger ..|> Trigger
-    OrTrigger ..|> Trigger
-    PlayerDiceTrigger ..|> Trigger
-    
+
     namespace Effects {
         class Effect {
-            String +effectDescriptionKey$;
-            String +effectNameKey$;
-            +apply(StepContext sc) void*;
+            <<abstract>>
+            +effectDescriptionKey: String
+            +effectNameKey: String
+            +apply(step: Step) void
         }
-
         class CompoundEffect {
-            List~Effect~ +effects;
+            +effects: List~Effect~
+            +combineEffects(effects: Effect...) CompoundEffect
         }
-
         class MoneyTransferEffect {
-            Player +from;
-            Player +to;
-            int +amount;
+            +from: Player?
+            +to: Player?
+            +amount: Int
         }
-
-        class BuyCardEffect {
-            Player +player;
-            CardFactory +factory;
+        class GrantCardEffect {
+            +player: Player
+            +kind: CardKind
         }
-    note for Effect "Invariant validation on creation by effects"
     }
 
-    
-    BuyCardEffect ..> CardFactory : uses
-    
-    CompoundEffect ..|> Effect
-    BuyCardEffect ..|> Effect
-	MoneyTransferEffect ..|> Effect 
-   
-    namespace Actions { class PlayerAction {
-	    Player +player;
-	    +getEffects() List~Effect~;
+    namespace Actions {
+        class PlayerAction {
+            <<abstract>>
+            +player: Player
+            +checkValid(step: Step) void
+            +getEffect(step: Step) Effect
+        }
+        class BuyCardAction {
+            +kind: CardKind
+        }
     }
-    class BuyAction {
-	    
-    } }
-    
-    PlayerAction ..> Effect : creates
 
-    namespace Cards { class Card {
-	    String +cardDescriptionKey$;
-	    String +cardNameKey$;
-	    +getPrice(Step sc) int*;
-	    +getEffect(Step sc) Effect*;
+    namespace Cards {
+        class Triggerable {
+            <<abstract>>
+            +getEffect(step: Step) Effect
+            +apply(step: Step) void
+        }
+        class Card {
+            <<abstract>>
+            +cardNameKey: String
+            +cardNameDescription: String
+            +kind: CardKind
+            +getPrice(step: Step) Int
+        }
+        class CardFactory {
+            <<object>>
+            +canCreate(kind: CardKind) Boolean
+            +create(kind: CardKind) Card
+        }
+        class CardCatalog {
+            <<object>>
+            +allKinds() List~CardKind~
+            +kindsByType(type: CardType) List~CardKind~
+            +contains(kind: CardKind) Boolean
+            +getCreator(kind: CardKind) Function
+        }
+        class CardKind {
+            <<enum>>
+        }
+        class CardType {
+            <<enum>>
+        }
     }
-    class SightCard
-    class EnterpriseCard
-    
-    class CardFactory {
-	    +create() Card;
-    } }
+
+    namespace CoreGame {
+        class Step {
+            +game: Game
+            +currentPlayer: Player
+            +stepNumber: Int
+        }
+        class WaitingDiceStep {
+            +rollDice(numDice: Int) DiceRolledStep
+        }
+        class DiceRolledStep {
+            +dice: List~Int~
+            +finish(action: PlayerAction) FinishedActionStep
+        }
+        class FinishedActionStep {
+            +action: PlayerAction
+            +effect: Effect
+        }
+        class Game {
+            +players: List~Player~
+            +steps: MutableList~Step~
+            +currentStep: Step?
+            +currentPlayer: Player?
+            +nextStep() Step
+            +getTriggerables() Sequence~Triggerable~
+            +countCardsOfKind(kind: CardKind) Int
+        }
+        class Player {
+            +name: String
+            +balance: Int
+            +cards: MutableList~Card~
+        }
+    }
+
+    namespace GameFacility {
+        class GameExporter {
+            <<interface>>
+            +export(game: Game) String
+        }
+        class GameImporter {
+            <<interface>>
+            +import(content: String) Game
+        }
+        class JSONExporter
+        class JSONImporter
+        class GameDriver {
+            +game: Game
+            +nextStep() WaitingDiceStep
+            +rollDice(player: Player, numDice: Int) DiceRolledStep
+            +finishStep(action: PlayerAction) FinishedActionStep
+        }
+        class GameFactory {
+            <<object>>
+            +createDriver(playerNames: List~String~) GameDriver
+            +export(game: Game, exporter: GameExporter) String
+            +import(content: String, importer: GameImporter) GameDriver
+        }
+    }
+
+    Trigger <|-- AnyDiceTrigger
+    Trigger <|-- PlayerDiceTrigger
+    Trigger <|-- AndTrigger
+    Trigger <|-- OrTrigger
+    Trigger <|-- Triggerable
+    Triggerable <|-- Card
+
+    Effect <|-- CompoundEffect
+    Effect <|-- MoneyTransferEffect
+    Effect <|-- GrantCardEffect
+
+    PlayerAction <|-- BuyCardAction
+    Step <|-- WaitingDiceStep
+    Step <|-- DiceRolledStep
+    Step <|-- FinishedActionStep
+
+    CardKind --> CardType : type
+    Card --> CardKind : kind
+    Player "1" o-- "*" Card : owns
+    Game "1" o-- "*" Player : contains
+    Game "1" o-- "*" Step : history
+
+    PlayerDiceTrigger --> Player
+    MoneyTransferEffect --> Player
+    GrantCardEffect --> Player
+    GrantCardEffect --> CardKind
+    GrantCardEffect ..> CardFactory : creates
+    CardFactory ..> CardCatalog : uses
     CardFactory ..> Card : creates
-    
-    
-    BuyAction --|> PlayerAction
-    BuyAction --|> BuyCardEffect
-    
-    namespace CoreGame { class Step {
-	    Game +game;
-	    Player +currentPlayer;
-	    int +stepNumber;
-		+rollDice(int numDice) DiceRolledStep;	    
-    }
-    
-    class DiceRolledStep {
-	    List~int~ +diceRolls;
-	    List~Effect~ +intermediateEffects;
-	    +finish(PlayerAction action) FinishedStep;
-    }
 
-	class FinishedStep {
-		PlayerAction +action;
-		List~Effect~ effectsApplied;
-	}
-	
-    
-    class Game {
-	    List~Player~ +players;
-	    Step? +currentStep;
-	    List~Step~ +steps;
-	    +nextStep() Step;
-    }
-    
-    
-    
-    class Player {
-	    String +name;
-	    List~Card~ +cards;
-	    Game +game;
-    } }
-
-	Step <|-- DiceRolledStep
-	DiceRolledStep <|-- FinishedStep
-    Game ..> Step : creates
-	Step ..> DiceRolledStep : creates
-	DiceRolledStep ..> FinishedStep : creates
+    Trigger ..> Step
+    Effect ..> Step
+    PlayerAction ..> Effect : returns
+    Game ..> Triggerable : getTriggerables
+    DiceRolledStep ..> PlayerAction : finish
+    FinishedActionStep --> PlayerAction
+    FinishedActionStep --> Effect
 
     JSONExporter ..|> GameExporter
-    CSVExporter ..|> GameExporter
     JSONImporter ..|> GameImporter
-    CSVImporter ..|> GameImporter
-    
-    namespace GameFacility { class GameExporter {
-	    +export(Game g) String;
-    }
-    
-    class GameImporter {
-	    +import(String s) Game;
-    }
-
-    class GameDriver {
-        Game +game; 
-    }
-    class JSONExporter {}
-    class JSONImporter {}
-    class CSVExporter {}
-    class CSVImporter {}
-
-    note for GameFactory "Game logic entrypoint"
-    class GameFactory {
-    } }
-    
-
+    GameDriver --> Game
     GameFactory ..> Game : creates
+    GameFactory ..> GameDriver : creates
     GameFactory ..> GameExporter : uses
     GameFactory ..> GameImporter : uses
-    GameFactory ..> GameDriver : creates
-
-
-    
-    Player ..> Card : posseses
-    Game ..> Player : contains
-
-    Effect <|.. Card : creates
-
-    Trigger <|.. Card
-    Effect ..> Game : changes
-
-    Card <|.. SightCard
-    Card <|.. EnterpriseCard
 ```
 
 Для описания дальнейшей логики используется диаграма классов выше. Далее будут описаны отдельные моменты.
@@ -180,8 +205,6 @@ classDiagram
 ### Эффекты
 Эффекты --- единственное, что может изменять игру. Действия игроков и карточки порождают эффекты,
 которые в свою очередь ответственны за поддержку инвариантов.
-
-
 
 
 
