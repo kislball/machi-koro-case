@@ -4,6 +4,7 @@ import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.effects.Effect
+import ru.kislball.machikoro.effects.utility.input.InputEffect
 import ru.kislball.machikoro.game.step.FinishedActionStepPhase
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
@@ -14,6 +15,9 @@ class Game(val catalog: CardCatalog, val players: List<Player>, val gameFinished
   constructor(players: List<Player>) : this(StandardCatalog, players, SightsCollectedTrigger())
 
   private var stepNumber: Int = 0
+
+  val inputEffects = InputEffectsQueue()
+
   var steps = mutableListOf<StepPhase>()
   var finished: Boolean = false
     private set

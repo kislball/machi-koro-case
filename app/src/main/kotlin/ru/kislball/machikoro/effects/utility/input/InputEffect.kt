@@ -1,0 +1,20 @@
+package ru.kislball.machikoro.effects.utility.input
+
+import ru.kislball.machikoro.effects.Effect
+import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.step.StepPhase
+
+abstract class InputEffect<T>(val id: String, val player: Player) {
+  abstract fun applyWithInput(stepPhase: StepPhase, input: T)
+
+  open fun checkInput(input: T) = true
+
+  fun getEffect(input: T): Effect {
+    require(checkInput(input))
+    return object : Effect(id) {
+      override fun apply(stepPhase: StepPhase) {
+        applyWithInput(stepPhase, input)
+      }
+    }
+  }
+}

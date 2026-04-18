@@ -31,13 +31,15 @@ class GameDriver(val game: Game) {
     return rolledStep
   }
 
-  fun finishStep(action: PlayerAction): FinishedActionStepPhase {
+  fun finishStep(action: PlayerAction): FinishedActionStepPhase? {
     val current =
         game.currentStepPhase as? DiceRolledStepPhase
             ?: error("Current step is not ready for player action")
     require(current.currentPlayer == action.player) { "Only current player can submit action" }
     val finishedStep = current.finish(action)
-    game.steps.add(finishedStep)
+    if (finishedStep != null) {
+      game.steps.add(finishedStep)
+    }
     return finishedStep
   }
 }
