@@ -10,7 +10,7 @@ class MaybeEffect(val inner: Effect) : Effect() {
         try {
             inner.apply(step)
         } catch (e: Exception) {
-            print("MaybeEffect: effect ${inner.javaClass.simpleName} emitted error ${e.message}")
+            print("${this.javaClass.simpleName}: effect ${inner.javaClass.simpleName} emitted error ${e.message}")
         }
     }
 }
