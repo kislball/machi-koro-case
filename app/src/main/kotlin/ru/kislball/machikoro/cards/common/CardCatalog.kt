@@ -1,6 +1,6 @@
 package ru.kislball.machikoro.cards.common
 
-open class CardCatalog(cards: List<Card>) {
+open class CardCatalog(vararg cards: Card) {
   private val cardsMap = cards.associateBy { it.id }
 
   init {
