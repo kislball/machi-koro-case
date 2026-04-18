@@ -95,4 +95,5 @@ val StandardCatalog =
             revenueFrom = CardIcon.WHEAT,
         ),
         StadiumCard(),
+        TVCentreCard(),
     )
