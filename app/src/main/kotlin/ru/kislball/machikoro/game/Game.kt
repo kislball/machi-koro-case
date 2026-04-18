@@ -43,7 +43,7 @@ class Game(val catalog: CardCatalog, val players: List<Player>) {
     val nextStep =
         WaitingDiceStep(
             game = this,
-            currentPlayer = players[(stepNumber - 1) % players.size],
+            currentPlayer = players[stepNumber % players.size],
             stepNumber = stepNumber,
         )
     steps.add(nextStep)
