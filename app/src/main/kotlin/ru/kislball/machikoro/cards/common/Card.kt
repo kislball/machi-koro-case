@@ -6,7 +6,7 @@ import ru.kislball.machikoro.game.Triggerable
 abstract class Card(
     val cardId: String,
     val type: CardType,
-    val totalCards: Int,
+    val totalCards: Int = 4,
 ) : Triggerable("card.$cardId") {
   abstract fun getPrice(s: Step): Int
 
