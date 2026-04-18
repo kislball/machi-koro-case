@@ -4,6 +4,7 @@ import ru.kislball.machikoro.effects.CompoundEffect
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.GrantCardEffect
 import ru.kislball.machikoro.effects.MoneyTransferEffect
+import ru.kislball.machikoro.effects.MoneyTransferType
 import ru.kislball.machikoro.game.DiceRolledStep
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
@@ -22,7 +23,8 @@ class BuyCardAction(game: Game, player: Player, id: String) : PlayerAction(playe
   override fun getEffect(s: Step): Effect {
     checkValid(s)
     return CompoundEffect.combineEffects(
-        MoneyTransferEffect(player, null, card.getPrice(s)),
+        MoneyTransferEffect(
+            player = player, amount = card.getPrice(s), type = MoneyTransferType.WithdrawExact),
         GrantCardEffect(player, card),
     )
   }
