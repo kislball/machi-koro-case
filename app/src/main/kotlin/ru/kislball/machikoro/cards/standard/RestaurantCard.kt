@@ -17,7 +17,7 @@ class RestaurantCard(
     val price: Int,
 ) :
     Card(
-        id = id,
+        cardId = id,
         type = CardType.ENTERPRISE,
         totalCards = totalCards,
     ) {

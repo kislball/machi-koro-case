@@ -28,11 +28,11 @@ class Game(val catalog: CardCatalog, val players: List<Player>) {
   }
 
   fun countCardsOfKind(id: String): Int {
-    return players.asSequence().flatMap { it.cards }.count { it.id == id }
+    return players.asSequence().flatMap { it.cards }.count { it.cardId == id }
   }
 
   fun countCardsOfKind(card: Card): Int {
-    return countCardsOfKind(card.id)
+    return countCardsOfKind(card.cardId)
   }
 
   fun nextStep(): Step {

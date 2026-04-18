@@ -4,15 +4,15 @@ import ru.kislball.machikoro.game.Step
 import ru.kislball.machikoro.game.Triggerable
 
 abstract class Card(
-    val id: String,
+    val cardId: String,
     val type: CardType,
     val totalCards: Int,
-) : Triggerable() {
+) : Triggerable("card.$cardId") {
   abstract fun getPrice(s: Step): Int
 
   val cardNameKey: String
-    get() = "$id.name"
+    get() = "$cardId.name"
 
   val cardNameDescription
-    get() = "$id.description"
+    get() = "$cardId.description"
 }
