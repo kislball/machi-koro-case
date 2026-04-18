@@ -12,10 +12,7 @@ enum class MoneyTransferType {
 }
 
 class MoneyTransferEffect(val player: Player, val amount: Int, val type: MoneyTransferType) :
-    Effect() {
-  override var effectDescriptionKey: String = "effects.money-transfer.description"
-
-  override var effectNameKey: String = "effects.money-transfer.name"
+    Effect("effects.money_transfer") {
 
   override fun apply(step: Step) {
     when (type) {

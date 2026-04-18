@@ -10,7 +10,8 @@ import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.Step
 
-class BuyCardAction(game: Game, player: Player, id: String) : PlayerAction(player) {
+class BuyCardAction(game: Game, player: Player, id: String) :
+    PlayerAction(id = "actions.buy_card", player) {
   val card = game.catalog[id] ?: throw IllegalArgumentException("Card $id does not exist")
 
   override fun checkValid(s: Step) {

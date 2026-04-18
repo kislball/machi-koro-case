@@ -4,8 +4,14 @@ import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.Step
 
-abstract class PlayerAction(val player: Player) {
+abstract class PlayerAction(val id: String, val player: Player) {
   abstract fun checkValid(s: Step)
 
   abstract fun getEffect(s: Step): Effect
+
+  val actionNameKey: String
+    get() = "$id.name"
+
+  val actionDescriptionKey: String
+    get() = "$id.description"
 }

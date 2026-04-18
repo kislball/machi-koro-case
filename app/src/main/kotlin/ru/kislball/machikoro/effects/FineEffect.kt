@@ -8,10 +8,7 @@ class FineEffect(
     val from: Player,
     val to: Player,
     val amount: Int,
-) : Effect() {
-  override var effectDescriptionKey: String = "effects.fine.description"
-  override var effectNameKey: String = "effects.fine.name"
-
+) : Effect("effects.fine") {
   fun getFinalAmount(): Int {
     return min(amount, from.balance)
   }
@@ -20,7 +17,8 @@ class FineEffect(
     return CompoundEffect.combineEffects(
         MoneyTransferEffect(
             player = from, type = MoneyTransferType.WithdrawExact, amount = getFinalAmount()),
-        MoneyTransferEffect(player = to, type = MoneyTransferType.Deposit, amount = getFinalAmount()),
+        MoneyTransferEffect(
+            player = to, type = MoneyTransferType.Deposit, amount = getFinalAmount()),
     )
   }
 

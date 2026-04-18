@@ -2,10 +2,7 @@ package ru.kislball.machikoro.effects
 
 import ru.kislball.machikoro.game.Step
 
-class MaybeEffect(val inner: Effect) : Effect() {
-  override var effectDescriptionKey = inner.effectDescriptionKey
-  override var effectNameKey = inner.effectNameKey
-
+class MaybeEffect(val inner: Effect) : Effect("effects.maybe") {
   override fun apply(step: Step) {
     try {
       inner.apply(step)
