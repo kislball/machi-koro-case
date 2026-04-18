@@ -2,6 +2,7 @@ package ru.kislball.machikoro
 
 import ru.kislball.machikoro.actions.PlayerAction
 import ru.kislball.machikoro.cards.common.Card
+import ru.kislball.machikoro.cards.common.CardIcon
 import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.game.Player
@@ -26,7 +27,7 @@ class StubCard(
     totalCards: Int = 4,
     private val triggered: Boolean = false,
     private val effect: Effect = CountingEffect(),
-) : Card(cardId, type, totalCards) {
+) : Card(cardId, type, totalCards, CardIcon.SHOP) {
   override val cardNameKey: String = "test.card.name"
   override val cardDescriptionKey: String = "test.card.description"
 

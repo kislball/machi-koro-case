@@ -10,6 +10,7 @@ import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
+import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
 class BuyCardActionTest {
   @Test
@@ -17,7 +18,7 @@ class BuyCardActionTest {
     val player = Player("p1")
     player.balance = 10
     val card = StubCard("cards.bakery")
-    val game = Game(CardCatalog(card), listOf(player))
+    val game = Game(CardCatalog(card), listOf(player), SightsCollectedTrigger())
     val step = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
     val action = BuyCardAction(game, player, "cards.bakery")
 
@@ -29,7 +30,7 @@ class BuyCardActionTest {
     val player = Player("p1")
     player.balance = 0
     val card = StubCard("cards.bakery")
-    val game = Game(CardCatalog(card), listOf(player))
+    val game = Game(CardCatalog(card), listOf(player), SightsCollectedTrigger())
     val step = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
     val action = BuyCardAction(game, player, "cards.bakery")
 
@@ -43,7 +44,7 @@ class BuyCardActionTest {
     val player = Player("p1")
     player.balance = 10
     val card = StubCard("cards.bakery")
-    val game = Game(CardCatalog(card), listOf(player))
+    val game = Game(CardCatalog(card), listOf(player), SightsCollectedTrigger())
     val step = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
     val action = BuyCardAction(game, player, "cards.bakery")
 
@@ -60,7 +61,7 @@ class BuyCardActionTest {
     val player = Player("p1")
     player.balance = 10
     val card = StubCard("cards.bakery")
-    val game = Game(CardCatalog(card), listOf(player))
+    val game = Game(CardCatalog(card), listOf(player), SightsCollectedTrigger())
     val invalidStepPhase = object : StepPhase(game, player, 1) {}
     val action = BuyCardAction(game, player, "cards.bakery")
 

@@ -8,7 +8,6 @@ import kotlin.test.assertTrue
 import ru.kislball.machikoro.CountingEffect
 import ru.kislball.machikoro.StubAction
 import ru.kislball.machikoro.StubCard
-import ru.kislball.machikoro.game.step.FinishedActionStepPhase
 import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
 
 class GameAndStepsTest {
@@ -27,7 +26,7 @@ class GameAndStepsTest {
 
     val triggerables = game.getTriggerables().toList()
 
-    assertEquals(2, triggerables.size)
+    assertEquals(3, triggerables.size)
   }
 
   @Test
@@ -46,8 +45,8 @@ class GameAndStepsTest {
     val game = Game(listOf(Player("p1"), Player("p2")))
 
     val step1 = game.nextStep() as WaitingDiceStepPhase
-    val finished = FinishedActionStepPhase(game, step1.rollDice(1), StubAction(step1.currentPlayer))
-    game.steps.add(finished)
+    val finished = step1.rollDice(1).finish(StubAction(step1.currentPlayer))
+    assertNotNull(finished)
     val step2 = game.nextStep()
 
     assertEquals("p1", step1.currentPlayer.name)
@@ -99,7 +98,8 @@ class GameAndStepsTest {
 
     val finished = rolled.finish(action)
 
-    assertEquals(2, action.checkValidCalled)
+    assertEquals(1, action.checkValidCalled)
+    assertNotNull(finished)
     assertEquals(player, finished.currentPlayer)
   }
 
@@ -110,8 +110,9 @@ class GameAndStepsTest {
     val game = Game(listOf(player))
     val rolled = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
 
-    FinishedActionStepPhase(game, rolled, StubAction(player, effect))
+    val finished = rolled.finish(StubAction(player, effect))
 
+    assertNotNull(finished)
     assertEquals(1, effect.appliedCount)
   }
 }

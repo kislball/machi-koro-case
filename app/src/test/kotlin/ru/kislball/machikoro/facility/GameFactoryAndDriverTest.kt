@@ -10,6 +10,7 @@ import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
 class GameFactoryAndDriverTest {
   @Test
@@ -70,7 +71,7 @@ class GameFactoryAndDriverTest {
     val player = Player("p1")
     player.balance = 5
     val card = StubCard("cards.bakery")
-    val game = Game(CardCatalog(card), listOf(player))
+    val game = Game(CardCatalog(card), listOf(player), SightsCollectedTrigger())
     val driver = GameDriver(game)
     val rolled = driver.rollDice(player, 1)
     assertNotNull(rolled)
