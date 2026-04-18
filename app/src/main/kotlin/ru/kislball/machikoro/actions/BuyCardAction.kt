@@ -14,6 +14,10 @@ class BuyCardAction(game: Game, player: Player, id: String) :
     PlayerAction(id = "actions.buy_card", player) {
   val card = game.catalog[id] ?: throw IllegalArgumentException("Card $id does not exist")
 
+  init {
+    require(game.players.contains(player)) { "Player ${player.name} does not exist" }
+  }
+
   override fun checkValid(s: Step) {
     require(player.balance >= card.getPrice(s)) { "Player doesn't have enough balance" }
     require(s.game.countCardsOfKind(card) < card.totalCards) { "No more cards available" }
