@@ -146,6 +146,27 @@ classDiagram
             +import(content: String, importer: GameImporter) GameDriver
         }
     }
+    
+    namespace UserInterface {
+        class CommandProcessor {
+            GameDriver +driver
+            +processCommand(command: GameCommand) void
+        }
+        
+        class GameCommand {
+            <<interface>>
+            +checkValid(GameDriver driver) bool
+            +execute(GameDriver driver) void
+        }
+        note for GameCommand "checkValid throws exception if command is invalid, returns true otherwise"
+        
+        class ReactiveGame {
+            GameDriver +driver
+        }
+        note for ReactiveGame "Makes the game state observable, implementation dependent"
+        
+        CommandProcessor ..> GameDriver : uses
+    }
 
     Trigger <|-- AnyDiceTrigger
     Trigger <|-- PlayerDiceTrigger
