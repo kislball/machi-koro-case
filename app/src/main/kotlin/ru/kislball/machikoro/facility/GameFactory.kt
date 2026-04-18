@@ -3,6 +3,7 @@ package ru.kislball.machikoro.facility
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
 object GameFactory {
   fun createDriver(catalog: CardCatalog, playerNames: List<String>): GameDriver {
@@ -11,6 +12,6 @@ object GameFactory {
     require(playerNames.toSet().size == playerNames.size) { "Player names must be unique" }
 
     val players = playerNames.map { Player(it) }
-    return GameDriver(Game(catalog, players))
+    return GameDriver(Game(catalog, players, SightsCollectedTrigger()))
   }
 }

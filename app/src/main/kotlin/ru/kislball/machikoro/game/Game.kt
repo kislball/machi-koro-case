@@ -3,15 +3,38 @@ package ru.kislball.machikoro.game
 import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.cards.standard.StandardCatalog
+import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.game.step.FinishedActionStepPhase
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
+import ru.kislball.machikoro.triggers.Trigger
+import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
-class Game(val catalog: CardCatalog, val players: List<Player>) {
-  constructor(players: List<Player>) : this(StandardCatalog, players)
+class Game(val catalog: CardCatalog, val players: List<Player>, val gameFinishedTrigger: Trigger) {
+  constructor(players: List<Player>) : this(StandardCatalog, players, SightsCollectedTrigger())
 
   private var stepNumber: Int = 0
   var steps = mutableListOf<StepPhase>()
+  var finished: Boolean = false
+    private set
+
+  private val finishedEffect =
+      object : Effect("effects.game_finished") {
+        override fun apply(stepPhase: StepPhase) {
+          stepPhase.game.finished = true
+        }
+      }
+
+  private val finishedTriggerable =
+      object : Triggerable("triggerable.${gameFinishedTrigger.id}") {
+        override fun getEffect(s: StepPhase, possessor: Player?): Effect {
+          return finishedEffect
+        }
+
+        override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
+          return gameFinishedTrigger.isTriggered(stepPhase, possessor)
+        }
+      }
 
   val currentStepPhase: StepPhase?
     get() = steps.lastOrNull()
@@ -24,10 +47,13 @@ class Game(val catalog: CardCatalog, val players: List<Player>) {
   }
 
   fun getTriggerables(): Sequence<Pair<Triggerable, Player?>> {
-    return players
-        .asSequence()
-        .flatMap { player -> player.cards.asSequence().map { it to player } }
-        .map { (card, player) -> card as Triggerable to player }
+    val cardTriggerables =
+        players
+            .asSequence()
+            .flatMap { player -> player.cards.asSequence().map { it to player } }
+            .map { (card, player) -> card as Triggerable to player }
+    val finished = finishedTriggerable to null
+    return sequenceOf(finished) + cardTriggerables
   }
 
   fun countCardsOfKind(id: String): Int {
