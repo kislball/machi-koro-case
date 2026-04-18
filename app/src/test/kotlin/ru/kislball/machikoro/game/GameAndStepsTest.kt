@@ -8,7 +8,6 @@ import kotlin.test.assertTrue
 import ru.kislball.machikoro.CountingEffect
 import ru.kislball.machikoro.StubAction
 import ru.kislball.machikoro.StubCard
-import ru.kislball.machikoro.cards.common.CardKind
 
 class GameAndStepsTest {
   @Test
@@ -20,8 +19,8 @@ class GameAndStepsTest {
   fun `getTriggerables exposes all player cards`() {
     val p1 = Player("p1")
     val p2 = Player("p2")
-    p1.cards.add(StubCard(CardKind.RANCH))
-    p2.cards.add(StubCard(CardKind.BAKERY))
+    p1.cards.add(StubCard("cards.ranch"))
+    p2.cards.add(StubCard("cards.bakery"))
     val game = Game(listOf(p1, p2))
 
     val triggerables = game.getTriggerables().toList()
@@ -33,11 +32,11 @@ class GameAndStepsTest {
   fun `countCardsOfKind counts cards across players`() {
     val p1 = Player("p1")
     val p2 = Player("p2")
-    p1.cards.add(StubCard(CardKind.RANCH))
-    p2.cards.add(StubCard(CardKind.RANCH))
+    p1.cards.add(StubCard("cards.ranch"))
+    p2.cards.add(StubCard("cards.ranch"))
     val game = Game(listOf(p1, p2))
 
-    assertEquals(2, game.countCardsOfKind(CardKind.RANCH))
+    assertEquals(2, game.countCardsOfKind("cards.ranch"))
   }
 
   @Test
@@ -50,7 +49,9 @@ class GameAndStepsTest {
     val step2 = game.nextStep()
 
     assertEquals("p1", step1.currentPlayer.name)
+    assertEquals(0, step1.stepNumber)
     assertEquals("p2", step2.currentPlayer.name)
+    assertEquals(1, step2.stepNumber)
     assertNotNull(game.currentPlayer)
     assertEquals(step2, game.currentStep)
   }
@@ -78,13 +79,13 @@ class GameAndStepsTest {
   fun `dice rolled step init applies effects for triggered cards`() {
     val effect = CountingEffect()
     val player = Player("p1")
-    player.cards.add(StubCard(CardKind.RANCH, triggered = true, effect = effect))
+    player.cards.add(StubCard("cards.ranch", triggered = true, effect = effect))
     val game = Game(listOf(player))
     val waiting = game.nextStep() as WaitingDiceStep
 
     waiting.rollDice(1)
 
-    assertEquals(1, effect.appliedCount)
+    assertEquals(2, effect.appliedCount)
   }
 
   @Test

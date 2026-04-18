@@ -2,51 +2,31 @@ package ru.kislball.machikoro.cards
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNull
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
-import ru.kislball.machikoro.cards.common.CardKind
-import ru.kislball.machikoro.cards.common.CardType
 
 class CardCatalogTest {
   @Test
-  fun `allKinds returns all enum entries`() {
-    assertEquals(CardKind.entries, CardCatalog.allKinds())
+  fun `get returns card by id`() {
+    val card = StubCard("cards.bakery")
+    val catalog = CardCatalog(card)
+
+    assertEquals(card, catalog["cards.bakery"])
   }
 
   @Test
-  fun `kindsByType filters by type`() {
-    val sights = CardCatalog.kindsByType(CardType.SIGHT)
+  fun `get returns null for missing id`() {
+    val catalog = CardCatalog(StubCard("cards.cafe"))
 
-    assertTrue(sights.all { it.type == CardType.SIGHT })
-    assertTrue(CardKind.TRAIN_STATION in sights)
+    assertNull(catalog["missing.card"])
   }
 
   @Test
-  fun `contains returns true for known kind`() {
-    assertTrue(CardCatalog.contains(CardKind.RANCH))
-  }
-
-  @Test
-  fun `registerCreator and getCreator roundtrip`() {
-    CardCatalog.registerCreator(CardKind.RANCH) { StubCard(CardKind.RANCH) }
-
-    val creator = CardCatalog.getCreator(CardKind.RANCH)
-
-    assertNotNull(creator)
-    assertEquals(CardKind.RANCH, creator.invoke().kind)
-  }
-
-  @Test
-  fun `registerCreators registers all creators`() {
-    CardCatalog.registerCreators(
-        mapOf(
-            CardKind.BAKERY to { StubCard(CardKind.BAKERY) },
-            CardKind.CAFE to { StubCard(CardKind.CAFE) },
-        ))
-
-    assertNotNull(CardCatalog.getCreator(CardKind.BAKERY))
-    assertNotNull(CardCatalog.getCreator(CardKind.CAFE))
+  fun `constructor rejects duplicate ids`() {
+    assertFailsWith<IllegalArgumentException> {
+      CardCatalog(StubCard("cards.same"), StubCard("cards.same"))
+    }
   }
 }

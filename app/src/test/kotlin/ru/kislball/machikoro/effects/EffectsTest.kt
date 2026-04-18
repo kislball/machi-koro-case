@@ -5,8 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import ru.kislball.machikoro.CountingEffect
 import ru.kislball.machikoro.StubCard
-import ru.kislball.machikoro.cards.common.CardCatalog
-import ru.kislball.machikoro.cards.common.CardKind
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 
@@ -26,39 +24,37 @@ class EffectsTest {
   }
 
   @Test
-  fun `money transfer moves coins when balance is enough`() {
-    val from = Player("from")
-    val to = Player("to")
-    from.balance = 5
-    val game = Game(listOf(from, to))
+  fun `money transfer withdraws coins`() {
+    val player = Player("from")
+    player.balance = 5
+    val game = Game(listOf(player))
     val step = game.nextStep()
 
-    MoneyTransferEffect(from, to, 3).apply(step)
+    MoneyTransferEffect(player, 3, MoneyTransferType.Withdraw).apply(step)
 
-    assertEquals(2, from.balance)
-    assertEquals(3, to.balance)
+    assertEquals(2, player.balance)
   }
 
   @Test
   fun `money transfer throws when sender balance is insufficient`() {
-    val from = Player("from")
-    from.balance = 1
-    val game = Game(listOf(from))
+    val player = Player("from")
+    player.balance = 1
+    val game = Game(listOf(player))
     val step = game.nextStep()
 
-    assertFailsWith<Exception> { MoneyTransferEffect(from, null, 2).apply(step) }
+    assertFailsWith<Exception> { MoneyTransferEffect(player, 2, MoneyTransferType.WithdrawExact).apply(step) }
   }
 
   @Test
-  fun `grant card adds created card to player`() {
+  fun `grant card adds provided card to player`() {
     val player = Player("p1")
     val game = Game(listOf(player))
     val step = game.nextStep()
-    CardCatalog.registerCreator(CardKind.CAFE) { StubCard(CardKind.CAFE) }
+    val card = StubCard("cards.cafe")
 
-    GrantCardEffect(player, CardKind.CAFE).apply(step)
+    GrantCardEffect(player, card).apply(step)
 
     assertEquals(1, player.cards.size)
-    assertEquals(CardKind.CAFE, player.cards.first().kind)
+    assertEquals("cards.cafe", player.cards.first().cardId)
   }
 }

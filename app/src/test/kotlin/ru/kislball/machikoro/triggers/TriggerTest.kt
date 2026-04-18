@@ -20,7 +20,7 @@ class TriggerTest {
     val rolled = (Game(listOf(player)).nextStep() as WaitingDiceStep).rollDice(1)
     val trigger = AnyDiceTrigger(rolled.dice)
 
-    assertTrue(trigger.isTriggered(rolled))
+    assertTrue(trigger.isTriggered(rolled, null))
     assertEquals("triggers.any-dice.name", trigger.triggerNameKey)
     assertEquals("triggers.any-dice.description", trigger.triggerDescriptionKey)
   }
@@ -31,7 +31,7 @@ class TriggerTest {
     val game = Game(listOf(player))
     val step = testStep(game, player, 1)
 
-    assertFalse(AnyDiceTrigger(listOf(1)).isTriggered(step))
+    assertFalse(AnyDiceTrigger(listOf(1)).isTriggered(step, null))
   }
 
   @Test
@@ -42,23 +42,23 @@ class TriggerTest {
     val rolled = (game.nextStep() as WaitingDiceStep).rollDice(1)
     val trigger = PlayerDiceTrigger(p1, rolled.dice)
 
-    assertTrue(trigger.isTriggered(rolled))
-    assertFalse(PlayerDiceTrigger(p2, rolled.dice).isTriggered(rolled))
+    assertTrue(trigger.isTriggered(rolled, null))
+    assertFalse(PlayerDiceTrigger(p2, rolled.dice).isTriggered(rolled, null))
   }
 
   @Test
   fun `and trigger requires all nested triggers`() {
     val step = testStep(Game(listOf(Player("p1"))), Player("p1"), 1)
 
-    assertTrue(AndTrigger(listOf(StubTrigger(true), StubTrigger(true))).isTriggered(step))
-    assertFalse(AndTrigger(listOf(StubTrigger(true), StubTrigger(false))).isTriggered(step))
+    assertTrue(AndTrigger(listOf(StubTrigger(true), StubTrigger(true))).isTriggered(step, null))
+    assertFalse(AndTrigger(listOf(StubTrigger(true), StubTrigger(false))).isTriggered(step, null))
   }
 
   @Test
   fun `or trigger requires at least one nested trigger`() {
     val step = testStep(Game(listOf(Player("p1"))), Player("p1"), 1)
 
-    assertTrue(OrTrigger(listOf(StubTrigger(false), StubTrigger(true))).isTriggered(step))
-    assertFalse(OrTrigger(listOf(StubTrigger(false), StubTrigger(false))).isTriggered(step))
+    assertTrue(OrTrigger(listOf(StubTrigger(false), StubTrigger(true))).isTriggered(step, null))
+    assertFalse(OrTrigger(listOf(StubTrigger(false), StubTrigger(false))).isTriggered(step, null))
   }
 }

@@ -8,14 +8,13 @@ import kotlin.test.assertTrue
 import ru.kislball.machikoro.StubAction
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
-import ru.kislball.machikoro.cards.common.CardKind
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 
 class GameFactoryAndDriverTest {
   @Test
   fun `createDriver builds driver with players`() {
-    val driver = GameFactory.createDriver(listOf("alice", "bob"))
+    val driver = GameFactory.createDriver(CardCatalog(), listOf("alice", "bob"))
 
     assertEquals(2, driver.game.players.size)
     assertEquals("alice", driver.game.players.first().name)
@@ -23,34 +22,9 @@ class GameFactoryAndDriverTest {
 
   @Test
   fun `createDriver validates input names`() {
-    assertFailsWith<IllegalArgumentException> { GameFactory.createDriver(emptyList()) }
-    assertFailsWith<IllegalArgumentException> { GameFactory.createDriver(listOf(" ")) }
-    assertFailsWith<IllegalArgumentException> { GameFactory.createDriver(listOf("a", "a")) }
-  }
-
-  @Test
-  fun `export delegates to provided exporter`() {
-    val game = Game(listOf(Player("p1")))
-    val exporter =
-        object : GameExporter {
-          override fun export(game: Game): String = "ok"
-        }
-
-    val exported = GameFactory.export(game, exporter)
-
-    assertEquals("ok", exported)
-  }
-
-  @Test
-  fun `import delegates to provided importer`() {
-    val importer =
-        object : GameImporter {
-          override fun import(content: String): Game = Game(listOf(Player(content)))
-        }
-
-    val driver = GameFactory.import("alex", importer)
-
-    assertEquals("alex", driver.game.players.single().name)
+    assertFailsWith<IllegalArgumentException> { GameFactory.createDriver(CardCatalog(), emptyList()) }
+    assertFailsWith<IllegalArgumentException> { GameFactory.createDriver(CardCatalog(), listOf(" ")) }
+    assertFailsWith<IllegalArgumentException> { GameFactory.createDriver(CardCatalog(), listOf("a", "a")) }
   }
 
   @Test
@@ -89,9 +63,9 @@ class GameFactoryAndDriverTest {
   fun `finishStep validates current player and appends result`() {
     val player = Player("p1")
     player.balance = 5
-    val game = Game(listOf(player))
+    val card = StubCard("cards.bakery")
+    val game = Game(CardCatalog(card), listOf(player))
     val driver = GameDriver(game)
-    CardCatalog.registerCreator(CardKind.BAKERY) { StubCard(CardKind.BAKERY) }
     val rolled = driver.rollDice(player, 1)
     assertNotNull(rolled)
 

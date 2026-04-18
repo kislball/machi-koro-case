@@ -39,7 +39,6 @@ class Game(val catalog: CardCatalog, val players: List<Player>) {
     val canAdvance = currentStep == null || currentStep is FinishedActionStep
     check(canAdvance) { "Step has not been finished" }
 
-    stepNumber++
     val nextStep =
         WaitingDiceStep(
             game = this,
@@ -47,6 +46,7 @@ class Game(val catalog: CardCatalog, val players: List<Player>) {
             stepNumber = stepNumber,
         )
     steps.add(nextStep)
+    stepNumber++
     nextStep.activate()
     return nextStep
   }

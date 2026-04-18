@@ -6,7 +6,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
-import ru.kislball.machikoro.cards.common.CardKind
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.Step
@@ -17,9 +16,10 @@ class BuyCardActionTest {
   fun `checkValid accepts correct game state`() {
     val player = Player("p1")
     player.balance = 10
-    val game = Game(listOf(player))
+    val card = StubCard("cards.bakery")
+    val game = Game(CardCatalog(card), listOf(player))
     val step = (game.nextStep() as WaitingDiceStep).rollDice(1)
-    val action = BuyCardAction(player, CardKind.BAKERY)
+    val action = BuyCardAction(game, player, "cards.bakery")
 
     action.checkValid(step)
   }
@@ -28,9 +28,10 @@ class BuyCardActionTest {
   fun `checkValid rejects when balance is too low`() {
     val player = Player("p1")
     player.balance = 0
-    val game = Game(listOf(player))
+    val card = StubCard("cards.bakery")
+    val game = Game(CardCatalog(card), listOf(player))
     val step = (game.nextStep() as WaitingDiceStep).rollDice(1)
-    val action = BuyCardAction(player, CardKind.BAKERY)
+    val action = BuyCardAction(game, player, "cards.bakery")
 
     val error = assertFailsWith<IllegalArgumentException> { action.checkValid(step) }
 
@@ -41,26 +42,27 @@ class BuyCardActionTest {
   fun `getEffect returns and applies compound purchase effect`() {
     val player = Player("p1")
     player.balance = 10
-    val game = Game(listOf(player))
+    val card = StubCard("cards.bakery")
+    val game = Game(CardCatalog(card), listOf(player))
     val step = (game.nextStep() as WaitingDiceStep).rollDice(1)
-    CardCatalog.registerCreator(CardKind.BAKERY) { StubCard(CardKind.BAKERY) }
-    val action = BuyCardAction(player, CardKind.BAKERY)
+    val action = BuyCardAction(game, player, "cards.bakery")
 
     val effect = action.getEffect(step)
     effect.apply(step)
 
     assertEquals(9, player.balance)
     assertEquals(1, player.cards.size)
-    assertEquals(CardKind.BAKERY, player.cards.first().kind)
+    assertEquals("cards.bakery", player.cards.first().cardId)
   }
 
   @Test
   fun `getEffect fails when step type is invalid`() {
     val player = Player("p1")
     player.balance = 10
-    val game = Game(listOf(player))
+    val card = StubCard("cards.bakery")
+    val game = Game(CardCatalog(card), listOf(player))
     val invalidStep = object : Step(game, player, 1) {}
-    val action = BuyCardAction(player, CardKind.BAKERY)
+    val action = BuyCardAction(game, player, "cards.bakery")
 
     assertFailsWith<IllegalArgumentException> { action.getEffect(invalidStep) }
   }
