@@ -1,6 +1,6 @@
 package ru.kislball.machikoro.actions
 
-import ru.kislball.machikoro.effects.CompoundEffect
+import ru.kislball.machikoro.effects.utility.CompoundEffect
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.GrantCardEffect
 import ru.kislball.machikoro.effects.MoneyTransferEffect

@@ -1,5 +1,6 @@
-package ru.kislball.machikoro.effects
+package ru.kislball.machikoro.effects.utility
 
+import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.game.step.StepPhase
 
 class MaybeEffect(val inner: Effect) : Effect("effects.maybe") {

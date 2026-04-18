@@ -6,6 +6,8 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.facility.json.JSONExporter
+import ru.kislball.machikoro.facility.json.JSONImporter
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 

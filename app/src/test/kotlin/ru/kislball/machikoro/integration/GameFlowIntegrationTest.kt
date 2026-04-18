@@ -7,8 +7,8 @@ import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.actions.BuyCardAction
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.facility.GameFactory
-import ru.kislball.machikoro.facility.JSONExporter
-import ru.kislball.machikoro.facility.JSONImporter
+import ru.kislball.machikoro.facility.json.JSONExporter
+import ru.kislball.machikoro.facility.json.JSONImporter
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 

@@ -9,6 +9,8 @@ import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
+import ru.kislball.machikoro.triggers.utility.AndTrigger
+import ru.kislball.machikoro.triggers.utility.OrTrigger
 
 class TriggerTest {
   private fun testStep(game: Game, player: Player, number: Int): StepPhase =

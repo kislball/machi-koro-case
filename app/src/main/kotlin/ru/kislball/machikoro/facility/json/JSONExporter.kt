@@ -1,6 +1,7 @@
-package ru.kislball.machikoro.facility
+package ru.kislball.machikoro.facility.json
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import ru.kislball.machikoro.facility.GameExporter
 import ru.kislball.machikoro.game.Game
 
 class JSONExporter : GameExporter {

@@ -1,9 +1,10 @@
-package ru.kislball.machikoro.facility
+package ru.kislball.machikoro.facility.json
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.facility.GameImporter
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 

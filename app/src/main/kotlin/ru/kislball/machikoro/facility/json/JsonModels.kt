@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.facility
+package ru.kislball.machikoro.facility.json
 
 data class GameJson(val players: List<PlayerJson>)
 
