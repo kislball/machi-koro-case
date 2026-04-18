@@ -1,5 +1,6 @@
-package ru.kislball.machikoro.effects
+package ru.kislball.machikoro.effects.utility
 
+import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.game.step.StepPhase
 
 class CompoundEffect(val effects: List<Effect>) : Effect("effects.compound") {
