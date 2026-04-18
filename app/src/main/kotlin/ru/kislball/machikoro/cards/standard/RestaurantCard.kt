@@ -30,12 +30,6 @@ class RestaurantCard(
 
   private val trigger = AnyDiceTrigger(acitvationRange)
 
-  override val triggerDescriptionKey: String
-    get() = trigger.triggerDescriptionKey
-
-  override val triggerNameKey: String
-    get() = trigger.triggerNameKey
-
   override fun isTriggered(step: Step, possessor: Player?): Boolean {
     return trigger.isTriggered(step, possessor)
   }
