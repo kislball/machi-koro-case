@@ -10,7 +10,7 @@ import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.get
 import ru.kislball.machikoro.game.step.StepPhase
-import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
+import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.triggers.dice.AnyDiceTrigger
 import ru.kislball.machikoro.triggers.dice.PlayerDiceTrigger
 import ru.kislball.machikoro.triggers.utility.AndTrigger
@@ -23,7 +23,7 @@ class TriggerTest {
   @Test
   fun `any dice trigger fires for matching rolled value`() {
     val player = Player("p1")
-    val rolled = (Game(listOf(player)).nextStep() as WaitingDiceStepPhase)
+    val rolled = (Game(listOf(player)).nextStep() as PendingStepPhase)
     rolled.rollDice(1)
     val trigger = AnyDiceTrigger(rolled.results.get<DiceRollResult>().diceThrown)
 
@@ -46,7 +46,7 @@ class TriggerTest {
     val p1 = Player("p1")
     val p2 = Player("p2")
     val game = Game(listOf(p1, p2))
-    val rolled = (game.nextStep() as WaitingDiceStepPhase)
+    val rolled = (game.nextStep() as PendingStepPhase)
     rolled.rollDice(1)
     val trigger = PlayerDiceTrigger(p1, rolled.results.get<DiceRollResult>().diceThrown)
 

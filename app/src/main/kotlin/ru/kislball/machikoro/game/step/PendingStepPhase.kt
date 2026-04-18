@@ -7,9 +7,9 @@ import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.contains
 
-class WaitingDiceStepPhase(game: Game, currentPlayer: Player, stepNumber: Int) :
+class PendingStepPhase(game: Game, currentPlayer: Player, stepNumber: Int) :
     StepPhase(game, currentPlayer, stepNumber) {
-  fun rollDice(numDice: Int): WaitingDiceStepPhase {
+  fun rollDice(numDice: Int): PendingStepPhase {
     check(!this.game.finished) { "Game has been finished" }
     check(canBeFinished()) { "Step can't be finished" }
     check(!results.contains<DiceRollResult>()) { "Dice have already been rolled" }
@@ -19,7 +19,7 @@ class WaitingDiceStepPhase(game: Game, currentPlayer: Player, stepNumber: Int) :
     return this
   }
 
-  fun finish(action: PlayerAction): FinishedActionStepPhase? {
+  fun finish(action: PlayerAction): FinishedStepPhase? {
     check(!this.game.finished) { "Game has been finished" }
     check(canBeFinished()) { "Step phase can't be finished" }
     check(results.contains<DiceRollResult>()) { "Dice have not been rolled yet" }
@@ -30,7 +30,7 @@ class WaitingDiceStepPhase(game: Game, currentPlayer: Player, stepNumber: Int) :
     this.runTriggerables()
 
     return if (game.inputEffects.peek() == null) {
-      substitute(FinishedActionStepPhase(game, this))
+      substitute(FinishedStepPhase(game, this))
     } else {
       null
     }

@@ -2,7 +2,7 @@ package ru.kislball.machikoro.game.step
 
 import ru.kislball.machikoro.game.Game
 
-class FinishedActionStepPhase : StepPhase {
+class FinishedStepPhase : StepPhase {
   constructor(
       game: Game,
       step: StepPhase,

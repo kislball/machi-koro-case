@@ -4,10 +4,9 @@ import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.effects.Effect
-import ru.kislball.machikoro.effects.utility.input.InputEffect
-import ru.kislball.machikoro.game.step.FinishedActionStepPhase
+import ru.kislball.machikoro.game.step.FinishedStepPhase
 import ru.kislball.machikoro.game.step.StepPhase
-import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
+import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.triggers.Trigger
 import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
@@ -69,11 +68,11 @@ class Game(val catalog: CardCatalog, val players: List<Player>, val gameFinished
   }
 
   fun nextStep(): StepPhase {
-    val canAdvance = currentStepPhase == null || currentStepPhase is FinishedActionStepPhase
+    val canAdvance = currentStepPhase == null || currentStepPhase is FinishedStepPhase
     check(canAdvance) { "Step has not been finished" }
 
     val nextStep =
-        WaitingDiceStepPhase(
+        PendingStepPhase(
             game = this,
             currentPlayer = players[stepNumber % players.size],
             stepNumber = stepNumber,

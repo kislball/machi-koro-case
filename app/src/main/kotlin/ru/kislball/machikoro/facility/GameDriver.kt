@@ -3,23 +3,23 @@ package ru.kislball.machikoro.facility
 import ru.kislball.machikoro.actions.PlayerAction
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.step.FinishedActionStepPhase
-import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
+import ru.kislball.machikoro.game.step.FinishedStepPhase
+import ru.kislball.machikoro.game.step.PendingStepPhase
 
 class GameDriver(val game: Game) {
-  fun nextStep(): WaitingDiceStepPhase {
+  fun nextStep(): PendingStepPhase {
     val nextStep = game.nextStep()
-    check(nextStep is WaitingDiceStepPhase) {
+    check(nextStep is PendingStepPhase) {
       "Expected WaitingDiceStep, got ${nextStep::class.simpleName}"
     }
     return nextStep
   }
 
-  fun rollDice(player: Player, numDice: Int): WaitingDiceStepPhase {
+  fun rollDice(player: Player, numDice: Int): PendingStepPhase {
     val waitingStep =
         when (val step = game.currentStepPhase) {
           null -> nextStep()
-          is WaitingDiceStepPhase -> step
+          is PendingStepPhase -> step
           else -> error("Current step is not waiting for dice roll")
         }
 
@@ -28,9 +28,9 @@ class GameDriver(val game: Game) {
     return waitingStep.rollDice(numDice)
   }
 
-  fun finishStep(action: PlayerAction): FinishedActionStepPhase? {
+  fun finishStep(action: PlayerAction): FinishedStepPhase? {
     val current =
-        game.currentStepPhase as? WaitingDiceStepPhase
+        game.currentStepPhase as? PendingStepPhase
             ?: error("Current step is not ready for player action")
     require(current.currentPlayer == action.player) { "Only current player can submit action" }
     val finishedStep = current.finish(action)

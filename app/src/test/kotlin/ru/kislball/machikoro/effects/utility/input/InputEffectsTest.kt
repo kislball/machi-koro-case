@@ -12,7 +12,7 @@ import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
-import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
+import ru.kislball.machikoro.game.step.PendingStepPhase
 
 class InputEffectsTest {
   @Test
@@ -89,7 +89,7 @@ class InputEffectsTest {
   fun `dice rolled finish returns null while awaiting input`() {
     val player = Player("p1")
     val game = Game(listOf(player))
-    val rolled = (game.nextStep() as WaitingDiceStepPhase)
+    val rolled = (game.nextStep() as PendingStepPhase)
     rolled.rollDice(1)
     val inputEffect = RecordingIntInputEffect(player)
 
@@ -119,7 +119,7 @@ class InputEffectsTest {
   fun `provide input effect resolves queued input from awaiting flow`() {
     val player = Player("p1")
     val game = Game(listOf(player))
-    val rolled = (game.nextStep() as WaitingDiceStepPhase)
+    val rolled = (game.nextStep() as PendingStepPhase)
     rolled.rollDice(1)
     val inputEffect = RecordingIntInputEffect(player)
 
@@ -138,7 +138,7 @@ class InputEffectsTest {
     val owner = Player("owner")
     val other = Player("other")
     val game = Game(listOf(owner, other))
-    val rolled = (game.nextStep() as WaitingDiceStepPhase)
+    val rolled = (game.nextStep() as PendingStepPhase)
     rolled.rollDice(1)
     val inputEffect = RecordingIntInputEffect(owner)
 
