@@ -5,6 +5,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import ru.kislball.machikoro.CountingEffect
+import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.actions.PlayerAction
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.Game
@@ -87,7 +89,8 @@ class InputEffectsTest {
   fun `dice rolled finish returns null while awaiting input`() {
     val player = Player("p1")
     val game = Game(listOf(player))
-    val rolled = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
+    val rolled = (game.nextStep() as WaitingDiceStepPhase)
+    rolled.rollDice(1)
     val inputEffect = RecordingIntInputEffect(player)
 
     val result = rolled.finish(AwaitingInputAction(player, inputEffect))
@@ -116,7 +119,8 @@ class InputEffectsTest {
   fun `provide input effect resolves queued input from awaiting flow`() {
     val player = Player("p1")
     val game = Game(listOf(player))
-    val rolled = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
+    val rolled = (game.nextStep() as WaitingDiceStepPhase)
+    rolled.rollDice(1)
     val inputEffect = RecordingIntInputEffect(player)
 
     val finishResult = rolled.finish(AwaitingInputAction(player, inputEffect))
@@ -134,7 +138,8 @@ class InputEffectsTest {
     val owner = Player("owner")
     val other = Player("other")
     val game = Game(listOf(owner, other))
-    val rolled = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
+    val rolled = (game.nextStep() as WaitingDiceStepPhase)
+    rolled.rollDice(1)
     val inputEffect = RecordingIntInputEffect(owner)
 
     val finishResult = rolled.finish(AwaitingInputAction(owner, inputEffect))
@@ -145,6 +150,21 @@ class InputEffectsTest {
 
     assertEquals(inputEffect, game.inputEffects.peek())
     assertEquals(emptyList(), inputEffect.appliedInputs)
+  }
+
+  @Test
+  fun `provide input does not rerun triggerables by itself`() {
+    val effect = CountingEffect()
+    val player = Player("p1")
+    player.cards.add(StubCard("cards.ranch", triggered = true, effect = effect))
+    val game = Game(listOf(player))
+    val step = game.nextStep()
+    val inputEffect = RecordingIntInputEffect(player)
+    game.inputEffects.enqueue(inputEffect)
+
+    ProvideInputEffect(inputEffect, 1, player).apply(step)
+
+    assertEquals(1, effect.appliedCount)
   }
 }
 

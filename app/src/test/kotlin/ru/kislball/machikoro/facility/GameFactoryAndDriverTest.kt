@@ -8,8 +8,10 @@ import kotlin.test.assertTrue
 import ru.kislball.machikoro.StubAction
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.getOrNull
 import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
 class GameFactoryAndDriverTest {
@@ -45,15 +47,16 @@ class GameFactoryAndDriverTest {
   }
 
   @Test
-  fun `rollDice appends rolled step to game history`() {
+  fun `rollDice stores result in current waiting step`() {
     val player = Player("p1")
     val game = Game(listOf(player))
     val driver = GameDriver(game)
 
     val rolled = driver.rollDice(player, 1)
 
-    assertEquals(2, game.steps.size)
+    assertEquals(1, game.steps.size)
     assertEquals(rolled, game.currentStepPhase)
+    assertNotNull(rolled.results.getOrNull<DiceRollResult>())
   }
 
   @Test
@@ -79,6 +82,6 @@ class GameFactoryAndDriverTest {
     val finished = driver.finishStep(StubAction(player))
 
     assertEquals(finished, game.currentStepPhase)
-    assertTrue(game.steps.size >= 3)
+    assertTrue(game.steps.size >= 2)
   }
 }

@@ -1,13 +1,15 @@
 package ru.kislball.machikoro.game.step
 
+import ru.kislball.machikoro.game.ClassMap
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 
 abstract class StepPhase(val game: Game, val currentPlayer: Player, val stepNumber: Int) {
   protected var finalised = false
   private var activated = false
+  val results = ClassMap()
 
-  protected fun runTriggerables() {
+  internal fun runTriggerables() {
     for ((triggerable, player) in game.getTriggerables()) {
       triggerable.apply(this, player)
     }

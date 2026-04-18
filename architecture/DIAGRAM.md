@@ -5,7 +5,7 @@ classDiagram
             <<abstract>>
             +triggerDescriptionKey: String
             +triggerNameKey: String
-            +isTriggered(step: Step) Boolean
+            +isTriggered(stepPhase: StepPhase, possessor: Player?) Boolean
         }
         class AnyDiceTrigger {
             +dice: List~Int~
@@ -14,12 +14,16 @@ classDiagram
             +player: Player
             +dice: List~Int~
         }
+        class PossessorDiceTrigger {
+            +dice: List~Int~
+        }
         class AndTrigger {
             +triggers: List~Trigger~
         }
         class OrTrigger {
             +triggers: List~Trigger~
         }
+        class SightsCollectedTrigger
     }
 
     namespace Effects {
@@ -27,20 +31,52 @@ classDiagram
             <<abstract>>
             +effectDescriptionKey: String
             +effectNameKey: String
-            +apply(step: Step) void
+            +apply(stepPhase: StepPhase) void
         }
         class CompoundEffect {
             +effects: List~Effect~
             +combineEffects(effects: Effect...) CompoundEffect
         }
+        class NoopEffect
+        class MaybeEffect {
+            +inner: Effect
+        }
         class MoneyTransferEffect {
-            +from: Player?
-            +to: Player?
+            +player: Player
+            +amount: Int
+            +type: MoneyTransferType
+        }
+        class MoneyTransferType {
+            <<enum>>
+        }
+        class FineEffect {
+            +from: Player
+            +to: Player
             +amount: Int
         }
         class GrantCardEffect {
             +player: Player
-            +kind: CardKind
+            +card: Card
+        }
+        class InputEffect~T~ {
+            <<abstract>>
+            +player: Player
+            +checkInput(input: T) Boolean
+            +getEffect(input: T) Effect
+            +applyWithInput(stepPhase: StepPhase, input: T) void
+        }
+        class AwaitInputEffect~T~ {
+            +player: Player
+            +apply(stepPhase: StepPhase) void
+        }
+        class DiceRollInputEffect {
+            +applyWithInput(stepPhase: StepPhase, input: List~Int~) void
+        }
+        class ProvideInputEffect~T~ {
+            +effect: InputEffect~T~
+            +input: T
+            +fromPlayer: Player
+            +apply(stepPhase: StepPhase) void
         }
     }
 
@@ -48,72 +84,83 @@ classDiagram
         class PlayerAction {
             <<abstract>>
             +player: Player
-            +checkValid(step: Step) void
-            +getEffect(step: Step) Effect
+            +checkValid(stepPhase: StepPhase) void
+            +getEffect(stepPhase: StepPhase) Effect
         }
         class BuyCardAction {
-            +kind: CardKind
+            +card: Card
         }
     }
 
     namespace Cards {
         class Triggerable {
             <<abstract>>
-            +getEffect(step: Step) Effect
-            +apply(step: Step) void
+            +getEffect(stepPhase: StepPhase, possessor: Player?) Effect
+            +apply(stepPhase: StepPhase, possessor: Player?) void
         }
         class Card {
             <<abstract>>
             +cardNameKey: String
-            +cardNameDescription: String
-            +kind: CardKind
-            +getPrice(step: Step) Int
-        }
-        class CardFactory {
-            <<object>>
-            +canCreate(kind: CardKind) Boolean
-            +create(kind: CardKind) Card
+            +cardDescriptionKey: String
+            +cardId: String
+            +type: CardType
+            +totalCards: Int
+            +icon: CardIcon
+            +getPrice(stepPhase: StepPhase) Int
         }
         class CardCatalog {
-            <<object>>
-            +allKinds() List~CardKind~
-            +kindsByType(type: CardType) List~CardKind~
-            +contains(kind: CardKind) Boolean
-            +getCreator(kind: CardKind) Function
+            +get(id: String) Card?
+            +getCardList() List~Card~
         }
-        class CardKind {
-            <<enum>>
-        }
+        class CompoundCatalog
         class CardType {
             <<enum>>
+        }
+        class CardIcon {
+            <<enum>>
+        }
+        class NatureCard
+        class RestaurantCard
+        class MediumEnterpriseCard
+        class StadiumCard
+        class TVCentreCard
+        class StandardCatalog {
+            <<object>>
         }
     }
 
     namespace CoreGame {
-        class Step {
+        class StepPhase {
             +game: Game
             +currentPlayer: Player
             +stepNumber: Int
+            +canBeFinished() Boolean
         }
-        class WaitingDiceStep {
-            +rollDice(numDice: Int) DiceRolledStep
+        class WaitingDiceStepPhase {
+            +rollDice(numDice: Int) WaitingDiceStepPhase
+            +finish(action: PlayerAction) FinishedActionStepPhase?
         }
-        class DiceRolledStep {
-            +dice: List~Int~
-            +finish(action: PlayerAction) FinishedActionStep
+        class FinishedActionStepPhase
+        class DiceRollResult {
+            +player: Player
+            +diceThrown: List~Int~
         }
-        class FinishedActionStep {
-            +action: PlayerAction
-            +effect: Effect
+        class ClassMap
+        class InputEffectsQueue {
+            +enqueue(effect: InputEffect~*~) void
+            +peek() InputEffect~*~?
+            +dequeue(effect: InputEffect~*~) void
         }
         class Game {
+            +catalog: CardCatalog
             +players: List~Player~
-            +steps: MutableList~Step~
-            +currentStep: Step?
+            +inputEffects: InputEffectsQueue
+            +steps: MutableList~StepPhase~
+            +currentStepPhase: StepPhase?
             +currentPlayer: Player?
-            +nextStep() Step
-            +getTriggerables() Sequence~Triggerable~
-            +countCardsOfKind(kind: CardKind) Int
+            +nextStep() StepPhase
+            +getTriggerables() Sequence~Pair~Triggerable, Player?~~
+            +countCardsOfKind(id: String) Int
         }
         class Player {
             +name: String
@@ -135,118 +182,135 @@ classDiagram
         class JSONImporter
         class GameDriver {
             +game: Game
-            +nextStep() WaitingDiceStep
-            +rollDice(player: Player, numDice: Int) DiceRolledStep
-            +finishStep(action: PlayerAction) FinishedActionStep
+            +nextStep() WaitingDiceStepPhase
+            +rollDice(player: Player, numDice: Int) WaitingDiceStepPhase
+            +finishStep(action: PlayerAction) FinishedActionStepPhase?
         }
         class GameFactory {
             <<object>>
-            +createDriver(playerNames: List~String~) GameDriver
-            +export(game: Game, exporter: GameExporter) String
-            +import(content: String, importer: GameImporter) GameDriver
+            +createDriver(catalog: CardCatalog, playerNames: List~String~) GameDriver
         }
     }
-    
+
     namespace UserInterface {
         class CommandProcessor {
             GameDriver +driver
             +processCommand(command: GameCommand) void
         }
-        
+
         class GameCommand {
             <<interface>>
             +checkValid(GameDriver driver) bool
             +execute(GameDriver driver) void
         }
         note for GameCommand "checkValid throws exception if command is invalid, returns true otherwise"
-        
+
         class ReactiveGame {
             GameDriver +driver
         }
-        note for ReactiveGame "Makes the game state observable, implementation dependent"    
+        note for ReactiveGame "Makes the game state observable, implementation dependent"
     }
 
     CommandProcessor ..> GameDriver : uses
     ReactiveGame ..> GameDriver : uses
-        
+
     Trigger <|-- AnyDiceTrigger
     Trigger <|-- PlayerDiceTrigger
+    Trigger <|-- PossessorDiceTrigger
     Trigger <|-- AndTrigger
     Trigger <|-- OrTrigger
+    Trigger <|-- SightsCollectedTrigger
     Trigger <|-- Triggerable
+
     Triggerable <|-- Card
+    Card <|-- NatureCard
+    Card <|-- RestaurantCard
+    Card <|-- MediumEnterpriseCard
+    Card <|-- StadiumCard
+    Card <|-- TVCentreCard
 
     Effect <|-- CompoundEffect
+    Effect <|-- NoopEffect
+    Effect <|-- MaybeEffect
     Effect <|-- MoneyTransferEffect
+    Effect <|-- FineEffect
     Effect <|-- GrantCardEffect
+    Effect <|-- AwaitInputEffect
+    InputEffect <|-- DiceRollInputEffect
+    Effect <|-- ProvideInputEffect
+
+    InputEffect <.. AwaitInputEffect : targetEffect
+    InputEffect <.. ProvideInputEffect : effect
 
     PlayerAction <|-- BuyCardAction
-    Step <|-- WaitingDiceStep
-    Step <|-- DiceRolledStep
-    Step <|-- FinishedActionStep
 
-    CardKind --> CardType : type
-    Card --> CardKind : kind
+    StepPhase <|-- WaitingDiceStepPhase
+    StepPhase <|-- FinishedActionStepPhase
+
+    MoneyTransferEffect --> MoneyTransferType
+    Card --> CardType
+    Card --> CardIcon
+
+    CardCatalog <|-- CompoundCatalog
+    StandardCatalog ..> CardCatalog : instance
+
     Player "1" o-- "*" Card : owns
     Game "1" o-- "*" Player : contains
-    Game "1" o-- "*" Step : history
+    Game "1" o-- "*" StepPhase : history
+    StepPhase --> ClassMap : results
+    ClassMap --> DiceRollResult
+    Game --> InputEffectsQueue
+    Game --> CardCatalog
 
     PlayerDiceTrigger --> Player
-    MoneyTransferEffect --> Player
-    GrantCardEffect --> Player
-    GrantCardEffect --> CardKind
-    GrantCardEffect ..> CardFactory : creates
-    CardFactory ..> CardCatalog : uses
-    CardFactory ..> Card : creates
+    PossessorDiceTrigger ..> PlayerDiceTrigger
+    SightsCollectedTrigger ..> CardCatalog
 
-    Trigger ..> Step
-    Effect ..> Step
+    MoneyTransferEffect --> Player
+    FineEffect --> Player
+    GrantCardEffect --> Player
+    GrantCardEffect --> Card
+
+    BuyCardAction --> Card
+    BuyCardAction --> Game
+
+    Trigger ..> StepPhase
+    Effect ..> StepPhase
+    InputEffect ..> StepPhase
     PlayerAction ..> Effect : returns
     Game ..> Triggerable : getTriggerables
-    DiceRolledStep ..> PlayerAction : finish
-    FinishedActionStep --> PlayerAction
-    FinishedActionStep --> Effect
+
+    WaitingDiceStepPhase ..> PlayerAction : finish
+    WaitingDiceStepPhase ..> DiceRollInputEffect : rollDice
+    WaitingDiceStepPhase ..> InputEffectsQueue : waits until queue is empty
+    InputEffectsQueue ..> InputEffect : stores
+    AwaitInputEffect ..> InputEffectsQueue : enqueue
+    ProvideInputEffect ..> InputEffectsQueue : dequeue
 
     JSONExporter ..|> GameExporter
     JSONImporter ..|> GameImporter
     GameDriver --> Game
     GameFactory ..> Game : creates
     GameFactory ..> GameDriver : creates
-    GameFactory ..> GameExporter : uses
-    GameFactory ..> GameImporter : uses
 ```
 
-Для описания дальнейшей логики используется диаграма классов выше. Далее будут описаны отдельные моменты.
+Для описания дальнейшей логики используется диаграмма классов выше. Далее перечислены моменты.
 
 #### Роль GameDriver
-Основная роль --- ведение игры. В неё входит:
-1. Приём команд от разных игроков, проверка соответствует ли порядок ходов правилам
-2. Обработка ошибок на каждую команду, возвращение результата для игрока
-3. Правильное завершение игры
+Основная роль — ведение игры. В неё входит:
+1. Приём команд от игроков и проверка порядка хода.
+2. Переход между фазами (`WaitingDiceStepPhase -> FinishedActionStepPhase`).
+3. Поддержка отложенного завершения шага: `finishStep` может вернуть `null`, если в `Game.inputEffects` есть ожидающие инпут-эффекты.
 
 ### Эффекты
-Эффекты --- единственное, что может изменять игру. Действия игроков и карточки порождают эффекты,
-которые в свою очередь ответственны за поддержку инвариантов.
+Эффекты — единственное, что может изменять состояние игры. Действия игроков и карточки порождают эффекты,
+которые отвечают за поддержку инвариантов.
 
+#### Input-эффекты
+Асинхронный ввод оформлен таким образом:
+1. `AwaitInputEffect` кладёт `InputEffect<T>` в `InputEffectsQueue`.
+2. `rollDice(...)` записывает `DiceRollResult` в `StepPhase.results` через `DiceRollInputEffect`.
+3. Пока очередь не пуста, `WaitingDiceStepPhase.finish(...)` возвращает `null`.
+4. `ProvideInputEffect` валидирует ввод и автора ввода, затем снимает эффект из очереди, вызывает `applyWithInput` и повторно запускает triggerables.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Это позволяет описывать карточки и действия, которым нужен дополнительный выбор игрока, без прямой мутации шага вне `Effect`-контракта.

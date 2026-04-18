@@ -3,7 +3,6 @@ package ru.kislball.machikoro.facility
 import ru.kislball.machikoro.actions.PlayerAction
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.step.DiceRolledStepPhase
 import ru.kislball.machikoro.game.step.FinishedActionStepPhase
 import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
 
@@ -16,7 +15,7 @@ class GameDriver(val game: Game) {
     return nextStep
   }
 
-  fun rollDice(player: Player, numDice: Int): DiceRolledStepPhase {
+  fun rollDice(player: Player, numDice: Int): WaitingDiceStepPhase {
     val waitingStep =
         when (val step = game.currentStepPhase) {
           null -> nextStep()
@@ -26,14 +25,12 @@ class GameDriver(val game: Game) {
 
     require(waitingStep.currentPlayer == player) { "Only current player can roll dice" }
 
-    val rolledStep = waitingStep.rollDice(numDice)
-    game.steps.add(rolledStep)
-    return rolledStep
+    return waitingStep.rollDice(numDice)
   }
 
   fun finishStep(action: PlayerAction): FinishedActionStepPhase? {
     val current =
-        game.currentStepPhase as? DiceRolledStepPhase
+        game.currentStepPhase as? WaitingDiceStepPhase
             ?: error("Current step is not ready for player action")
     require(current.currentPlayer == action.player) { "Only current player can submit action" }
     val finishedStep = current.finish(action)

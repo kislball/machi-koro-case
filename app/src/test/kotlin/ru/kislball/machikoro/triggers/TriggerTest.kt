@@ -5,8 +5,10 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.StubTrigger
+import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.get
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
 import ru.kislball.machikoro.triggers.dice.AnyDiceTrigger
@@ -21,8 +23,9 @@ class TriggerTest {
   @Test
   fun `any dice trigger fires for matching rolled value`() {
     val player = Player("p1")
-    val rolled = (Game(listOf(player)).nextStep() as WaitingDiceStepPhase).rollDice(1)
-    val trigger = AnyDiceTrigger(rolled.dice)
+    val rolled = (Game(listOf(player)).nextStep() as WaitingDiceStepPhase)
+    rolled.rollDice(1)
+    val trigger = AnyDiceTrigger(rolled.results.get<DiceRollResult>().diceThrown)
 
     assertTrue(trigger.isTriggered(rolled, null))
     assertEquals("triggers.any-dice.name", trigger.triggerNameKey)
@@ -43,11 +46,14 @@ class TriggerTest {
     val p1 = Player("p1")
     val p2 = Player("p2")
     val game = Game(listOf(p1, p2))
-    val rolled = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
-    val trigger = PlayerDiceTrigger(p1, rolled.dice)
+    val rolled = (game.nextStep() as WaitingDiceStepPhase)
+    rolled.rollDice(1)
+    val trigger = PlayerDiceTrigger(p1, rolled.results.get<DiceRollResult>().diceThrown)
 
     assertTrue(trigger.isTriggered(rolled, null))
-    assertFalse(PlayerDiceTrigger(p2, rolled.dice).isTriggered(rolled, null))
+    assertFalse(
+        PlayerDiceTrigger(p2, rolled.results.get<DiceRollResult>().diceThrown).isTriggered(
+            rolled, null))
   }
 
   @Test

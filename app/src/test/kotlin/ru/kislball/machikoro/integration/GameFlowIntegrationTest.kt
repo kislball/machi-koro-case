@@ -25,7 +25,7 @@ class GameFlowIntegrationTest {
 
     assertEquals(9, alice.balance)
     assertEquals("cards.tv_station", alice.cards.single().cardId)
-    assertTrue(driver.game.steps.size >= 3)
+    assertTrue(driver.game.steps.size >= 2)
   }
 
   @Test

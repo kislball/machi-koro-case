@@ -1,15 +1,39 @@
 package ru.kislball.machikoro.game.step
 
+import ru.kislball.machikoro.actions.PlayerAction
+import ru.kislball.machikoro.effects.utility.input.DiceRollInputEffect
+import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.contains
 
 class WaitingDiceStepPhase(game: Game, currentPlayer: Player, stepNumber: Int) :
     StepPhase(game, currentPlayer, stepNumber) {
-  fun rollDice(numDice: Int): DiceRolledStepPhase {
+  fun rollDice(numDice: Int): WaitingDiceStepPhase {
     check(!this.game.finished) { "Game has been finished" }
     check(canBeFinished()) { "Step can't be finished" }
+    check(!results.contains<DiceRollResult>()) { "Dice have already been rolled" }
     val diceRolled = (0..numDice).map { (DICE_MIN_VALUE..DICE_MAX_VALUE).random() }
-    return substitute(DiceRolledStepPhase(game, currentPlayer, stepNumber, diceRolled))
+    DiceRollInputEffect(currentPlayer).applyWithInput(this, diceRolled)
+    runTriggerables()
+    return this
+  }
+
+  fun finish(action: PlayerAction): FinishedActionStepPhase? {
+    check(!this.game.finished) { "Game has been finished" }
+    check(canBeFinished()) { "Step phase can't be finished" }
+    check(results.contains<DiceRollResult>()) { "Dice have not been rolled yet" }
+    action.checkValid(this)
+
+    val effect = action.getEffect(this)
+    effect.apply(this)
+    this.runTriggerables()
+
+    return if (game.inputEffects.peek() == null) {
+      substitute(FinishedActionStepPhase(game, this))
+    } else {
+      null
+    }
   }
 
   private companion object {

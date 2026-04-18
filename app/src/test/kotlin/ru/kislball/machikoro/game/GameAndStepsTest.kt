@@ -45,7 +45,8 @@ class GameAndStepsTest {
     val game = Game(listOf(Player("p1"), Player("p2")))
 
     val step1 = game.nextStep() as WaitingDiceStepPhase
-    val finished = step1.rollDice(1).finish(StubAction(step1.currentPlayer))
+    step1.rollDice(1)
+    val finished = step1.finish(StubAction(step1.currentPlayer))
     assertNotNull(finished)
     val step2 = game.nextStep()
 
@@ -70,10 +71,11 @@ class GameAndStepsTest {
     val game = Game(listOf(Player("p1")))
     val waiting = game.nextStep() as WaitingDiceStepPhase
 
-    val rolled = waiting.rollDice(2)
+    waiting.rollDice(2)
+    val rolled = waiting.results.get<DiceRollResult>()
 
-    assertEquals(3, rolled.dice.size)
-    assertTrue(rolled.dice.all { it in 0..7 })
+    assertEquals(3, rolled.diceThrown.size)
+    assertTrue(rolled.diceThrown.all { it in 0..7 })
   }
 
   @Test
@@ -93,10 +95,11 @@ class GameAndStepsTest {
   fun `finish delegates validation and returns finished action step`() {
     val player = Player("p1")
     val game = Game(listOf(player))
-    val rolled = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
+    val waiting = game.nextStep() as WaitingDiceStepPhase
+    waiting.rollDice(1)
     val action = StubAction(player)
 
-    val finished = rolled.finish(action)
+    val finished = waiting.finish(action)
 
     assertEquals(1, action.checkValidCalled)
     assertNotNull(finished)
@@ -108,9 +111,10 @@ class GameAndStepsTest {
     val effect = CountingEffect()
     val player = Player("p1")
     val game = Game(listOf(player))
-    val rolled = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
+    val waiting = game.nextStep() as WaitingDiceStepPhase
+    waiting.rollDice(1)
 
-    val finished = rolled.finish(StubAction(player, effect))
+    val finished = waiting.finish(StubAction(player, effect))
 
     assertNotNull(finished)
     assertEquals(1, effect.appliedCount)
