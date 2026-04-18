@@ -163,11 +163,12 @@ classDiagram
         class ReactiveGame {
             GameDriver +driver
         }
-        note for ReactiveGame "Makes the game state observable, implementation dependent"
-        
-        CommandProcessor ..> GameDriver : uses
+        note for ReactiveGame "Makes the game state observable, implementation dependent"    
     }
 
+    CommandProcessor ..> GameDriver : uses
+    ReactiveGame ..> GameDriver : uses
+        
     Trigger <|-- AnyDiceTrigger
     Trigger <|-- PlayerDiceTrigger
     Trigger <|-- AndTrigger
