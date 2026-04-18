@@ -4,9 +4,9 @@ import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.triggers.Trigger
 
 abstract class Triggerable : Trigger() {
-  abstract fun getEffect(s: Step): Effect
+  abstract fun getEffect(s: Step, possessor: Player?): Effect
 
-  fun apply(s: Step) {
-    if (isTriggered(s)) getEffect(s).apply(s)
+  fun apply(s: Step, possessor: Player?) {
+    if (isTriggered(s)) getEffect(s, possessor).apply(s)
   }
 }
