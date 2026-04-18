@@ -19,11 +19,8 @@ class MoneyTransferEffect(val player: Player, val amount: Int, val type: MoneyTr
       MoneyTransferType.Deposit -> player.balance += amount
       MoneyTransferType.Withdraw -> player.balance = max(player.balance - amount, 0)
       MoneyTransferType.WithdrawExact -> {
-        if (player.balance >= amount) {
-          player.balance -= amount
-        } else {
-          throw IllegalArgumentException("Insufficient funds")
-        }
+        require(player.balance >= amount) { "Insufficient funds" }
+        player.balance -= amount
       }
     }
   }
