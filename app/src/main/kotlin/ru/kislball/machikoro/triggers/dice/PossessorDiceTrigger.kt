@@ -7,12 +7,9 @@ import ru.kislball.machikoro.triggers.Trigger
 class PossessorDiceTrigger(
     val dice: List<Int>,
 ) : Trigger("triggers.possessor_dice") {
-    override fun isTriggered(
-        stepPhase: StepPhase,
-        possessor: Player?
-    ): Boolean {
-        if (possessor == null) return false
-        val inner = PlayerDiceTrigger(possessor, dice)
-        return inner.isTriggered(stepPhase, possessor)
-    }
+  override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
+    if (possessor == null) return false
+    val inner = PlayerDiceTrigger(possessor, dice)
+    return inner.isTriggered(stepPhase, possessor)
+  }
 }

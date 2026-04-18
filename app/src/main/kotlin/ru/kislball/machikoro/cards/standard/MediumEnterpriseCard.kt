@@ -17,38 +17,33 @@ class MediumEnterpriseCard(
     activationRange: List<Int>,
     val revenueFrom: CardIcon?,
     val reward: Int,
-) : Card(cardId = id, icon = icon, type = CardType.ENTERPRISE) {
-    private val trigger = PossessorDiceTrigger(activationRange)
+    totalCards: Int = 4,
+) : Card(totalCards = totalCards, cardId = id, icon = icon, type = CardType.ENTERPRISE) {
+  private val trigger = PossessorDiceTrigger(activationRange)
 
-    private fun calculateMultiplier(player: Player): Int {
-        revenueFrom ?: return 1
-        return player.cards.count { it.icon == revenueFrom }
-    }
+  private fun calculateMultiplier(player: Player): Int {
+    revenueFrom ?: return 1
+    return player.cards.count { it.icon == revenueFrom }
+  }
 
-    fun calculateReward(player: Player): Int {
-        return calculateMultiplier(player) * reward
-    }
+  fun calculateReward(player: Player): Int {
+    return calculateMultiplier(player) * reward
+  }
 
-    override fun getPrice(s: StepPhase): Int {
-        return price
-    }
+  override fun getPrice(s: StepPhase): Int {
+    return price
+  }
 
-    override fun getEffect(
-        s: StepPhase,
-        possessor: Player?
-    ): Effect {
-        require(possessor != null) { "possessor must be set" }
-        return MoneyTransferEffect(
-            player = possessor,
-            type = MoneyTransferType.Deposit,
-            amount = calculateReward(possessor),
-        )
-    }
+  override fun getEffect(s: StepPhase, possessor: Player?): Effect {
+    require(possessor != null) { "possessor must be set" }
+    return MoneyTransferEffect(
+        player = possessor,
+        type = MoneyTransferType.Deposit,
+        amount = calculateReward(possessor),
+    )
+  }
 
-    override fun isTriggered(
-        stepPhase: StepPhase,
-        possessor: Player?
-    ): Boolean {
-        return trigger.isTriggered(stepPhase, possessor)
-    }
+  override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
+    return trigger.isTriggered(stepPhase, possessor)
+  }
 }

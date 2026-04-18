@@ -13,7 +13,7 @@ import ru.kislball.machikoro.triggers.dice.AnyDiceTrigger
 class RestaurantCard(
     activationRange: List<Int>,
     id: String,
-    totalCards: Int,
+    totalCards: Int = 4,
     icon: CardIcon,
     val reward: Int,
     val price: Int,

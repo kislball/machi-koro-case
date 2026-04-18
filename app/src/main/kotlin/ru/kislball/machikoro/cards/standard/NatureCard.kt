@@ -11,32 +11,27 @@ import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.dice.AnyDiceTrigger
 
 class NatureCard(
-    cardId: String,
+    id: String,
     activationRange: List<Int>,
     icon: CardIcon,
     val price: Int,
     val reward: Int,
-) : Card(type = CardType.ENTERPRISE, cardId = cardId, icon = icon) {
-    private val trigger = AnyDiceTrigger(activationRange)
+    totalCards: Int = 4,
+) : Card(totalCards = totalCards, type = CardType.ENTERPRISE, cardId = id, icon = icon) {
+  private val trigger = AnyDiceTrigger(activationRange)
 
-    override fun getPrice(s: StepPhase): Int = price
+  override fun getPrice(s: StepPhase): Int = price
 
-    override fun getEffect(
-        s: StepPhase,
-        possessor: Player?
-    ): Effect {
-        require(possessor != null) { "possessor must not be null" }
-        return MoneyTransferEffect(
-            player = possessor,
-            type = MoneyTransferType.Deposit,
-            amount = reward,
-        )
-    }
+  override fun getEffect(s: StepPhase, possessor: Player?): Effect {
+    require(possessor != null) { "possessor must not be null" }
+    return MoneyTransferEffect(
+        player = possessor,
+        type = MoneyTransferType.Deposit,
+        amount = reward,
+    )
+  }
 
-    override fun isTriggered(
-        stepPhase: StepPhase,
-        possessor: Player?
-    ): Boolean {
-        return trigger.isTriggered(stepPhase, possessor)
-    }
+  override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
+    return trigger.isTriggered(stepPhase, possessor)
+  }
 }
