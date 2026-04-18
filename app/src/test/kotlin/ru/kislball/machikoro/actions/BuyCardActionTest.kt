@@ -8,8 +8,8 @@ import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.step.PendingStepPhase
+import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
 class BuyCardActionTest {

@@ -5,8 +5,8 @@ import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.game.step.FinishedStepPhase
-import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.step.PendingStepPhase
+import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.Trigger
 import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
