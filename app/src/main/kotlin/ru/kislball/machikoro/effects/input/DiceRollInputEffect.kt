@@ -4,7 +4,8 @@ import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 
-class DiceRollInputEffect(player: Player) : InputEffect<List<Int>>("effects.dice_roll_input", player) {
+class DiceRollInputEffect(player: Player) :
+    InputEffect<List<Int>>("effects.dice_roll_input", player) {
   override fun checkInput(input: List<Int>): Boolean {
     return input.all { it in DICE_MIN_VALUE..DICE_MAX_VALUE }
   }

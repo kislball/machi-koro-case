@@ -10,9 +10,7 @@ class ProvideInputEffect<T>(
     val fromPlayer: Player,
 ) : Effect("effects.provide_input") {
   override fun apply(stepPhase: StepPhase) {
-    check(stepPhase.game.inputEffects.hasEffect(effect)) {
-      "Effect is not awaiting input"
-    }
+    check(stepPhase.game.inputEffects.hasEffect(effect)) { "Effect is not awaiting input" }
     if (effect.checkInput(input) && fromPlayer == effect.player) {
       stepPhase.game.inputEffects.dequeue(effect)
       effect.applyWithInput(stepPhase, input)
