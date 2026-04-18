@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.cards
+package ru.kislball.machikoro.cards.common
 
 object CardFactory {
   fun canCreate(kind: CardKind): Boolean {

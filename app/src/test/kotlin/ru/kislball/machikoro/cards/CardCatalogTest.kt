@@ -5,6 +5,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.StubCard
+import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.cards.common.CardKind
+import ru.kislball.machikoro.cards.common.CardType
 
 class CardCatalogTest {
   @Test

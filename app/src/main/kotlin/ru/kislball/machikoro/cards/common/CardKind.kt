@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.cards
+package ru.kislball.machikoro.cards.common
 
 enum class CardKind(
     val type: CardType,

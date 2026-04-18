@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.cards
+package ru.kislball.machikoro.cards.common
 
 import ru.kislball.machikoro.game.Step
 import ru.kislball.machikoro.game.Triggerable

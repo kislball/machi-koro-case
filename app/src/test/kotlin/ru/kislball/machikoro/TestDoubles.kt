@@ -1,8 +1,8 @@
 package ru.kislball.machikoro
 
 import ru.kislball.machikoro.actions.PlayerAction
-import ru.kislball.machikoro.cards.Card
-import ru.kislball.machikoro.cards.CardKind
+import ru.kislball.machikoro.cards.common.Card
+import ru.kislball.machikoro.cards.common.CardKind
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player

@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 import ru.kislball.machikoro.CountingEffect
 import ru.kislball.machikoro.StubAction
 import ru.kislball.machikoro.StubCard
-import ru.kislball.machikoro.cards.CardKind
+import ru.kislball.machikoro.cards.common.CardKind
 
 class GameAndStepsTest {
   @Test

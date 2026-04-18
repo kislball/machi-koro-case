@@ -1,7 +1,7 @@
 package ru.kislball.machikoro.effects
 
-import ru.kislball.machikoro.cards.CardFactory
-import ru.kislball.machikoro.cards.CardKind
+import ru.kislball.machikoro.cards.common.CardFactory
+import ru.kislball.machikoro.cards.common.CardKind
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.Step
 

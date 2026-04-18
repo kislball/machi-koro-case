@@ -1,6 +1,6 @@
 package ru.kislball.machikoro.game
 
-import ru.kislball.machikoro.cards.CardKind
+import ru.kislball.machikoro.cards.common.CardKind
 
 class Game(val players: List<Player>) {
   private var stepNumber: Int = 0

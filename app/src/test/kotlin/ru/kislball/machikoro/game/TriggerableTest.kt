@@ -4,7 +4,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import ru.kislball.machikoro.CountingEffect
 import ru.kislball.machikoro.StubCard
-import ru.kislball.machikoro.cards.CardKind
+import ru.kislball.machikoro.cards.common.CardKind
 
 class TriggerableTest {
   @Test

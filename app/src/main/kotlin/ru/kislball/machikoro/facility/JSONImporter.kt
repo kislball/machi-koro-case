@@ -3,8 +3,8 @@ package ru.kislball.machikoro.facility
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import ru.kislball.machikoro.cards.CardFactory
-import ru.kislball.machikoro.cards.CardKind
+import ru.kislball.machikoro.cards.common.CardFactory
+import ru.kislball.machikoro.cards.common.CardKind
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 

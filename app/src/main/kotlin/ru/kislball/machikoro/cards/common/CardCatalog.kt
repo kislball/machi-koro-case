@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.cards
+package ru.kislball.machikoro.cards.common
 
 object CardCatalog {
   fun allKinds(): List<CardKind> = CardKind.entries

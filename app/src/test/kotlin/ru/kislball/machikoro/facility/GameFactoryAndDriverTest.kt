@@ -7,8 +7,8 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.StubAction
 import ru.kislball.machikoro.StubCard
-import ru.kislball.machikoro.cards.CardCatalog
-import ru.kislball.machikoro.cards.CardKind
+import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.cards.common.CardKind
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 
