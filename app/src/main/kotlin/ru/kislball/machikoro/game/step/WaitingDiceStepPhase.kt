@@ -6,7 +6,8 @@ import ru.kislball.machikoro.game.Player
 class WaitingDiceStepPhase(game: Game, currentPlayer: Player, stepNumber: Int) :
     StepPhase(game, currentPlayer, stepNumber) {
   fun rollDice(numDice: Int): DiceRolledStepPhase {
-    check(canBeFinished()) { "Game can't be finished" }
+    check(!this.game.finished) { "Game has been finished" }
+    check(canBeFinished()) { "Step can't be finished" }
     val diceRolled = (0..numDice).map { (DICE_MIN_VALUE..DICE_MAX_VALUE).random() }
     return substitute(DiceRolledStepPhase(game, currentPlayer, stepNumber, diceRolled))
   }

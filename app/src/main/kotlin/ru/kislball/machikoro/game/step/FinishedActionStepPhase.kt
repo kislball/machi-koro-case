@@ -13,6 +13,7 @@ class FinishedActionStepPhase : StepPhase {
       step: DiceRolledStepPhase,
       playerAction: PlayerAction
   ) : super(game, step.currentPlayer, step.stepNumber) {
+    check(!this.game.finished) { "Game has been finished" }
     finalised = true
     action = playerAction
     action.checkValid(step)
