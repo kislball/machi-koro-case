@@ -9,9 +9,9 @@ abstract class PlayerAction(val id: String, val player: Player) {
 
   abstract fun getEffect(s: Step): Effect
 
-  val actionNameKey: String
+  open val actionNameKey: String
     get() = "$id.name"
 
-  val actionDescriptionKey: String
+  open val actionDescriptionKey: String
     get() = "$id.description"
 }

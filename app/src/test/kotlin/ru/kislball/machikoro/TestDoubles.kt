@@ -29,7 +29,7 @@ class StubCard(
   override val triggerDescriptionKey: String = "test.trigger.description"
   override val triggerNameKey: String = "test.trigger.name"
   override val cardNameKey: String = "test.card.name"
-  override val cardNameDescription: String = "test.card.description"
+  override val cardDescriptionKey: String = "test.card.description"
 
   override fun getPrice(s: Step): Int = kind.basePrice
 

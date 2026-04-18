@@ -10,9 +10,9 @@ abstract class Card(
 ) : Triggerable("card.$cardId") {
   abstract fun getPrice(s: Step): Int
 
-  val cardNameKey: String
+  open val cardNameKey: String
     get() = "$cardId.name"
 
-  val cardNameDescription
+  open val cardDescriptionKey
     get() = "$cardId.description"
 }
