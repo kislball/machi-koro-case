@@ -1,15 +1,16 @@
-package ru.kislball.machikoro.game
+package ru.kislball.machikoro.game.step
 
 import ru.kislball.machikoro.actions.PlayerAction
 import ru.kislball.machikoro.effects.Effect
+import ru.kislball.machikoro.game.Game
 
-class FinishedActionStep : Step {
+class FinishedActionStepPhase : StepPhase {
   val action: PlayerAction
   val effect: Effect
 
   constructor(
       game: Game,
-      step: DiceRolledStep,
+      step: DiceRolledStepPhase,
       playerAction: PlayerAction
   ) : super(game, step.currentPlayer, step.stepNumber) {
     finalised = true

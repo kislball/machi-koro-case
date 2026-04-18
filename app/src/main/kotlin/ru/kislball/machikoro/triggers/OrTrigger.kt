@@ -1,10 +1,10 @@
 package ru.kislball.machikoro.triggers
 
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.Step
+import ru.kislball.machikoro.game.step.StepPhase
 
 class OrTrigger(val triggers: List<Trigger>) : Trigger("triggers.or") {
-  override fun isTriggered(step: Step, possessor: Player?): Boolean {
-    return triggers.any { it.isTriggered(step, possessor) }
+  override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
+    return triggers.any { it.isTriggered(stepPhase, possessor) }
   }
 }

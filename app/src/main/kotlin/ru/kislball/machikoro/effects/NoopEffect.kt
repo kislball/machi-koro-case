@@ -1,7 +1,7 @@
 package ru.kislball.machikoro.effects
 
-import ru.kislball.machikoro.game.Step
+import ru.kislball.machikoro.game.step.StepPhase
 
 class NoopEffect : Effect("effects.noop") {
-  override fun apply(step: Step) = Unit
+  override fun apply(stepPhase: StepPhase) = Unit
 }

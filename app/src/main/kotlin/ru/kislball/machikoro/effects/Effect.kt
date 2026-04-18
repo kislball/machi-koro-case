@@ -1,6 +1,6 @@
 package ru.kislball.machikoro.effects
 
-import ru.kislball.machikoro.game.Step
+import ru.kislball.machikoro.game.step.StepPhase
 
 abstract class Effect(val id: String) {
   open val effectDescriptionKey: String
@@ -9,5 +9,5 @@ abstract class Effect(val id: String) {
   open val effectNameKey: String
     get() = "$id.name"
 
-  abstract fun apply(step: Step)
+  abstract fun apply(stepPhase: StepPhase)
 }

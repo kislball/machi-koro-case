@@ -6,7 +6,7 @@ import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.FineEffect
 import ru.kislball.machikoro.effects.NoopEffect
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.Step
+import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.AnyDiceTrigger
 
 class RestaurantCard(
@@ -21,16 +21,16 @@ class RestaurantCard(
         type = CardType.ENTERPRISE,
         totalCards = totalCards,
     ) {
-  override fun getPrice(s: Step): Int = price
+  override fun getPrice(s: StepPhase): Int = price
 
-  override fun getEffect(s: Step, possessor: Player?): Effect {
+  override fun getEffect(s: StepPhase, possessor: Player?): Effect {
     if (s.currentPlayer == possessor || possessor == null) return NoopEffect()
     return FineEffect(from = s.currentPlayer, to = possessor, amount = reward)
   }
 
   private val trigger = AnyDiceTrigger(acitvationRange)
 
-  override fun isTriggered(step: Step, possessor: Player?): Boolean {
-    return trigger.isTriggered(step, possessor)
+  override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
+    return trigger.isTriggered(stepPhase, possessor)
   }
 }

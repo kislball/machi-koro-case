@@ -46,7 +46,7 @@ class GameFactoryAndDriverTest {
     val rolled = driver.rollDice(player, 1)
 
     assertEquals(2, game.steps.size)
-    assertEquals(rolled, game.currentStep)
+    assertEquals(rolled, game.currentStepPhase)
   }
 
   @Test
@@ -71,7 +71,7 @@ class GameFactoryAndDriverTest {
 
     val finished = driver.finishStep(StubAction(player))
 
-    assertEquals(finished, game.currentStep)
+    assertEquals(finished, game.currentStepPhase)
     assertTrue(game.steps.size >= 3)
   }
 }

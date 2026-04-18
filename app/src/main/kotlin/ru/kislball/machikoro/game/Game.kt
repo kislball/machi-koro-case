@@ -3,18 +3,21 @@ package ru.kislball.machikoro.game
 import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.cards.standard.StandardCatalog
+import ru.kislball.machikoro.game.step.FinishedActionStepPhase
+import ru.kislball.machikoro.game.step.StepPhase
+import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
 
 class Game(val catalog: CardCatalog, val players: List<Player>) {
   constructor(players: List<Player>) : this(StandardCatalog, players)
 
   private var stepNumber: Int = 0
-  var steps = mutableListOf<Step>()
+  var steps = mutableListOf<StepPhase>()
 
-  val currentStep: Step?
+  val currentStepPhase: StepPhase?
     get() = steps.lastOrNull()
 
   val currentPlayer: Player?
-    get() = currentStep?.currentPlayer
+    get() = currentStepPhase?.currentPlayer
 
   init {
     require(players.isNotEmpty()) { "Player list must not be empty" }
@@ -35,12 +38,12 @@ class Game(val catalog: CardCatalog, val players: List<Player>) {
     return countCardsOfKind(card.cardId)
   }
 
-  fun nextStep(): Step {
-    val canAdvance = currentStep == null || currentStep is FinishedActionStep
+  fun nextStep(): StepPhase {
+    val canAdvance = currentStepPhase == null || currentStepPhase is FinishedActionStepPhase
     check(canAdvance) { "Step has not been finished" }
 
     val nextStep =
-        WaitingDiceStep(
+        WaitingDiceStepPhase(
             game = this,
             currentPlayer = players[stepNumber % players.size],
             stepNumber = stepNumber,

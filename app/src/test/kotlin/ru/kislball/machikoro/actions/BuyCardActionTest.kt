@@ -8,8 +8,8 @@ import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.Step
-import ru.kislball.machikoro.game.WaitingDiceStep
+import ru.kislball.machikoro.game.step.StepPhase
+import ru.kislball.machikoro.game.step.WaitingDiceStepPhase
 
 class BuyCardActionTest {
   @Test
@@ -18,7 +18,7 @@ class BuyCardActionTest {
     player.balance = 10
     val card = StubCard("cards.bakery")
     val game = Game(CardCatalog(card), listOf(player))
-    val step = (game.nextStep() as WaitingDiceStep).rollDice(1)
+    val step = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
     val action = BuyCardAction(game, player, "cards.bakery")
 
     action.checkValid(step)
@@ -30,7 +30,7 @@ class BuyCardActionTest {
     player.balance = 0
     val card = StubCard("cards.bakery")
     val game = Game(CardCatalog(card), listOf(player))
-    val step = (game.nextStep() as WaitingDiceStep).rollDice(1)
+    val step = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
     val action = BuyCardAction(game, player, "cards.bakery")
 
     val error = assertFailsWith<IllegalArgumentException> { action.checkValid(step) }
@@ -44,7 +44,7 @@ class BuyCardActionTest {
     player.balance = 10
     val card = StubCard("cards.bakery")
     val game = Game(CardCatalog(card), listOf(player))
-    val step = (game.nextStep() as WaitingDiceStep).rollDice(1)
+    val step = (game.nextStep() as WaitingDiceStepPhase).rollDice(1)
     val action = BuyCardAction(game, player, "cards.bakery")
 
     val effect = action.getEffect(step)
@@ -61,9 +61,9 @@ class BuyCardActionTest {
     player.balance = 10
     val card = StubCard("cards.bakery")
     val game = Game(CardCatalog(card), listOf(player))
-    val invalidStep = object : Step(game, player, 1) {}
+    val invalidStepPhase = object : StepPhase(game, player, 1) {}
     val action = BuyCardAction(game, player, "cards.bakery")
 
-    assertFailsWith<IllegalArgumentException> { action.getEffect(invalidStep) }
+    assertFailsWith<IllegalArgumentException> { action.getEffect(invalidStepPhase) }
   }
 }

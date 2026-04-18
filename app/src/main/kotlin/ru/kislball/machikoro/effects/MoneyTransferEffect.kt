@@ -3,7 +3,7 @@ package ru.kislball.machikoro.effects
 import kotlin.math.max
 import kotlin.math.min
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.Step
+import ru.kislball.machikoro.game.step.StepPhase
 
 enum class MoneyTransferType {
   Deposit,
@@ -14,7 +14,7 @@ enum class MoneyTransferType {
 class MoneyTransferEffect(val player: Player, val amount: Int, val type: MoneyTransferType) :
     Effect("effects.money_transfer") {
 
-  override fun apply(step: Step) {
+  override fun apply(stepPhase: StepPhase) {
     when (type) {
       MoneyTransferType.Deposit -> player.balance += amount
       MoneyTransferType.Withdraw -> player.balance = max(player.balance - amount, 0)

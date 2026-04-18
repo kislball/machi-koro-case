@@ -1,7 +1,7 @@
 package ru.kislball.machikoro.triggers
 
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.Step
+import ru.kislball.machikoro.game.step.StepPhase
 
 abstract class Trigger(val id: String) {
   open val triggerDescriptionKey: String
@@ -10,5 +10,5 @@ abstract class Trigger(val id: String) {
   open val triggerNameKey: String
     get() = "$id.name"
 
-  abstract fun isTriggered(step: Step, possessor: Player?): Boolean
+  abstract fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean
 }

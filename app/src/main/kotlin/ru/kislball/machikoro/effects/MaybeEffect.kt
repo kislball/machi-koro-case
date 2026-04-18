@@ -1,11 +1,11 @@
 package ru.kislball.machikoro.effects
 
-import ru.kislball.machikoro.game.Step
+import ru.kislball.machikoro.game.step.StepPhase
 
 class MaybeEffect(val inner: Effect) : Effect("effects.maybe") {
-  override fun apply(step: Step) {
+  override fun apply(stepPhase: StepPhase) {
     try {
-      inner.apply(step)
+      inner.apply(stepPhase)
     } catch (e: Exception) {
       print(
           "${this.javaClass.simpleName}: effect ${inner.javaClass.simpleName} emitted error ${e.message}")

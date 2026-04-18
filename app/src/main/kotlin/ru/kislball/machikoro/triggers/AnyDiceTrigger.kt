@@ -1,13 +1,13 @@
 package ru.kislball.machikoro.triggers
 
-import ru.kislball.machikoro.game.DiceRolledStep
+import ru.kislball.machikoro.game.step.DiceRolledStepPhase
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.Step
+import ru.kislball.machikoro.game.step.StepPhase
 
 class AnyDiceTrigger(val dice: List<Int>) : Trigger("triggers.any-dice") {
-  override fun isTriggered(step: Step, possessor: Player?): Boolean {
-    return if (step is DiceRolledStep) {
-      step.dice.any { dice.contains(it) }
+  override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
+    return if (stepPhase is DiceRolledStepPhase) {
+      stepPhase.dice.any { dice.contains(it) }
     } else {
       false
     }
