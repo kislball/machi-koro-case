@@ -54,5 +54,3 @@ class StubTrigger(private val triggered: Boolean) : Trigger("test.trigger") {
 
   override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean = triggered
 }
-
-

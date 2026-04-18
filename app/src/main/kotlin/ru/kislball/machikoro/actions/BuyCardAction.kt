@@ -1,13 +1,13 @@
 package ru.kislball.machikoro.actions
 
-import ru.kislball.machikoro.effects.utility.CompoundEffect
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.GrantCardEffect
 import ru.kislball.machikoro.effects.MoneyTransferEffect
 import ru.kislball.machikoro.effects.MoneyTransferType
-import ru.kislball.machikoro.game.step.DiceRolledStepPhase
+import ru.kislball.machikoro.effects.utility.CompoundEffect
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.step.DiceRolledStepPhase
 import ru.kislball.machikoro.game.step.StepPhase
 
 class BuyCardAction(game: Game, player: Player, id: String) :

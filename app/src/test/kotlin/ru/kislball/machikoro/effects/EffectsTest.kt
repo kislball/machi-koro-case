@@ -43,7 +43,9 @@ class EffectsTest {
     val game = Game(listOf(player))
     val step = game.nextStep()
 
-    assertFailsWith<Exception> { MoneyTransferEffect(player, 2, MoneyTransferType.WithdrawExact).apply(step) }
+    assertFailsWith<Exception> {
+      MoneyTransferEffect(player, 2, MoneyTransferType.WithdrawExact).apply(step)
+    }
   }
 
   @Test

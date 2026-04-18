@@ -1,7 +1,7 @@
 package ru.kislball.machikoro.triggers
 
-import ru.kislball.machikoro.game.step.DiceRolledStepPhase
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.step.DiceRolledStepPhase
 import ru.kislball.machikoro.game.step.StepPhase
 
 class PlayerDiceTrigger(val player: Player, val dice: List<Int>) : Trigger("triggers.player_dice") {

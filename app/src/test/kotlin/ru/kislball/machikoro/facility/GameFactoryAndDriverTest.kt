@@ -22,9 +22,15 @@ class GameFactoryAndDriverTest {
 
   @Test
   fun `createDriver validates input names`() {
-    assertFailsWith<IllegalArgumentException> { GameFactory.createDriver(CardCatalog(), emptyList()) }
-    assertFailsWith<IllegalArgumentException> { GameFactory.createDriver(CardCatalog(), listOf(" ")) }
-    assertFailsWith<IllegalArgumentException> { GameFactory.createDriver(CardCatalog(), listOf("a", "a")) }
+    assertFailsWith<IllegalArgumentException> {
+      GameFactory.createDriver(CardCatalog(), emptyList())
+    }
+    assertFailsWith<IllegalArgumentException> {
+      GameFactory.createDriver(CardCatalog(), listOf(" "))
+    }
+    assertFailsWith<IllegalArgumentException> {
+      GameFactory.createDriver(CardCatalog(), listOf("a", "a"))
+    }
   }
 
   @Test

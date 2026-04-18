@@ -1,7 +1,7 @@
 package ru.kislball.machikoro.effects
 
-import ru.kislball.machikoro.effects.utility.CompoundEffect
 import kotlin.math.min
+import ru.kislball.machikoro.effects.utility.CompoundEffect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 

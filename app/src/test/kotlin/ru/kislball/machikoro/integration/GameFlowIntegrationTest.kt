@@ -48,6 +48,8 @@ class GameFlowIntegrationTest {
     val importedPlayers = imported.players
     assertEquals(listOf("alice", "bob"), importedPlayers.map { it.name })
     assertEquals(listOf(4, 2), importedPlayers.map { it.balance })
-    assertEquals(listOf("cards.business_center", "cards.cafe"), importedPlayers.map { it.cards.single().cardId })
+    assertEquals(
+        listOf("cards.business_center", "cards.cafe"),
+        importedPlayers.map { it.cards.single().cardId })
   }
 }
