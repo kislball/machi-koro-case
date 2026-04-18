@@ -1,5 +1,6 @@
-package ru.kislball.machikoro.effects.utility.input
+package ru.kislball.machikoro.effects
 
+import ru.kislball.machikoro.effects.utility.input.InputEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
@@ -18,4 +19,3 @@ class DiceRollInputEffect(player: Player) : InputEffect<List<Int>>("effects.dice
     const val DICE_MAX_VALUE = 7
   }
 }
-

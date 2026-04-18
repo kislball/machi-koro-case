@@ -1,7 +1,7 @@
 package ru.kislball.machikoro.game.step
 
 import ru.kislball.machikoro.actions.PlayerAction
-import ru.kislball.machikoro.effects.utility.input.DiceRollInputEffect
+import ru.kislball.machikoro.effects.DiceRollInputEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
