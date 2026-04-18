@@ -2,10 +2,8 @@ package ru.kislball.machikoro.cards.standard
 
 import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardType
-import ru.kislball.machikoro.effects.CompoundEffect
 import ru.kislball.machikoro.effects.Effect
-import ru.kislball.machikoro.effects.MaybeEffect
-import ru.kislball.machikoro.effects.MoneyTransferEffect
+import ru.kislball.machikoro.effects.FineEffect
 import ru.kislball.machikoro.effects.NoopEffect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.Step
@@ -26,11 +24,8 @@ class RestaurantCard(
   override fun getPrice(s: Step): Int = price
 
   override fun getEffect(s: Step, possessor: Player?): Effect {
-    if (s.currentPlayer == possessor) return NoopEffect()
-    return CompoundEffect.combineEffects(
-        MoneyTransferEffect(from = null, to = possessor, amount = reward),
-        MaybeEffect(MoneyTransferEffect(from = s.currentPlayer, to = null, amount = reward)),
-    )
+    if (s.currentPlayer == possessor || possessor == null) return NoopEffect()
+    return FineEffect(from = s.currentPlayer, to = possessor, amount = reward)
   }
 
   private val trigger = AnyDiceTrigger(acitvationRange)
