@@ -9,8 +9,8 @@ import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.get
-import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.step.PendingStepPhase
+import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.dice.AnyDiceTrigger
 import ru.kislball.machikoro.triggers.dice.PlayerDiceTrigger
 import ru.kislball.machikoro.triggers.utility.AndTrigger
@@ -52,8 +52,8 @@ class TriggerTest {
 
     assertTrue(trigger.isTriggered(rolled, null))
     assertFalse(
-        PlayerDiceTrigger(p2, rolled.results.get<DiceRollResult>().diceThrown).isTriggered(
-            rolled, null))
+        PlayerDiceTrigger(p2, rolled.results.get<DiceRollResult>().diceThrown)
+            .isTriggered(rolled, null))
   }
 
   @Test

@@ -14,8 +14,8 @@ import ru.kislball.machikoro.effects.input.ProvideInputEffect
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.step.PendingStepPhase
+import ru.kislball.machikoro.game.step.StepPhase
 
 class InputEffectsTest {
   @Test
@@ -171,7 +171,8 @@ class InputEffectsTest {
   }
 }
 
-private class RecordingIntInputEffect(player: Player) : InputEffect<Int>("effects.test.input", player) {
+private class RecordingIntInputEffect(player: Player) :
+    InputEffect<Int>("effects.test.input", player) {
   val appliedInputs = mutableListOf<Int>()
 
   override fun checkInput(input: Int): Boolean {
@@ -187,7 +188,6 @@ private class AwaitingInputAction(player: Player, private val inputEffect: Input
     PlayerAction("actions.test.await_input", player) {
   override fun checkValid(s: StepPhase) = Unit
 
-  override fun getEffect(s: StepPhase) = AwaitInputEffect("effects.await_input", player, inputEffect)
+  override fun getEffect(s: StepPhase) =
+      AwaitInputEffect("effects.await_input", player, inputEffect)
 }
-
-
