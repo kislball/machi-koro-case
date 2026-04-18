@@ -5,9 +5,9 @@ import ru.kislball.machikoro.actions.PlayerAction
 class DiceRolledStep(game: Game, currentPlayer: Player, stepNumber: Int, val dice: List<Int>) :
     Step(game, currentPlayer, stepNumber) {
   init {
-    for (triggerable in game.getTriggerables()) {
-      if (triggerable.isTriggered(this)) {
-        triggerable.getEffect(this).apply(this)
+    for ((triggerable, possessor) in game.getTriggerables()) {
+      if (triggerable.isTriggered(this, possessor)) {
+        triggerable.getEffect(this, possessor).apply(this)
       }
     }
   }

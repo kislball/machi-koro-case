@@ -1,5 +1,6 @@
 package ru.kislball.machikoro.triggers
 
+import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.Step
 
 class OrTrigger(val triggers: List<Trigger>) : Trigger() {
@@ -9,7 +10,7 @@ class OrTrigger(val triggers: List<Trigger>) : Trigger() {
   override val triggerNameKey: String
     get() = "triggers.or.name"
 
-  override fun isTriggered(step: Step): Boolean {
-    return triggers.any { it.isTriggered(step) }
+  override fun isTriggered(step: Step, possessor: Player?): Boolean {
+    return triggers.any { it.isTriggered(step, possessor) }
   }
 }

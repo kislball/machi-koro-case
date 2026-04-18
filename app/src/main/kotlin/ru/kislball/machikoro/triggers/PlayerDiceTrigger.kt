@@ -11,7 +11,7 @@ class PlayerDiceTrigger(val player: Player, val dice: List<Int>) : Trigger() {
   override val triggerNameKey: String
     get() = "triggers.any-dice.name"
 
-  override fun isTriggered(step: Step): Boolean {
+  override fun isTriggered(step: Step, possessor: Player?): Boolean {
     return if (step.currentPlayer == player && step is DiceRolledStep) {
       step.dice.any { dice.contains(it) }
     } else {

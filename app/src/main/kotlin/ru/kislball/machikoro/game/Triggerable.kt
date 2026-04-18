@@ -7,6 +7,6 @@ abstract class Triggerable : Trigger() {
   abstract fun getEffect(s: Step, possessor: Player?): Effect
 
   fun apply(s: Step, possessor: Player?) {
-    if (isTriggered(s)) getEffect(s, possessor).apply(s)
+    if (isTriggered(s, possessor)) getEffect(s, possessor).apply(s)
   }
 }
