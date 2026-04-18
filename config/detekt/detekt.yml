@@ -4,6 +4,10 @@ style:
   MagicNumber:
     active: false
 
+complexity:
+  LongParameterList:
+    constructorThreshold: 16
+
 performance:
   SpreadOperator:
     active: false
