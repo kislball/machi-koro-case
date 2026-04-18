@@ -7,7 +7,7 @@ import ru.kislball.machikoro.effects.FineEffect
 import ru.kislball.machikoro.effects.utility.NoopEffect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
-import ru.kislball.machikoro.triggers.AnyDiceTrigger
+import ru.kislball.machikoro.triggers.dice.AnyDiceTrigger
 
 class RestaurantCard(
     activationRange: List<Int>,
