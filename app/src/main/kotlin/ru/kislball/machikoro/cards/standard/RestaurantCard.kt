@@ -10,7 +10,7 @@ import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.AnyDiceTrigger
 
 class RestaurantCard(
-    acitvationRange: List<Int>,
+    activationRange: List<Int>,
     id: String,
     totalCards: Int,
     val reward: Int,
@@ -28,7 +28,7 @@ class RestaurantCard(
     return FineEffect(from = s.currentPlayer, to = possessor, amount = reward)
   }
 
-  private val trigger = AnyDiceTrigger(acitvationRange)
+  private val trigger = AnyDiceTrigger(activationRange)
 
   override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
     return trigger.isTriggered(stepPhase, possessor)

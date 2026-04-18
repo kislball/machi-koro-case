@@ -5,14 +5,14 @@ import ru.kislball.machikoro.cards.common.CardCatalog
 val StandardCatalog =
     CardCatalog(
         RestaurantCard(
-            acitvationRange = listOf(3),
+            activationRange = listOf(3),
             id = "cards.cafe",
             totalCards = 4,
             reward = 1,
             price = 2,
         ),
         RestaurantCard(
-            acitvationRange = listOf(9, 10),
+            activationRange = listOf(9, 10),
             id = "cards.family",
             totalCards = 4,
             reward = 2,
