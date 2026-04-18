@@ -12,6 +12,7 @@ class FinishedActionStep : Step {
       step: DiceRolledStep,
       playerAction: PlayerAction
   ) : super(game, step.currentPlayer, step.stepNumber) {
+    finalised = true
     action = playerAction
     action.checkValid(step)
     effect = action.getEffect(step)

@@ -4,16 +4,9 @@ import ru.kislball.machikoro.actions.PlayerAction
 
 class DiceRolledStep(game: Game, currentPlayer: Player, stepNumber: Int, val dice: List<Int>) :
     Step(game, currentPlayer, stepNumber) {
-  init {
-    for ((triggerable, possessor) in game.getTriggerables()) {
-      if (triggerable.isTriggered(this, possessor)) {
-        triggerable.getEffect(this, possessor).apply(this)
-      }
-    }
-  }
-
   fun finish(action: PlayerAction): FinishedActionStep {
+    check(canBeFinished()) { "Game can't be finished" }
     action.checkValid(this)
-    return FinishedActionStep(game, this, action)
+    return substitute(FinishedActionStep(game, this, action))
   }
 }

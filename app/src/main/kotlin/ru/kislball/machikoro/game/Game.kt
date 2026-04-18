@@ -47,6 +47,7 @@ class Game(val catalog: CardCatalog, val players: List<Player>) {
             stepNumber = stepNumber,
         )
     steps.add(nextStep)
+    nextStep.activate()
     return nextStep
   }
 }
