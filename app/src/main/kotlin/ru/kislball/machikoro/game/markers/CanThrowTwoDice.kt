@@ -6,9 +6,9 @@ import ru.kislball.machikoro.game.getOrNull
 class CanThrowTwoDice(val can: Boolean = true)
 
 fun Player.canThrowTwoDice(): Boolean {
-    return resources.getOrNull<CanThrowTwoDice>()?.can ?: false
+  return resources.getOrNull<CanThrowTwoDice>()?.can ?: false
 }
 
 fun Player.setThrowTwoDice(value: Boolean) {
-    resources.set(CanThrowTwoDice(value))
+  resources.set(CanThrowTwoDice(value))
 }

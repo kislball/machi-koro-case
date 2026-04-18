@@ -5,8 +5,7 @@ import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.markers.canThrowTwoDice
 import ru.kislball.machikoro.game.step.StepPhase
 
-class DiceRollInputEffect(player: Player) :
-    InputEffect<Int>("effects.dice_roll_input", player) {
+class DiceRollInputEffect(player: Player) : InputEffect<Int>("effects.dice_roll_input", player) {
   override fun checkInput(input: Int): Boolean {
     require(input in 1..2) { "Input must be between 1 and 2" }
     require(input != 2 || player.canThrowTwoDice()) { "Player ${player.name} can't throw two dice" }
