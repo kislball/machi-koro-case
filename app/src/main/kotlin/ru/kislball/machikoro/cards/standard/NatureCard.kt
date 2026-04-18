@@ -1,6 +1,7 @@
 package ru.kislball.machikoro.cards.standard
 
 import ru.kislball.machikoro.cards.common.Card
+import ru.kislball.machikoro.cards.common.CardIcon
 import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.MoneyTransferEffect
@@ -12,9 +13,10 @@ import ru.kislball.machikoro.triggers.dice.AnyDiceTrigger
 class NatureCard(
     cardId: String,
     activationRange: List<Int>,
+    icon: CardIcon,
     val price: Int,
     val reward: Int,
-) : Card(type = CardType.ENTERPRISE, cardId = cardId) {
+) : Card(type = CardType.ENTERPRISE, cardId = cardId, icon = icon) {
     private val trigger = AnyDiceTrigger(activationRange)
 
     override fun getPrice(s: StepPhase): Int = price

@@ -1,6 +1,7 @@
 package ru.kislball.machikoro.cards.standard
 
 import ru.kislball.machikoro.cards.common.Card
+import ru.kislball.machikoro.cards.common.CardIcon
 import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.FineEffect
@@ -13,6 +14,7 @@ class RestaurantCard(
     activationRange: List<Int>,
     id: String,
     totalCards: Int,
+    icon: CardIcon,
     val reward: Int,
     val price: Int,
 ) :
@@ -20,6 +22,7 @@ class RestaurantCard(
         cardId = id,
         type = CardType.ENTERPRISE,
         totalCards = totalCards,
+        icon = icon,
     ) {
   override fun getPrice(s: StepPhase): Int = price
 
