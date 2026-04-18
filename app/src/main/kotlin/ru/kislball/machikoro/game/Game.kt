@@ -16,6 +16,7 @@ class Game(val catalog: CardCatalog, val players: List<Player>, val gameFinished
   private var stepNumber: Int = 0
 
   val inputEffects = InputEffectsQueue()
+    val resources = ClassMap()
 
   var steps = mutableListOf<StepPhase>()
   var finished: Boolean = false
