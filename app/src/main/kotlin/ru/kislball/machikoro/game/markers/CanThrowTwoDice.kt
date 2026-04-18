@@ -1,10 +1,14 @@
 package ru.kislball.machikoro.game.markers
 
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.contains
+import ru.kislball.machikoro.game.getOrNull
 
-class CanThrowTwoDice
+class CanThrowTwoDice(val can: Boolean = true)
 
 fun Player.canThrowTwoDice(): Boolean {
-    return resources.contains<CanThrowTwoDice>()
+    return resources.getOrNull<CanThrowTwoDice>()?.can ?: false
+}
+
+fun Player.setThrowTwoDice(value: Boolean) {
+    resources.set(CanThrowTwoDice(value))
 }
