@@ -16,4 +16,8 @@ class InputEffectsQueue {
     fun dequeue(effect: InputEffect<*>) {
         effectsAwaitingInput.remove(effect)
     }
+
+    fun hasEffect(effect: InputEffect<*>): Boolean {
+        return effectsAwaitingInput.contains(effect)
+    }
 }
