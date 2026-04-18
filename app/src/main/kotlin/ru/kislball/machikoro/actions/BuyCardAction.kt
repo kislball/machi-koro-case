@@ -5,7 +5,6 @@ import ru.kislball.machikoro.effects.GrantCardEffect
 import ru.kislball.machikoro.effects.MoneyTransferEffect
 import ru.kislball.machikoro.effects.MoneyTransferType
 import ru.kislball.machikoro.effects.utility.CompoundEffect
-import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.contains
