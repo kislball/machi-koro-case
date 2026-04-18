@@ -1,18 +1,20 @@
 package ru.kislball.machikoro.actions
 
-import ru.kislball.machikoro.cards.common.CardKind
 import ru.kislball.machikoro.effects.CompoundEffect
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.GrantCardEffect
 import ru.kislball.machikoro.effects.MoneyTransferEffect
 import ru.kislball.machikoro.game.DiceRolledStep
+import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.Step
 
-class BuyCardAction(player: Player, var kind: CardKind) : PlayerAction(player) {
+class BuyCardAction(game: Game, player: Player, id: String) : PlayerAction(player) {
+  val card = game.catalog[id] ?: throw IllegalArgumentException("Card $id does not exist")
+
   override fun checkValid(s: Step) {
-    require(player.balance >= kind.basePrice) { "Player doesn't have enough balance" }
-    require(s.game.countCardsOfKind(kind) < kind.totalCards) { "No more cards available" }
+    require(player.balance >= card.getPrice(s)) { "Player doesn't have enough balance" }
+    require(s.game.countCardsOfKind(card) < card.totalCards) { "No more cards available" }
     require(s is DiceRolledStep) { "Buying cards is only available during buying stage" }
     require(player == s.currentPlayer) { "Only current player can buy cards" }
   }
@@ -20,8 +22,8 @@ class BuyCardAction(player: Player, var kind: CardKind) : PlayerAction(player) {
   override fun getEffect(s: Step): Effect {
     checkValid(s)
     return CompoundEffect.combineEffects(
-        MoneyTransferEffect(player, null, kind.basePrice),
-        GrantCardEffect(player, kind),
+        MoneyTransferEffect(player, null, card.getPrice(s)),
+        GrantCardEffect(player, card),
     )
   }
 }

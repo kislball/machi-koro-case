@@ -14,7 +14,7 @@ class JSONExporter : GameExporter {
                   PlayerJson(
                       name = player.name,
                       balance = player.balance,
-                      cards = player.cards.map { it.kind.name },
+                      cards = player.cards.map { it.cardNameKey },
                   )
                 },
         )

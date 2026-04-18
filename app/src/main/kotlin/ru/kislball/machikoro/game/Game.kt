@@ -1,8 +1,12 @@
 package ru.kislball.machikoro.game
 
-import ru.kislball.machikoro.cards.common.CardKind
+import ru.kislball.machikoro.cards.common.Card
+import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.cards.standard.StandardCatalog
 
-class Game(val players: List<Player>) {
+class Game(val catalog: CardCatalog, val players: List<Player>) {
+  constructor(players: List<Player>) : this(StandardCatalog, players)
+
   private var stepNumber: Int = 0
   var steps = mutableListOf<Step>()
 
@@ -16,15 +20,19 @@ class Game(val players: List<Player>) {
     require(players.isNotEmpty()) { "Player list must not be empty" }
   }
 
-  fun getTriggerables(): Sequence<Triggerable> {
-    return players.asSequence().flatMap { it.cards.asSequence() }
-  }
-
-  fun countCardsOfKind(kind: CardKind): Int {
+  fun getTriggerables(): Sequence<Pair<Triggerable, Player?>> {
     return players
         .asSequence()
-        .flatMap { player -> player.cards.asSequence().filter { it.kind == kind } }
-        .count()
+        .flatMap { player -> player.cards.asSequence().map { it to player } }
+        .map { (card, player) -> card as Triggerable to player }
+  }
+
+  fun countCardsOfKind(id: String): Int {
+    return players.asSequence().flatMap { it.cards }.count { it.id == id }
+  }
+
+  fun countCardsOfKind(card: Card): Int {
+    return countCardsOfKind(card.id)
   }
 
   fun nextStep(): Step {

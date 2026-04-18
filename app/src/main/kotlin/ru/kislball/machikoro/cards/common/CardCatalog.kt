@@ -1,21 +1,7 @@
 package ru.kislball.machikoro.cards.common
 
-object CardCatalog {
-  fun allKinds(): List<CardKind> = CardKind.entries
+open class CardCatalog(private val cards: List<Card>) {
+  private val cardsMap = cards.associateBy { it.id }
 
-  fun kindsByType(type: CardType): List<CardKind> = CardKind.entries.filter { it.type == type }
-
-  fun contains(kind: CardKind): Boolean = kind in CardKind.entries
-
-  private val creators: MutableMap<CardKind, () -> Card> = mutableMapOf()
-
-  fun getCreator(kind: CardKind): (() -> Card)? = creators[kind]
-
-  fun registerCreator(kind: CardKind, creator: () -> Card) {
-    creators[kind] = creator
-  }
-
-  fun registerCreators(newCreators: Map<CardKind, () -> Card>) {
-    creators.putAll(newCreators)
-  }
+  operator fun get(id: String) = cardsMap[id]
 }
