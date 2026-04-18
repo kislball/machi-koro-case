@@ -1,6 +1,6 @@
 package ru.kislball.machikoro.game
 
-import ru.kislball.machikoro.effects.utility.input.InputEffect
+import ru.kislball.machikoro.effects.input.InputEffect
 
 class InputEffectsQueue {
     private val effectsAwaitingInput = mutableListOf<InputEffect<*>>()

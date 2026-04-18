@@ -1,6 +1,5 @@
-package ru.kislball.machikoro.effects
+package ru.kislball.machikoro.effects.input
 
-import ru.kislball.machikoro.effects.utility.input.InputEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase

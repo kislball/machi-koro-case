@@ -8,6 +8,9 @@ import kotlin.test.assertNull
 import ru.kislball.machikoro.CountingEffect
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.actions.PlayerAction
+import ru.kislball.machikoro.effects.input.AwaitInputEffect
+import ru.kislball.machikoro.effects.input.InputEffect
+import ru.kislball.machikoro.effects.input.ProvideInputEffect
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
