@@ -2,7 +2,7 @@ package ru.kislball.machikoro.cards.standard
 
 import ru.kislball.machikoro.cards.common.CardCatalog
 
-object StandardCatalog :
+val StandardCatalog =
     CardCatalog(
         listOf(
             RestaurantCard(
