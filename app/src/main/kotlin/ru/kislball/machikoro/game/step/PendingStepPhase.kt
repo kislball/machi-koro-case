@@ -13,8 +13,7 @@ class PendingStepPhase(game: Game, currentPlayer: Player, stepNumber: Int) :
     check(!this.game.finished) { "Game has been finished" }
     check(canBeFinished()) { "Step can't be finished" }
     check(!results.contains<DiceRollResult>()) { "Dice have already been rolled" }
-    val diceRolled = (0..numDice).map { (DICE_MIN_VALUE..DICE_MAX_VALUE).random() }
-    DiceRollInputEffect(currentPlayer).applyWithInput(this, diceRolled)
+    DiceRollInputEffect(currentPlayer).applyWithInput(this, numDice)
     runTriggerables()
     return this
   }
