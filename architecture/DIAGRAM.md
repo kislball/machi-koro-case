@@ -153,8 +153,7 @@ classDiagram
              +runTriggerables() void
          }
          class PendingStepPhase {
-             +rollDice(numDice: Int) PendingStepPhase
-             +finish(action: PlayerAction) FinishedStepPhase?
+             +submitPlayerAction(action: PlayerAction) FinishedStepPhase?
          }
          class FinishedStepPhase
         class DiceRollResult {
@@ -303,8 +302,8 @@ classDiagram
      PlayerAction ..> Effect : returns
      Game ..> Triggerable : getTriggerables
 
-     PendingStepPhase ..> PlayerAction : finish
-     PendingStepPhase ..> DiceRollInputEffect : rollDice
+     PendingStepPhase ..> PlayerAction : submitPlayerAction
+     GameDriver ..> DiceRollInputEffect : rollDice
      PendingStepPhase ..> InputEffectsQueue : waits until queue is empty
      InputEffectsQueue ..> InputEffect : stores
      AwaitInputEffect ..> InputEffectsQueue : enqueue
@@ -332,7 +331,7 @@ classDiagram
 #### Input-эффекты
 Асинхронный ввод оформлен таким образом:
 1. `AwaitInputEffect` кладёт `InputEffect<T>` в `InputEffectsQueue` при применении.
-2. `PendingStepPhase.finish(...)` возвращает `null`, если очередь не пуста.
+2. `PendingStepPhase.submitPlayerAction(...)` возвращает `null`, если очередь не пуста.
 3. `ProvideInputEffect.apply(...)` вызывает `Effect.isValid()`, который проверяет:
    - `InputEffect.checkInput(input)` — синтаксическая валидация ввода
    - `InputEffect.isValid(stepPhase, input)` — семантическая валидация в контексте игры

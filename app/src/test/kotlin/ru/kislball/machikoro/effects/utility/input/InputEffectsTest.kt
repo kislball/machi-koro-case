@@ -14,7 +14,6 @@ import ru.kislball.machikoro.effects.input.ProvideInputEffect
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.step.StepPhase
 
 class InputEffectsTest {
@@ -94,11 +93,12 @@ class InputEffectsTest {
   fun `dice rolled finish returns null while awaiting input`() {
     val player = Player("p1")
     val game = Game(listOf(player))
-    val rolled = (game.nextStep() as PendingStepPhase)
-    rolled.rollDice(1)
+    val driver = GameDriver(game)
+    val rolled = driver.nextStep()
+    driver.rollDice(player, 1)
     val inputEffect = RecordingIntInputEffect(player)
 
-    val result = rolled.finish(AwaitingInputAction(player, inputEffect))
+    val result = rolled.submitPlayerAction(AwaitingInputAction(player, inputEffect))
 
     assertNull(result)
     assertEquals(rolled, game.currentStepPhase)
@@ -124,11 +124,12 @@ class InputEffectsTest {
   fun `provide input effect resolves queued input from awaiting flow`() {
     val player = Player("p1")
     val game = Game(listOf(player))
-    val rolled = (game.nextStep() as PendingStepPhase)
-    rolled.rollDice(1)
+    val driver = GameDriver(game)
+    val rolled = driver.nextStep()
+    driver.rollDice(player, 1)
     val inputEffect = RecordingIntInputEffect(player)
 
-    val finishResult = rolled.finish(AwaitingInputAction(player, inputEffect))
+    val finishResult = rolled.submitPlayerAction(AwaitingInputAction(player, inputEffect))
     assertNull(finishResult)
     assertEquals(inputEffect, game.inputEffects.peek())
 
@@ -159,11 +160,12 @@ class InputEffectsTest {
     val owner = Player("owner")
     val other = Player("other")
     val game = Game(listOf(owner, other))
-    val rolled = (game.nextStep() as PendingStepPhase)
-    rolled.rollDice(1)
+    val driver = GameDriver(game)
+    val rolled = driver.nextStep()
+    driver.rollDice(owner, 1)
     val inputEffect = RecordingIntInputEffect(owner)
 
-    val finishResult = rolled.finish(AwaitingInputAction(owner, inputEffect))
+    val finishResult = rolled.submitPlayerAction(AwaitingInputAction(owner, inputEffect))
     assertNull(finishResult)
     assertEquals(inputEffect, game.inputEffects.peek())
 
@@ -189,6 +191,7 @@ class InputEffectsTest {
 
     assertEquals(1, effect.appliedCount)
   }
+
 }
 
 private class RecordingIntInputEffect(player: Player) :

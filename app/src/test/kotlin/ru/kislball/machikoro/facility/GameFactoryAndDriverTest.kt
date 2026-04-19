@@ -84,4 +84,5 @@ class GameFactoryAndDriverTest {
     assertEquals(finished, game.currentStepPhase)
     assertTrue(game.steps.size >= 2)
   }
+
 }

@@ -8,7 +8,7 @@ import kotlin.test.assertTrue
 import ru.kislball.machikoro.CountingEffect
 import ru.kislball.machikoro.StubAction
 import ru.kislball.machikoro.StubCard
-import ru.kislball.machikoro.game.step.PendingStepPhase
+import ru.kislball.machikoro.facility.GameDriver
 
 class GameAndStepsTest {
   @Test
@@ -43,10 +43,11 @@ class GameAndStepsTest {
   @Test
   fun `nextStep creates waiting step and rotates current player`() {
     val game = Game(listOf(Player("p1"), Player("p2")))
+    val driver = GameDriver(game)
 
-    val step1 = game.nextStep() as PendingStepPhase
-    step1.rollDice(1)
-    val finished = step1.finish(StubAction(step1.currentPlayer))
+    val step1 = driver.nextStep()
+    driver.rollDice(step1.currentPlayer, 1)
+    val finished = step1.submitPlayerAction(StubAction(step1.currentPlayer))
     assertNotNull(finished)
     val step2 = game.nextStep()
 
@@ -69,9 +70,10 @@ class GameAndStepsTest {
   @Test
   fun `waiting dice step rollDice returns random dice list of expected size`() {
     val game = Game(listOf(Player("p1")))
-    val waiting = game.nextStep() as PendingStepPhase
+    val driver = GameDriver(game)
+    val waiting = driver.nextStep()
 
-    waiting.rollDice(2)
+    driver.rollDice(waiting.currentPlayer, 2)
     val rolled = waiting.results.get<DiceRollResult>()
 
     assertEquals(2, rolled.diceThrown.size)
@@ -84,9 +86,10 @@ class GameAndStepsTest {
     val player = Player("p1")
     player.cards.add(StubCard("cards.ranch", triggered = true, effect = effect))
     val game = Game(listOf(player))
-    val waiting = game.nextStep() as PendingStepPhase
+    val driver = GameDriver(game)
+    driver.nextStep()
 
-    waiting.rollDice(1)
+    driver.rollDice(player, 1)
 
     assertEquals(2, effect.appliedCount)
   }
@@ -95,11 +98,12 @@ class GameAndStepsTest {
   fun `finish delegates validation and returns finished action step`() {
     val player = Player("p1")
     val game = Game(listOf(player))
-    val waiting = game.nextStep() as PendingStepPhase
-    waiting.rollDice(1)
+    val driver = GameDriver(game)
+    val waiting = driver.nextStep()
+    driver.rollDice(player, 1)
     val action = StubAction(player)
 
-    val finished = waiting.finish(action)
+    val finished = waiting.submitPlayerAction(action)
 
     assertEquals(1, action.checkValidCalled)
     assertNotNull(finished)
@@ -111,10 +115,11 @@ class GameAndStepsTest {
     val effect = CountingEffect()
     val player = Player("p1")
     val game = Game(listOf(player))
-    val waiting = game.nextStep() as PendingStepPhase
-    waiting.rollDice(1)
+    val driver = GameDriver(game)
+    val waiting = driver.nextStep()
+    driver.rollDice(player, 1)
 
-    val finished = waiting.finish(StubAction(player, effect))
+    val finished = waiting.submitPlayerAction(StubAction(player, effect))
 
     assertNotNull(finished)
     assertEquals(1, effect.appliedCount)
