@@ -3,7 +3,7 @@ package ru.kislball.machikoro.game.markers
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.getOrNull
 
-class CanThrowTwoDice(val can: Boolean = true)
+private class CanThrowTwoDice(val can: Boolean = true)
 
 fun Player.canThrowTwoDice(): Boolean {
   return resources.getOrNull<CanThrowTwoDice>()?.can ?: false
