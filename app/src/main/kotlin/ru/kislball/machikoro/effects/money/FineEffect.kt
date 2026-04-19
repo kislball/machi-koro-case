@@ -24,7 +24,11 @@ class FineEffect(
     )
   }
 
-  override fun apply(stepPhase: StepPhase) {
+    override fun isValid(stepPhase: StepPhase): Boolean {
+        return getInnerEffect().isValid(stepPhase)
+    }
+
+  override fun run(stepPhase: StepPhase) {
     return getInnerEffect().apply(stepPhase)
   }
 }

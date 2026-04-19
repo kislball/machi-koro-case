@@ -4,7 +4,7 @@ import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.game.step.StepPhase
 
 class MaybeEffect(val inner: Effect) : Effect("effects.maybe") {
-  override fun apply(stepPhase: StepPhase) {
+  override fun run(stepPhase: StepPhase) {
     try {
       inner.apply(stepPhase)
     } catch (e: Exception) {

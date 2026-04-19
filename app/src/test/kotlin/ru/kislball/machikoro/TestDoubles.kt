@@ -15,7 +15,7 @@ class CountingEffect : Effect("test.effect") {
   var appliedCount: Int = 0
   var lastStepPhase: StepPhase? = null
 
-  override fun apply(stepPhase: StepPhase) {
+  override fun run(stepPhase: StepPhase) {
     appliedCount += 1
     lastStepPhase = stepPhase
   }

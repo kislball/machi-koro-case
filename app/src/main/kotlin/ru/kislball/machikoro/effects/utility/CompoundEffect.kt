@@ -4,7 +4,7 @@ import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.game.step.StepPhase
 
 class CompoundEffect(val effects: List<Effect>) : Effect("effects.compound") {
-  override fun apply(stepPhase: StepPhase) {
+  override fun run(stepPhase: StepPhase) {
     for (effect in effects) {
       effect.apply(stepPhase)
     }

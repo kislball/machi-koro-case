@@ -9,7 +9,7 @@ class AwaitInputEffect<T>(
     val player: Player,
     private val targetEffect: InputEffect<T>
 ) : Effect(id) {
-  override fun apply(stepPhase: StepPhase) {
+  override fun run(stepPhase: StepPhase) {
     stepPhase.game.inputEffects.enqueue(targetEffect)
   }
 }

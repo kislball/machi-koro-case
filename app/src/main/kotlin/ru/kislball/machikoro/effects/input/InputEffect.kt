@@ -12,7 +12,7 @@ abstract class InputEffect<T>(val id: String, val player: Player) {
   fun getEffect(input: T): Effect {
     require(checkInput(input))
     return object : Effect(id) {
-      override fun apply(stepPhase: StepPhase) {
+      override fun run(stepPhase: StepPhase) {
         applyWithInput(stepPhase, input)
       }
     }

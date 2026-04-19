@@ -6,7 +6,7 @@ import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 
 class GrantCardEffect(val player: Player, val card: Card) : Effect("effects.grant_card") {
-  override fun apply(stepPhase: StepPhase) {
+  override fun run(stepPhase: StepPhase) {
     player.cards.add(card)
   }
 }

@@ -24,7 +24,7 @@ class Game(val catalog: CardCatalog, val players: List<Player>, val gameFinished
 
   private val finishedEffect =
       object : Effect("effects.game_finished") {
-        override fun apply(stepPhase: StepPhase) {
+        override fun run(stepPhase: StepPhase) {
           stepPhase.game.finished = true
         }
       }

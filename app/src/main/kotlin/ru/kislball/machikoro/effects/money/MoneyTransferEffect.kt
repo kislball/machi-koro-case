@@ -15,12 +15,18 @@ enum class MoneyTransferType {
 class MoneyTransferEffect(val player: Player, val amount: Int, val type: MoneyTransferType) :
     Effect("effects.money_transfer") {
 
-  override fun apply(stepPhase: StepPhase) {
+  override fun isValid(stepPhase: StepPhase): Boolean {
+    if (type == MoneyTransferType.WithdrawExact) {
+      require(player.balance >= amount) { "Insufficient funds" }
+    }
+    return true
+  }
+
+  override fun run(stepPhase: StepPhase) {
     when (type) {
       MoneyTransferType.Deposit -> player.balance += amount
       MoneyTransferType.Withdraw -> player.balance = max(player.balance - amount, 0)
       MoneyTransferType.WithdrawExact -> {
-        require(player.balance >= amount) { "Insufficient funds" }
         player.balance -= amount
       }
     }

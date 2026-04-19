@@ -9,5 +9,12 @@ abstract class Effect(val id: String) {
   open val effectNameKey: String
     get() = "$id.name"
 
-  abstract fun apply(stepPhase: StepPhase)
+  open fun isValid(stepPhase: StepPhase): Boolean = true
+
+  protected abstract fun run(stepPhase: StepPhase)
+
+  fun apply(stepPhase: StepPhase) {
+    require(isValid(stepPhase)) { "Effect is not valid" }
+    run(stepPhase)
+  }
 }
