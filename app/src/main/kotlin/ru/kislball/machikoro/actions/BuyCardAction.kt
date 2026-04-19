@@ -21,7 +21,9 @@ class BuyCardAction(game: Game, player: Player, id: String) :
 
   override fun checkValid(s: StepPhase) {
     require(player.balance >= card.getPrice(s)) { "Player doesn't have enough balance" }
-      require(s.results.contains<DiceRollResult>()) { "Buying is only available after dice have been rolled" }
+    require(s.results.contains<DiceRollResult>()) {
+      "Buying is only available after dice have been rolled"
+    }
     require(s.game.countCardsOfKind(card) < card.totalCards) { "No more cards available" }
     require(player == s.currentPlayer) { "Only current player can buy cards" }
   }

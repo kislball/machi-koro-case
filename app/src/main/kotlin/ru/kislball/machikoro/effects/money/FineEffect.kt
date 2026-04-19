@@ -1,7 +1,7 @@
 package ru.kislball.machikoro.effects.money
 
-import ru.kislball.machikoro.effects.Effect
 import kotlin.math.min
+import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.utility.CompoundEffect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
@@ -24,9 +24,9 @@ class FineEffect(
     )
   }
 
-    override fun isValid(stepPhase: StepPhase): Boolean {
-        return getInnerEffect().isValid(stepPhase)
-    }
+  override fun isValid(stepPhase: StepPhase): Boolean {
+    return getInnerEffect().isValid(stepPhase)
+  }
 
   override fun run(stepPhase: StepPhase) {
     return getInnerEffect().apply(stepPhase)

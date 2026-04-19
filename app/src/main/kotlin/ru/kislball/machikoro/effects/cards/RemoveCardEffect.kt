@@ -9,12 +9,12 @@ class RemoveCardEffect(
     val from: Player,
     val card: Card,
 ) : Effect("effects.remove_card") {
-    override fun isValid(stepPhase: StepPhase): Boolean {
-        require(from.cards.contains(card)) { "Player does not have the card to remove" }
-        return true
-    }
+  override fun isValid(stepPhase: StepPhase): Boolean {
+    require(from.cards.contains(card)) { "Player does not have the card to remove" }
+    return true
+  }
 
-    override fun run(stepPhase: StepPhase) {
-        from.cards.remove(card)
-    }
+  override fun run(stepPhase: StepPhase) {
+    from.cards.remove(card)
+  }
 }

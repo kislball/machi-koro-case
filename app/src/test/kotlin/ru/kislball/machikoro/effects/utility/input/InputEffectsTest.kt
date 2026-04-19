@@ -67,7 +67,9 @@ class InputEffectsTest {
     val inputEffect = RecordingIntInputEffect(player)
     game.inputEffects.enqueue(inputEffect)
 
-    assertFailsWith<IllegalArgumentException> { ProvideInputEffect(inputEffect, -1, player).apply(step) }
+    assertFailsWith<IllegalArgumentException> {
+      ProvideInputEffect(inputEffect, -1, player).apply(step)
+    }
 
     assertEquals(inputEffect, game.inputEffects.peek())
     assertEquals(emptyList(), inputEffect.appliedInputs)
@@ -144,7 +146,9 @@ class InputEffectsTest {
     val inputEffect = InvalidOnStepInputEffect(player)
     game.inputEffects.enqueue(inputEffect)
 
-    assertFailsWith<IllegalArgumentException> { ProvideInputEffect(inputEffect, 1, player).apply(step) }
+    assertFailsWith<IllegalArgumentException> {
+      ProvideInputEffect(inputEffect, 1, player).apply(step)
+    }
 
     assertEquals(inputEffect, game.inputEffects.peek())
     assertEquals(emptyList(), inputEffect.appliedInputs)
@@ -163,7 +167,9 @@ class InputEffectsTest {
     assertNull(finishResult)
     assertEquals(inputEffect, game.inputEffects.peek())
 
-    assertFailsWith<IllegalStateException> { ProvideInputEffect(inputEffect, 6, other).apply(rolled) }
+    assertFailsWith<IllegalStateException> {
+      ProvideInputEffect(inputEffect, 6, other).apply(rolled)
+    }
 
     assertEquals(inputEffect, game.inputEffects.peek())
     assertEquals(emptyList(), inputEffect.appliedInputs)
