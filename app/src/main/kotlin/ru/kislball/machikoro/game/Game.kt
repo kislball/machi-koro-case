@@ -9,17 +9,21 @@ import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.utilities.ClassMap
 import ru.kislball.machikoro.game.utilities.InputEffectsQueue
+import ru.kislball.machikoro.game.utilities.PlayerOrderManager
 import ru.kislball.machikoro.game.utilities.Triggerable
 import ru.kislball.machikoro.triggers.Trigger
 import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
-class Game(val catalog: CardCatalog, val players: List<Player>, val gameFinishedTrigger: Trigger) {
+class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrigger: Trigger) {
   constructor(players: List<Player>) : this(StandardCatalog, players, SightsCollectedTrigger())
 
   private var stepNumber: Int = 0
 
   val inputEffects = InputEffectsQueue()
   val resources = ClassMap()
+    val orderManager = PlayerOrderManager(players)
+    val players: List<Player>
+        get() = orderManager.players
 
   var steps = mutableListOf<StepPhase>()
   var finished: Boolean = false
@@ -78,7 +82,7 @@ class Game(val catalog: CardCatalog, val players: List<Player>, val gameFinished
     val nextStep =
         PendingStepPhase(
             game = this,
-            currentPlayer = players[stepNumber % players.size],
+            currentPlayer = orderManager.next(),
             stepNumber = stepNumber,
         )
     steps.add(nextStep)
