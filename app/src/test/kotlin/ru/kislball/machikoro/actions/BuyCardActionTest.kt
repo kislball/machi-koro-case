@@ -19,11 +19,12 @@ class BuyCardActionTest {
     player.balance = 10
     val card = StubCard("cards.bakery")
     val game = Game(CardCatalog(card), listOf(player), SightsCollectedTrigger())
-    val step = GameDriver(game).run {
-      val pending = nextStep()
-      rollDice(player, 1)
-      pending
-    }
+    val step =
+        GameDriver(game).run {
+          val pending = nextStep()
+          rollDice(player, 1)
+          pending
+        }
     val action = BuyCardAction(game, player, "cards.bakery")
 
     action.checkValid(step)
@@ -35,11 +36,12 @@ class BuyCardActionTest {
     player.balance = 0
     val card = StubCard("cards.bakery")
     val game = Game(CardCatalog(card), listOf(player), SightsCollectedTrigger())
-    val step = GameDriver(game).run {
-      val pending = nextStep()
-      rollDice(player, 1)
-      pending
-    }
+    val step =
+        GameDriver(game).run {
+          val pending = nextStep()
+          rollDice(player, 1)
+          pending
+        }
     val action = BuyCardAction(game, player, "cards.bakery")
 
     val error = assertFailsWith<IllegalArgumentException> { action.checkValid(step) }
@@ -53,11 +55,12 @@ class BuyCardActionTest {
     player.balance = 10
     val card = StubCard("cards.bakery")
     val game = Game(CardCatalog(card), listOf(player), SightsCollectedTrigger())
-    val step = GameDriver(game).run {
-      val pending = nextStep()
-      rollDice(player, 1)
-      pending
-    }
+    val step =
+        GameDriver(game).run {
+          val pending = nextStep()
+          rollDice(player, 1)
+          pending
+        }
     val action = BuyCardAction(game, player, "cards.bakery")
 
     val effect = action.getEffect(step)

@@ -5,13 +5,14 @@ import ru.kislball.machikoro.effects.input.InputEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.IntermediateRollResult
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.markers.canRethrowDice
+import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.utilities.contains
 import ru.kislball.machikoro.game.utilities.get
 import ru.kislball.machikoro.game.utilities.remove
-import ru.kislball.machikoro.game.markers.canRethrowDice
-import ru.kislball.machikoro.game.step.StepPhase
 
-class RethrowDiceInputEffect(player: Player) : InputEffect<Boolean>("effects.rethrow_dice", player) {
+class RethrowDiceInputEffect(player: Player) :
+    InputEffect<Boolean>("effects.rethrow_dice", player) {
   override fun applyWithInput(stepPhase: StepPhase, input: Boolean) {
     val intermediate = stepPhase.results.get<IntermediateRollResult>().result
     if (input) {

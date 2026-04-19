@@ -21,9 +21,9 @@ class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrig
 
   val inputEffects = InputEffectsQueue()
   val resources = ClassMap()
-    val orderManager = PlayerOrderManager(players)
-    val players: List<Player>
-        get() = orderManager.players
+  val orderManager = PlayerOrderManager(players)
+  val players: List<Player>
+    get() = orderManager.players
 
   var steps = mutableListOf<StepPhase>()
   var finished: Boolean = false

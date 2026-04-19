@@ -4,13 +4,13 @@ import ru.kislball.machikoro.actions.PlayerAction
 import ru.kislball.machikoro.effects.dice.DiceRollInputEffect
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
 import ru.kislball.machikoro.effects.input.ProvideInputEffect
-import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.DiceRollResult
+import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.IntermediateRollResult
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.utilities.contains
 import ru.kislball.machikoro.game.step.FinishedStepPhase
 import ru.kislball.machikoro.game.step.PendingStepPhase
+import ru.kislball.machikoro.game.utilities.contains
 
 class GameDriver(val game: Game) {
   fun nextStep(): PendingStepPhase {
@@ -66,7 +66,9 @@ class GameDriver(val game: Game) {
             ?: error("Current step is not awaiting rethrow decision")
 
     ProvideInputEffect(awaitingInput, shouldRethrow, player).apply(current)
-    check(current.results.contains<DiceRollResult>()) { "Rethrow decision did not produce dice result" }
+    check(current.results.contains<DiceRollResult>()) {
+      "Rethrow decision did not produce dice result"
+    }
     current.runTriggerables()
     return current
   }

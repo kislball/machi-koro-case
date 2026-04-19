@@ -191,7 +191,6 @@ class InputEffectsTest {
 
     assertEquals(1, effect.appliedCount)
   }
-
 }
 
 private class RecordingIntInputEffect(player: Player) :

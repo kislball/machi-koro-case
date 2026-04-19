@@ -5,7 +5,7 @@ import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 
 class GivePlayerAdditionalStepEffect(val player: Player) : Effect("effects.additional_step") {
-    override fun run(stepPhase: StepPhase) {
-        stepPhase.game.orderManager.setNext(player)
-    }
+  override fun run(stepPhase: StepPhase) {
+    stepPhase.game.orderManager.setNext(player)
+  }
 }

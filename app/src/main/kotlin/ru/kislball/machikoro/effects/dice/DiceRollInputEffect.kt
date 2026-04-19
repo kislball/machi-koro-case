@@ -4,10 +4,10 @@ import ru.kislball.machikoro.effects.input.InputEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.IntermediateRollResult
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.utilities.contains
 import ru.kislball.machikoro.game.markers.canRethrowDice
 import ru.kislball.machikoro.game.markers.canThrowTwoDice
 import ru.kislball.machikoro.game.step.StepPhase
+import ru.kislball.machikoro.game.utilities.contains
 
 class DiceRollInputEffect(player: Player) : InputEffect<Int>("effects.dice_roll_input", player) {
   override fun checkInput(input: Int): Boolean {

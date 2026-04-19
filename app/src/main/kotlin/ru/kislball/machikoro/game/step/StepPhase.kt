@@ -1,8 +1,8 @@
 package ru.kislball.machikoro.game.step
 
-import ru.kislball.machikoro.game.utilities.ClassMap
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.utilities.ClassMap
 
 abstract class StepPhase(val game: Game, val currentPlayer: Player, val stepNumber: Int) {
   protected var finalised = false

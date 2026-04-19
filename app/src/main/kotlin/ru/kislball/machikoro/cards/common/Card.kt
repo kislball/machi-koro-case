@@ -1,7 +1,7 @@
 package ru.kislball.machikoro.cards.common
 
-import ru.kislball.machikoro.game.utilities.Triggerable
 import ru.kislball.machikoro.game.step.StepPhase
+import ru.kislball.machikoro.game.utilities.Triggerable
 
 abstract class Card(
     val cardId: String,
