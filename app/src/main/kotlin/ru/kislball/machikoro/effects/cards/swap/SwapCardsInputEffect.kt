@@ -2,6 +2,7 @@ package ru.kislball.machikoro.effects.cards.swap
 
 import ru.kislball.machikoro.effects.cards.GrantCardEffect
 import ru.kislball.machikoro.effects.cards.RemoveCardEffect
+import ru.kislball.machikoro.effects.input.AwaitInputEffect
 import ru.kislball.machikoro.effects.input.InputEffect
 import ru.kislball.machikoro.effects.utility.CompoundEffect
 import ru.kislball.machikoro.game.Player
@@ -34,5 +35,15 @@ class SwapCardsInputEffect(
         input: SwapCardsInput
     ) {
         getInnerEffect(input).apply(stepPhase)
+    }
+
+    companion object {
+        fun getAwaiter(to: Player): AwaitInputEffect<SwapCardsInput> {
+            return AwaitInputEffect(
+                "effects.awaiter.swap_cards",
+                player = to,
+                targetEffect = SwapCardsInputEffect(to),
+            )
+        }
     }
 }
