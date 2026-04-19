@@ -7,6 +7,7 @@ import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.money.MoneyTransferEffect
 import ru.kislball.machikoro.effects.money.MoneyTransferType
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.markers.getBonusForType
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.dice.AnyDiceTrigger
 
@@ -22,12 +23,16 @@ class NatureCard(
 
   override fun getPrice(s: StepPhase): Int = price
 
+    fun calculateReward(player: Player): Int {
+        return reward + player.getBonusForType(icon)
+    }
+
   override fun getEffect(s: StepPhase, possessor: Player?): Effect {
     require(possessor != null) { "possessor must not be null" }
     return MoneyTransferEffect(
         player = possessor,
         type = MoneyTransferType.Deposit,
-        amount = reward,
+        amount = calculateReward(possessor),
     )
   }
 

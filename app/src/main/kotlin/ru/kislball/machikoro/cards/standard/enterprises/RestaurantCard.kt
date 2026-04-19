@@ -7,6 +7,7 @@ import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.money.FineEffect
 import ru.kislball.machikoro.effects.utility.NoopEffect
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.markers.getBonusForType
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.dice.AnyDiceTrigger
 
@@ -28,8 +29,12 @@ class RestaurantCard(
 
   override fun getEffect(s: StepPhase, possessor: Player?): Effect {
     if (s.currentPlayer == possessor || possessor == null) return NoopEffect()
-    return FineEffect(from = s.currentPlayer, to = possessor, amount = reward)
+    return FineEffect(from = s.currentPlayer, to = possessor, amount = calculateReward(possessor))
   }
+
+    fun calculateReward(player: Player): Int {
+        return reward + player.getBonusForType(icon)
+    }
 
   private val trigger = AnyDiceTrigger(activationRange)
 

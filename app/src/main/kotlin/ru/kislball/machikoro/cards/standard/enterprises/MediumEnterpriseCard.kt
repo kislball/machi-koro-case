@@ -7,6 +7,7 @@ import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.money.MoneyTransferEffect
 import ru.kislball.machikoro.effects.money.MoneyTransferType
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.markers.getBonusForType
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.dice.PossessorDiceTrigger
 
@@ -27,7 +28,7 @@ class MediumEnterpriseCard(
   }
 
   fun calculateReward(player: Player): Int {
-    return calculateMultiplier(player) * reward
+    return calculateMultiplier(player) * reward + player.getBonusForType(icon)
   }
 
   override fun getPrice(s: StepPhase): Int {
