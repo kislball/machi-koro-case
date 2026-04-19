@@ -12,4 +12,6 @@ class PossessorDiceTrigger(
     val inner = PlayerDiceTrigger(possessor, dice)
     return inner.isTriggered(stepPhase, possessor)
   }
+
+  constructor(singleDice: Int) : this(listOf(singleDice))
 }
