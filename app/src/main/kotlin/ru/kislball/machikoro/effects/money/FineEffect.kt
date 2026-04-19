@@ -10,7 +10,7 @@ class FineEffect(
     val from: Player,
     val to: Player,
     val amount: Int,
-) : Effect("effects.fine") {
+) : Effect("effects.money.fine") {
   fun getFinalAmount(): Int {
     return min(amount, from.balance)
   }

@@ -7,7 +7,7 @@ import ru.kislball.machikoro.game.step.StepPhase
 
 class GivePlayerAdditionalStepInputEffect(player: Player) :
     InputEffect<Boolean>(
-        id = "effects.additional_step.input",
+        id = "effects.order.additional_step",
         player = player,
     ) {
   override fun applyWithInput(stepPhase: StepPhase, input: Boolean) {
@@ -19,7 +19,7 @@ class GivePlayerAdditionalStepInputEffect(player: Player) :
   companion object {
     fun getAwaiter(player: Player): AwaitInputEffect<Boolean> {
       return AwaitInputEffect<Boolean>(
-          id = "effects.awaiter.additional_step",
+          id = "effects.awaiter.order.additional_step",
           player = player,
           targetEffect = GivePlayerAdditionalStepInputEffect(player),
       )

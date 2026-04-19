@@ -8,7 +8,7 @@ import ru.kislball.machikoro.game.step.StepPhase
 class RemoveCardEffect(
     val from: Player,
     val card: Card,
-) : Effect("effects.remove_card") {
+) : Effect("effects.cards.remove") {
   override fun isValid(stepPhase: StepPhase): Boolean {
     require(from.cards.contains(card)) { "Player does not have the card to remove" }
     return true

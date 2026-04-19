@@ -13,7 +13,7 @@ enum class MoneyTransferType {
 }
 
 class MoneyTransferEffect(val player: Player, val amount: Int, val type: MoneyTransferType) :
-    Effect("effects.money_transfer") {
+    Effect("effects.money.transfer") {
 
   override fun isValid(stepPhase: StepPhase): Boolean {
     if (type == MoneyTransferType.WithdrawExact) {

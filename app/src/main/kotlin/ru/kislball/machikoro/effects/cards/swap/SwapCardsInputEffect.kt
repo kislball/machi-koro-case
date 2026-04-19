@@ -10,7 +10,7 @@ import ru.kislball.machikoro.game.step.StepPhase
 
 class SwapCardsInputEffect(
     val to: Player,
-) : InputEffect<SwapCardsInput>("effects.swap_cards", to) {
+) : InputEffect<SwapCardsInput>("effects.cards.swap", to) {
   override fun checkInput(input: SwapCardsInput): Boolean {
     return input.isValid()
   }
@@ -37,7 +37,7 @@ class SwapCardsInputEffect(
   companion object {
     fun getAwaiter(to: Player): AwaitInputEffect<SwapCardsInput> {
       return AwaitInputEffect(
-          "effects.awaiter.swap_cards",
+          "effects.awaiter.cards.swap",
           player = to,
           targetEffect = SwapCardsInputEffect(to),
       )

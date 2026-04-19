@@ -12,7 +12,7 @@ import ru.kislball.machikoro.game.utilities.get
 import ru.kislball.machikoro.game.utilities.remove
 
 class RethrowDiceInputEffect(player: Player) :
-    InputEffect<Boolean>("effects.rethrow_dice", player) {
+    InputEffect<Boolean>("effects.dice.rethrow", player) {
   override fun applyWithInput(stepPhase: StepPhase, input: Boolean) {
     val intermediate = stepPhase.results.get<IntermediateRollResult>().result
     if (input) {
@@ -28,7 +28,7 @@ class RethrowDiceInputEffect(player: Player) :
   companion object {
     fun getAwaiter(player: Player): AwaitInputEffect<Boolean> {
       return AwaitInputEffect<Boolean>(
-          id = "effects.awaiter.rethrow_dice",
+          id = "effects.awaiter.dice.rethrow",
           player = player,
           targetEffect = RethrowDiceInputEffect(player),
       )

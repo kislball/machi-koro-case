@@ -6,7 +6,7 @@ import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 
 class PickAndChargeUserInputEffect(val to: Player, val amount: Int) :
-    InputEffect<Player>("effects.pick_and_charge_user", to) {
+    InputEffect<Player>("effects.money.pick_and_charge", to) {
 
   override fun checkInput(input: Player): Boolean {
     // Suppression is needed since type-safety may have been violated
@@ -30,7 +30,7 @@ class PickAndChargeUserInputEffect(val to: Player, val amount: Int) :
   companion object {
     fun getAwaiter(to: Player, amount: Int): AwaitInputEffect<Player> {
       return AwaitInputEffect(
-          "awaiter.effects.pick_and_charge_user",
+          "effects.awaiter.money.pick_and_charge",
           player = to,
           targetEffect = PickAndChargeUserInputEffect(to, amount),
       )
