@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.game
+package ru.kislball.machikoro.game.utilities
 
 class ClassMap {
   private val map = HashMap<Class<*>, Any>()

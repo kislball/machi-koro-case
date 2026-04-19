@@ -1,6 +1,6 @@
 package ru.kislball.machikoro.game.step
 
-import ru.kislball.machikoro.game.ClassMap
+import ru.kislball.machikoro.game.utilities.ClassMap
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 

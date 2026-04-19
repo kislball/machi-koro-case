@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.game
+package ru.kislball.machikoro.game.utilities
 
 import ru.kislball.machikoro.effects.input.InputEffect
 

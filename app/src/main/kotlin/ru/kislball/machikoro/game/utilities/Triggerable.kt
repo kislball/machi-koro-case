@@ -1,6 +1,7 @@
-package ru.kislball.machikoro.game
+package ru.kislball.machikoro.game.utilities
 
 import ru.kislball.machikoro.effects.Effect
+import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.Trigger
 

@@ -11,7 +11,7 @@ import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.IntermediateRollResult
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.getOrNull
+import ru.kislball.machikoro.game.utilities.getOrNull
 import ru.kislball.machikoro.game.markers.setCanRethrowDice
 
 class GameDriverRethrowTest {

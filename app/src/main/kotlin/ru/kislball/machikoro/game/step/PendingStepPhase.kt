@@ -4,7 +4,7 @@ import ru.kislball.machikoro.actions.PlayerAction
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.contains
+import ru.kislball.machikoro.game.utilities.contains
 
 class PendingStepPhase(game: Game, currentPlayer: Player, stepNumber: Int) :
     StepPhase(game, currentPlayer, stepNumber) {

@@ -1,7 +1,7 @@
 package ru.kislball.machikoro.game.markers
 
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.getOrNull
+import ru.kislball.machikoro.game.utilities.getOrNull
 
 private class CanThrowTwoDice(val can: Boolean = true)
 

@@ -8,7 +8,7 @@ import ru.kislball.machikoro.effects.utility.CompoundEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.game.contains
+import ru.kislball.machikoro.game.utilities.contains
 import ru.kislball.machikoro.game.step.StepPhase
 
 class BuyCardAction(game: Game, player: Player, id: String) :

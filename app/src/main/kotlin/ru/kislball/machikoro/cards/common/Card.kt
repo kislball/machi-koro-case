@@ -1,6 +1,6 @@
 package ru.kislball.machikoro.cards.common
 
-import ru.kislball.machikoro.game.Triggerable
+import ru.kislball.machikoro.game.utilities.Triggerable
 import ru.kislball.machikoro.game.step.StepPhase
 
 abstract class Card(

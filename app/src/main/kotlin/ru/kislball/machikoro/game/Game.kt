@@ -7,6 +7,9 @@ import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.game.step.FinishedStepPhase
 import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.step.StepPhase
+import ru.kislball.machikoro.game.utilities.ClassMap
+import ru.kislball.machikoro.game.utilities.InputEffectsQueue
+import ru.kislball.machikoro.game.utilities.Triggerable
 import ru.kislball.machikoro.triggers.Trigger
 import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 

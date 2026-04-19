@@ -9,7 +9,7 @@ import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.facility.GameDriver
-import ru.kislball.machikoro.game.get
+import ru.kislball.machikoro.game.utilities.get
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.dice.AnyDiceTrigger
 import ru.kislball.machikoro.triggers.dice.PlayerDiceTrigger
