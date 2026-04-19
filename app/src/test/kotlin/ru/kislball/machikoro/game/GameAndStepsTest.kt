@@ -74,7 +74,7 @@ class GameAndStepsTest {
     waiting.rollDice(2)
     val rolled = waiting.results.get<DiceRollResult>()
 
-    assertEquals(3, rolled.diceThrown.size)
+    assertEquals(2, rolled.diceThrown.size)
     assertTrue(rolled.diceThrown.all { it in 0..7 })
   }
 
