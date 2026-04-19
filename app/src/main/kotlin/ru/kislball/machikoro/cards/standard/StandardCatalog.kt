@@ -2,6 +2,7 @@ package ru.kislball.machikoro.cards.standard
 
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.cards.common.CardIcon
+import ru.kislball.machikoro.cards.standard.enterprises.BusinessCentreCard
 import ru.kislball.machikoro.cards.standard.enterprises.MediumEnterpriseCard
 import ru.kislball.machikoro.cards.standard.enterprises.NatureCard
 import ru.kislball.machikoro.cards.standard.enterprises.RestaurantCard
@@ -101,4 +102,5 @@ val StandardCatalog =
         ),
         StadiumCard(),
         TVCentreCard(),
+        BusinessCentreCard(),
     )
