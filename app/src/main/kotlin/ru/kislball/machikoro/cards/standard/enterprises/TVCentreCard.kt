@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.cards.standard
+package ru.kislball.machikoro.cards.standard.enterprises
 
 import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardIcon

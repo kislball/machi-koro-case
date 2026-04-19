@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.cards.standard
+package ru.kislball.machikoro.cards.standard.enterprises
 
 import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardIcon
@@ -8,26 +8,38 @@ import ru.kislball.machikoro.effects.money.MoneyTransferEffect
 import ru.kislball.machikoro.effects.money.MoneyTransferType
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
-import ru.kislball.machikoro.triggers.dice.AnyDiceTrigger
+import ru.kislball.machikoro.triggers.dice.PossessorDiceTrigger
 
-class NatureCard(
+class MediumEnterpriseCard(
     id: String,
-    activationRange: List<Int>,
     icon: CardIcon,
     val price: Int,
+    activationRange: List<Int>,
+    val revenueFrom: CardIcon?,
     val reward: Int,
     totalCards: Int = 4,
-) : Card(totalCards = totalCards, type = CardType.ENTERPRISE, cardId = id, icon = icon) {
-  private val trigger = AnyDiceTrigger(activationRange)
+) : Card(totalCards = totalCards, cardId = id, icon = icon, type = CardType.ENTERPRISE) {
+  private val trigger = PossessorDiceTrigger(activationRange)
 
-  override fun getPrice(s: StepPhase): Int = price
+  private fun calculateMultiplier(player: Player): Int {
+    revenueFrom ?: return 1
+    return player.cards.count { it.icon == revenueFrom }
+  }
+
+  fun calculateReward(player: Player): Int {
+    return calculateMultiplier(player) * reward
+  }
+
+  override fun getPrice(s: StepPhase): Int {
+    return price
+  }
 
   override fun getEffect(s: StepPhase, possessor: Player?): Effect {
-    require(possessor != null) { "possessor must not be null" }
+    require(possessor != null) { "possessor must be set" }
     return MoneyTransferEffect(
         player = possessor,
         type = MoneyTransferType.Deposit,
-        amount = reward,
+        amount = calculateReward(possessor),
     )
   }
 
