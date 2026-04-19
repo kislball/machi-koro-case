@@ -60,21 +60,21 @@ class InputEffectsTest {
   }
 
   @Test
-  fun `provide input effect ignores invalid input`() {
+  fun `provide input effect throws on invalid input`() {
     val player = Player("p1")
     val game = Game(listOf(player))
     val step = game.nextStep()
     val inputEffect = RecordingIntInputEffect(player)
     game.inputEffects.enqueue(inputEffect)
 
-    ProvideInputEffect(inputEffect, -1, player).apply(step)
+    assertFailsWith<IllegalArgumentException> { ProvideInputEffect(inputEffect, -1, player).apply(step) }
 
     assertEquals(inputEffect, game.inputEffects.peek())
     assertEquals(emptyList(), inputEffect.appliedInputs)
   }
 
   @Test
-  fun `provide input effect ignores input from non-owner player`() {
+  fun `provide input effect throws on input from non-owner player`() {
     val owner = Player("owner")
     val other = Player("other")
     val game = Game(listOf(owner, other))
@@ -82,7 +82,7 @@ class InputEffectsTest {
     val inputEffect = RecordingIntInputEffect(owner)
     game.inputEffects.enqueue(inputEffect)
 
-    ProvideInputEffect(inputEffect, 4, other).apply(step)
+    assertFailsWith<IllegalStateException> { ProvideInputEffect(inputEffect, 4, other).apply(step) }
 
     assertEquals(inputEffect, game.inputEffects.peek())
     assertEquals(emptyList(), inputEffect.appliedInputs)
@@ -137,7 +137,21 @@ class InputEffectsTest {
   }
 
   @Test
-  fun `provide input effect does not resolve queued input for wrong player in awaiting flow`() {
+  fun `provide input effect checks input effect validity against step phase`() {
+    val player = Player("p1")
+    val game = Game(listOf(player))
+    val step = game.nextStep()
+    val inputEffect = InvalidOnStepInputEffect(player)
+    game.inputEffects.enqueue(inputEffect)
+
+    assertFailsWith<IllegalArgumentException> { ProvideInputEffect(inputEffect, 1, player).apply(step) }
+
+    assertEquals(inputEffect, game.inputEffects.peek())
+    assertEquals(emptyList(), inputEffect.appliedInputs)
+  }
+
+  @Test
+  fun `provide input effect throws for wrong player in awaiting flow`() {
     val owner = Player("owner")
     val other = Player("other")
     val game = Game(listOf(owner, other))
@@ -149,7 +163,7 @@ class InputEffectsTest {
     assertNull(finishResult)
     assertEquals(inputEffect, game.inputEffects.peek())
 
-    ProvideInputEffect(inputEffect, 6, other).apply(rolled)
+    assertFailsWith<IllegalStateException> { ProvideInputEffect(inputEffect, 6, other).apply(rolled) }
 
     assertEquals(inputEffect, game.inputEffects.peek())
     assertEquals(emptyList(), inputEffect.appliedInputs)
@@ -177,6 +191,23 @@ private class RecordingIntInputEffect(player: Player) :
 
   override fun checkInput(input: Int): Boolean {
     return input > 0
+  }
+
+  override fun applyWithInput(stepPhase: StepPhase, input: Int) {
+    appliedInputs.add(input)
+  }
+}
+
+private class InvalidOnStepInputEffect(player: Player) :
+    InputEffect<Int>("effects.test.input.invalid_on_step", player) {
+  val appliedInputs = mutableListOf<Int>()
+
+  override fun checkInput(input: Int): Boolean {
+    return true
+  }
+
+  override fun isValid(stepPhase: StepPhase, input: Int): Boolean {
+    return false
   }
 
   override fun applyWithInput(stepPhase: StepPhase, input: Int) {
