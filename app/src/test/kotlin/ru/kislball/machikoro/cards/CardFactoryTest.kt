@@ -10,6 +10,8 @@ class CardFactoryTest {
   fun `standard catalog contains known cards`() {
     assertNotNull(StandardCatalog["cards.cafe"])
     assertNotNull(StandardCatalog["cards.family"])
+    assertNotNull(StandardCatalog["cards.railway_station"])
+    assertNotNull(StandardCatalog["cards.tv_tower"])
   }
 
   @Test

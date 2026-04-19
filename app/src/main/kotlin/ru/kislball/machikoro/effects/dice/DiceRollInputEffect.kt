@@ -17,6 +17,7 @@ class DiceRollInputEffect(player: Player) : InputEffect<Int>("effects.dice.roll"
   }
 
   override fun applyWithInput(stepPhase: StepPhase, input: Int) {
+    require(checkInput(input)) { "Invalid dice roll input: $input" }
     val dice = (1..input).map { (DICE_MIN_VALUE..DICE_MAX_VALUE).random() }
     val result = DiceRollResult(player, dice)
 

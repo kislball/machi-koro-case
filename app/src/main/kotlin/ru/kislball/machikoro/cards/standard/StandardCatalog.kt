@@ -8,6 +8,9 @@ import ru.kislball.machikoro.cards.standard.enterprises.NatureCard
 import ru.kislball.machikoro.cards.standard.enterprises.RestaurantCard
 import ru.kislball.machikoro.cards.standard.enterprises.StadiumCard
 import ru.kislball.machikoro.cards.standard.enterprises.TVCentreCard
+import ru.kislball.machikoro.cards.standard.sights.EntertainmentParkCard
+import ru.kislball.machikoro.cards.standard.sights.RailwayStationCard
+import ru.kislball.machikoro.cards.standard.sights.TVTowerCard
 
 val StandardCatalog =
     CardCatalog(
@@ -103,4 +106,7 @@ val StandardCatalog =
         StadiumCard(),
         TVCentreCard(),
         BusinessCentreCard(),
+        RailwayStationCard(),
+        TVTowerCard(),
+        EntertainmentParkCard(),
     )

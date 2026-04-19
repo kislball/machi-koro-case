@@ -9,6 +9,7 @@ import ru.kislball.machikoro.CountingEffect
 import ru.kislball.machikoro.StubAction
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.facility.GameDriver
+import ru.kislball.machikoro.game.markers.setThrowTwoDice
 import ru.kislball.machikoro.game.utilities.get
 
 class GameAndStepsTest {
@@ -73,12 +74,13 @@ class GameAndStepsTest {
     val game = Game(listOf(Player("p1")))
     val driver = GameDriver(game)
     val waiting = driver.nextStep()
+    waiting.currentPlayer.setThrowTwoDice(true)
 
     driver.rollDice(waiting.currentPlayer, 2)
     val rolled = waiting.results.get<DiceRollResult>()
 
     assertEquals(2, rolled.diceThrown.size)
-    assertTrue(rolled.diceThrown.all { it in 0..7 })
+    assertTrue(rolled.diceThrown.all { it in 1..6 })
   }
 
   @Test

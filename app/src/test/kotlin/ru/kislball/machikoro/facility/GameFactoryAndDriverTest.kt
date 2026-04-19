@@ -5,6 +5,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.StubAction
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
@@ -67,6 +68,27 @@ class GameFactoryAndDriverTest {
     val driver = GameDriver(game)
 
     assertFailsWith<IllegalArgumentException> { driver.rollDice(p2, 1) }
+  }
+
+  @Test
+  fun `rollDice rejects two dice when player has no Railway Station`() {
+    val player = Player("p1")
+    val game = Game(listOf(player))
+    val driver = GameDriver(game)
+
+    assertFailsWith<IllegalArgumentException> { driver.rollDice(player, 2) }
+  }
+
+  @Test
+  fun `rollDice allows two dice when player owns Railway Station`() {
+    val player = Player("p1")
+    player.cards.add(StandardCatalog["cards.railway_station"]!!)
+    val game = Game(listOf(player))
+    val driver = GameDriver(game)
+
+    val rolled = driver.rollDice(player, 2)
+
+    assertEquals(2, rolled.results.getOrNull<DiceRollResult>()!!.diceThrown.size)
   }
 
   @Test
