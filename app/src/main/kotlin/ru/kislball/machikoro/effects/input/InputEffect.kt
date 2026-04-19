@@ -15,6 +15,11 @@ abstract class InputEffect<T>(val id: String, val player: Player) {
       override fun run(stepPhase: StepPhase) {
         applyWithInput(stepPhase, input)
       }
+
+      override fun isValid(stepPhase: StepPhase): Boolean {
+        require(checkInput(input)) { "Invalid input for effect $id" }
+        return true
+      }
     }
   }
 }
