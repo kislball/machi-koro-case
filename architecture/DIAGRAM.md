@@ -54,30 +54,44 @@ classDiagram
             +to: Player
             +amount: Int
         }
-        class GrantCardEffect {
-            +player: Player
-            +card: Card
-        }
-        class InputEffect~T~ {
-            <<abstract>>
-            +player: Player
-            +checkInput(input: T) Boolean
-            +getEffect(input: T) Effect
-            +applyWithInput(stepPhase: StepPhase, input: T) void
-        }
-        class AwaitInputEffect~T~ {
-            +player: Player
-            +apply(stepPhase: StepPhase) void
-        }
-        class DiceRollInputEffect {
-            +applyWithInput(stepPhase: StepPhase, input: List~Int~) void
-        }
-        class ProvideInputEffect~T~ {
-            +effect: InputEffect~T~
-            +input: T
-            +fromPlayer: Player
-            +apply(stepPhase: StepPhase) void
-        }
+         class GrantCardEffect {
+             +player: Player
+             +card: Card
+         }
+         class RemoveCardEffect {
+             +from: Player
+             +card: Card
+         }
+         class InputEffect~T~ {
+             <<abstract>>
+             +player: Player
+             +id: String
+             +checkInput(input: T) Boolean
+             +isValid(stepPhase: StepPhase, input: T) Boolean
+             +applyWithInput(stepPhase: StepPhase, input: T) void
+             +getEffect(input: T) Effect
+         }
+         class AwaitInputEffect~T~ {
+             +player: Player
+             +targetEffect: InputEffect~T~
+         }
+         class DiceRollInputEffect {
+             +applyWithInput(stepPhase: StepPhase, input: Int) void
+         }
+         class ProvideInputEffect~T~ {
+             +effect: InputEffect~T~
+             +input: T
+             +fromPlayer: Player
+         }
+         class SwapCardsInputEffect {
+             +to: Player
+             +getAwaiter(to: Player) AwaitInputEffect
+         }
+         class SwapCardsInput {
+             +from: Player
+             +fromCard: Card
+             +toCard: Card
+         }
     }
 
     namespace Actions {
@@ -119,28 +133,30 @@ classDiagram
         class CardIcon {
             <<enum>>
         }
-        class NatureCard
-        class RestaurantCard
-        class MediumEnterpriseCard
-        class StadiumCard
-        class TVCentreCard
-        class StandardCatalog {
-            <<object>>
-        }
+         class NatureCard
+         class RestaurantCard
+         class MediumEnterpriseCard
+         class StadiumCard
+         class TVCentreCard
+         class BusinessCentreCard
+         class StandardCatalog {
+             <<object>>
+         }
     }
 
     namespace CoreGame {
-        class StepPhase {
-            +game: Game
-            +currentPlayer: Player
-            +stepNumber: Int
-            +canBeFinished() Boolean
-        }
-        class WaitingDiceStepPhase {
-            +rollDice(numDice: Int) WaitingDiceStepPhase
-            +finish(action: PlayerAction) FinishedActionStepPhase?
-        }
-        class FinishedActionStepPhase
+         class StepPhase {
+             +game: Game
+             +currentPlayer: Player
+             +stepNumber: Int
+             +canBeFinished() Boolean
+             +runTriggerables() void
+         }
+         class PendingStepPhase {
+             +rollDice(numDice: Int) PendingStepPhase
+             +finish(action: PlayerAction) FinishedStepPhase?
+         }
+         class FinishedStepPhase
         class DiceRollResult {
             +player: Player
             +diceThrown: List~Int~
@@ -219,79 +235,86 @@ classDiagram
     Trigger <|-- PossessorDiceTrigger
     Trigger <|-- AndTrigger
     Trigger <|-- OrTrigger
-    Trigger <|-- SightsCollectedTrigger
-    Trigger <|-- Triggerable
+     Trigger <|-- SightsCollectedTrigger
+     Trigger <|-- Triggerable
 
-    Triggerable <|-- Card
-    Card <|-- NatureCard
-    Card <|-- RestaurantCard
-    Card <|-- MediumEnterpriseCard
-    Card <|-- StadiumCard
-    Card <|-- TVCentreCard
+     Triggerable <|-- Card
+     Card <|-- NatureCard
+     Card <|-- RestaurantCard
+     Card <|-- MediumEnterpriseCard
+     Card <|-- StadiumCard
+     Card <|-- TVCentreCard
+     Card <|-- BusinessCentreCard
 
-    Effect <|-- CompoundEffect
-    Effect <|-- NoopEffect
-    Effect <|-- MaybeEffect
-    Effect <|-- MoneyTransferEffect
-    Effect <|-- FineEffect
-    Effect <|-- GrantCardEffect
-    Effect <|-- AwaitInputEffect
-    InputEffect <|-- DiceRollInputEffect
-    Effect <|-- ProvideInputEffect
+     Effect <|-- CompoundEffect
+     Effect <|-- NoopEffect
+     Effect <|-- MaybeEffect
+     Effect <|-- MoneyTransferEffect
+     Effect <|-- FineEffect
+     Effect <|-- GrantCardEffect
+     Effect <|-- RemoveCardEffect
+     Effect <|-- AwaitInputEffect
+     Effect <|-- ProvideInputEffect
+     InputEffect <|-- DiceRollInputEffect
+     InputEffect <|-- SwapCardsInputEffect
 
-    InputEffect <.. AwaitInputEffect : targetEffect
-    InputEffect <.. ProvideInputEffect : effect
+     InputEffect <.. AwaitInputEffect : targetEffect
+     InputEffect <.. ProvideInputEffect : effect
 
-    PlayerAction <|-- BuyCardAction
+     PlayerAction <|-- BuyCardAction
 
-    StepPhase <|-- WaitingDiceStepPhase
-    StepPhase <|-- FinishedActionStepPhase
+     StepPhase <|-- PendingStepPhase
+     StepPhase <|-- FinishedStepPhase
 
-    MoneyTransferEffect --> MoneyTransferType
-    Card --> CardType
-    Card --> CardIcon
+     MoneyTransferEffect --> MoneyTransferType
+     Card --> CardType
+     Card --> CardIcon
 
-    CardCatalog <|-- CompoundCatalog
-    StandardCatalog ..> CardCatalog : instance
+     CardCatalog <|-- CompoundCatalog
+     StandardCatalog ..> CardCatalog : instance
 
-    Player "1" o-- "*" Card : owns
-    Game "1" o-- "*" Player : contains
-    Game "1" o-- "*" StepPhase : history
-    StepPhase --> ClassMap : results
-    ClassMap --> DiceRollResult
-    Game --> InputEffectsQueue
-    Game --> CardCatalog
+     Player "1" o-- "*" Card : owns
+     Game "1" o-- "*" Player : contains
+     Game "1" o-- "*" StepPhase : history
+     StepPhase --> ClassMap : results
+     ClassMap --> DiceRollResult
+     Game --> InputEffectsQueue
+     Game --> CardCatalog
 
-    PlayerDiceTrigger --> Player
-    PossessorDiceTrigger ..> PlayerDiceTrigger
-    SightsCollectedTrigger ..> CardCatalog
+     PlayerDiceTrigger --> Player
+     PossessorDiceTrigger ..> PlayerDiceTrigger
+     SightsCollectedTrigger ..> CardCatalog
 
-    MoneyTransferEffect --> Player
-    FineEffect --> Player
-    GrantCardEffect --> Player
-    GrantCardEffect --> Card
+     MoneyTransferEffect --> Player
+     FineEffect --> Player
+     GrantCardEffect --> Player
+     GrantCardEffect --> Card
+     RemoveCardEffect --> Player
+     RemoveCardEffect --> Card
+     SwapCardsInputEffect --> Player
+     SwapCardsInputEffect --> SwapCardsInput
 
-    BuyCardAction --> Card
-    BuyCardAction --> Game
+     BuyCardAction --> Card
+     BuyCardAction --> Game
 
-    Trigger ..> StepPhase
-    Effect ..> StepPhase
-    InputEffect ..> StepPhase
-    PlayerAction ..> Effect : returns
-    Game ..> Triggerable : getTriggerables
+     Trigger ..> StepPhase
+     Effect ..> StepPhase
+     InputEffect ..> StepPhase
+     PlayerAction ..> Effect : returns
+     Game ..> Triggerable : getTriggerables
 
-    WaitingDiceStepPhase ..> PlayerAction : finish
-    WaitingDiceStepPhase ..> DiceRollInputEffect : rollDice
-    WaitingDiceStepPhase ..> InputEffectsQueue : waits until queue is empty
-    InputEffectsQueue ..> InputEffect : stores
-    AwaitInputEffect ..> InputEffectsQueue : enqueue
-    ProvideInputEffect ..> InputEffectsQueue : dequeue
+     PendingStepPhase ..> PlayerAction : finish
+     PendingStepPhase ..> DiceRollInputEffect : rollDice
+     PendingStepPhase ..> InputEffectsQueue : waits until queue is empty
+     InputEffectsQueue ..> InputEffect : stores
+     AwaitInputEffect ..> InputEffectsQueue : enqueue
+     ProvideInputEffect ..> InputEffectsQueue : dequeue
 
-    JSONExporter ..|> GameExporter
-    JSONImporter ..|> GameImporter
-    GameDriver --> Game
-    GameFactory ..> Game : creates
-    GameFactory ..> GameDriver : creates
+     JSONExporter ..|> GameExporter
+     JSONImporter ..|> GameImporter
+     GameDriver --> Game
+     GameFactory ..> Game : creates
+     GameFactory ..> GameDriver : creates
 ```
 
 Для описания дальнейшей логики используется диаграмма классов выше. Далее перечислены моменты.
@@ -308,9 +331,24 @@ classDiagram
 
 #### Input-эффекты
 Асинхронный ввод оформлен таким образом:
-1. `AwaitInputEffect` кладёт `InputEffect<T>` в `InputEffectsQueue`.
-2. `rollDice(...)` записывает `DiceRollResult` в `StepPhase.results` через `DiceRollInputEffect`.
-3. Пока очередь не пуста, `WaitingDiceStepPhase.finish(...)` возвращает `null`.
-4. `ProvideInputEffect` валидирует ввод и автора ввода, затем снимает эффект из очереди, вызывает `applyWithInput` и повторно запускает triggerables.
+1. `AwaitInputEffect` кладёт `InputEffect<T>` в `InputEffectsQueue` при применении.
+2. `PendingStepPhase.finish(...)` возвращает `null`, если очередь не пуста.
+3. `ProvideInputEffect.apply(...)` вызывает `Effect.isValid()`, который проверяет:
+   - `InputEffect.checkInput(input)` — синтаксическая валидация ввода
+   - `InputEffect.isValid(stepPhase, input)` — семантическая валидация в контексте игры
+   - корректность владельца эффекта и того, кто прислал ввод
+4. После успешной валидации `ProvideInputEffect.run()` снимает эффект из очереди и вызывает `InputEffect.applyWithInput(...)`.
 
 Это позволяет описывать карточки и действия, которым нужен дополнительный выбор игрока, без прямой мутации шага вне `Effect`-контракта.
+
+#### Пример: Business Centre Card (обмен карт)
+`BusinessCentreCard` триггеруется на кубик 8 и инициирует обмен карт между игроком-владельцем и соперником:
+1. `BusinessCentreCard.getEffect(...)` возвращает `SwapCardsInputEffect.getAwaiter(possessor)` — `AwaitInputEffect`.
+2. `AwaitInputEffect.run()` кладёт `SwapCardsInputEffect` в очередь.
+3. Игрок создаёт `ProvideInputEffect(SwapCardsInputEffect, SwapCardsInput(...), opponent)`.
+4. `SwapCardsInputEffect.isValid(...)` проверяет:
+   - что source и target — разные игроки (`from != to`)
+   - что target владеет предлагаемой картой (`to.cards.contains(toCard)`)
+   - что обе карты — не SIGHT и не SPECIAL (через `SwapCardsInput.checkInput()`)
+5. После валидации карты обмениваются через `RemoveCardEffect` и `GrantCardEffect`.
+
