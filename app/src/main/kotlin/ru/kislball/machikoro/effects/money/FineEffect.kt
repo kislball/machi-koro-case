@@ -1,5 +1,6 @@
-package ru.kislball.machikoro.effects
+package ru.kislball.machikoro.effects.money
 
+import ru.kislball.machikoro.effects.Effect
 import kotlin.math.min
 import ru.kislball.machikoro.effects.utility.CompoundEffect
 import ru.kislball.machikoro.game.Player

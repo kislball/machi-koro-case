@@ -4,7 +4,7 @@ import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardIcon
 import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.effects.Effect
-import ru.kislball.machikoro.effects.FineEffect
+import ru.kislball.machikoro.effects.money.FineEffect
 import ru.kislball.machikoro.effects.utility.NoopEffect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase

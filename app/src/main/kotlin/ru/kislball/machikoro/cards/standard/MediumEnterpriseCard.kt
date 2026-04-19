@@ -4,8 +4,8 @@ import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardIcon
 import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.effects.Effect
-import ru.kislball.machikoro.effects.MoneyTransferEffect
-import ru.kislball.machikoro.effects.MoneyTransferType
+import ru.kislball.machikoro.effects.money.MoneyTransferEffect
+import ru.kislball.machikoro.effects.money.MoneyTransferType
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.dice.PossessorDiceTrigger

@@ -1,5 +1,6 @@
-package ru.kislball.machikoro.effects.input
+package ru.kislball.machikoro.effects.dice
 
+import ru.kislball.machikoro.effects.input.InputEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.markers.canThrowTwoDice

@@ -5,6 +5,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import ru.kislball.machikoro.CountingEffect
 import ru.kislball.machikoro.StubCard
+import ru.kislball.machikoro.effects.cards.GrantCardEffect
+import ru.kislball.machikoro.effects.money.MoneyTransferEffect
+import ru.kislball.machikoro.effects.money.MoneyTransferType
 import ru.kislball.machikoro.effects.utility.CompoundEffect
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player

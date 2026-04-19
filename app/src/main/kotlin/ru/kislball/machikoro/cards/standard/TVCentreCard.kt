@@ -4,7 +4,7 @@ import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardIcon
 import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.effects.Effect
-import ru.kislball.machikoro.effects.input.PickAndChargeUserInputEffect
+import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.dice.PossessorDiceTrigger

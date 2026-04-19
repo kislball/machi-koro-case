@@ -1,6 +1,7 @@
-package ru.kislball.machikoro.effects.input
+package ru.kislball.machikoro.effects.money
 
-import ru.kislball.machikoro.effects.FineEffect
+import ru.kislball.machikoro.effects.input.AwaitInputEffect
+import ru.kislball.machikoro.effects.input.InputEffect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 
