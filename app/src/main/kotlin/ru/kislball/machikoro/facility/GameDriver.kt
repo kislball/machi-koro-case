@@ -1,9 +1,14 @@
 package ru.kislball.machikoro.facility
 
+import ru.kislball.machikoro.actions.BuyCardAction
+import ru.kislball.machikoro.actions.PickAndChargePlayerAction
 import ru.kislball.machikoro.actions.PlayerAction
+import ru.kislball.machikoro.actions.ProvideAdditionalStepDecisionAction
+import ru.kislball.machikoro.actions.ProvideRethrowDecisionAction
+import ru.kislball.machikoro.actions.SwapCardsAction
+import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.effects.dice.DiceRollInputEffect
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
-import ru.kislball.machikoro.effects.input.ProvideInputEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.IntermediateRollResult
@@ -54,30 +59,54 @@ class GameDriver(val game: Game) {
   }
 
   fun submitRethrowDecision(player: Player, shouldRethrow: Boolean): PendingStepPhase {
-    check(!game.finished) { "Game has been finished" }
-    val current =
-        game.currentStepPhase as? PendingStepPhase
-            ?: error("Current step is not waiting for rethrow decision")
-    require(current.currentPlayer == player) { "Only current player can submit rethrow decision" }
-    check(current.canBeFinished()) { "Step can't be finished" }
-
-    val awaitingInput =
-        game.inputEffects.peek() as? RethrowDiceInputEffect
-            ?: error("Current step is not awaiting rethrow decision")
-
-    ProvideInputEffect(awaitingInput, shouldRethrow, player).apply(current)
-    check(current.results.contains<DiceRollResult>()) {
-      "Rethrow decision did not produce dice result"
-    }
-    current.runTriggerables()
-    return current
+    finishStep(ProvideRethrowDecisionAction(player, shouldRethrow))
+    return currentPendingStep
   }
 
-  fun finishStep(action: PlayerAction): FinishedStepPhase? {
+  fun pickAndChargePlayer(player: Player, targetPlayer: Player): PendingStepPhase {
+    finishStep(PickAndChargePlayerAction(player, targetPlayer))
+    return currentPendingStep
+  }
+
+  fun swapCards(player: Player, input: SwapCardsInput): PendingStepPhase {
+    finishStep(SwapCardsAction(player, input))
+    return currentPendingStep
+  }
+
+  fun submitAdditionalStepDecision(
+      player: Player,
+      shouldTakeAdditionalStep: Boolean,
+  ): PendingStepPhase {
+    finishStep(ProvideAdditionalStepDecisionAction(player, shouldTakeAdditionalStep))
+    return currentPendingStep
+  }
+
+  fun buyCard(player: Player, cardId: String): FinishedStepPhase? {
+    return finishStep(BuyCardAction(game, player, cardId))
+  }
+
+  private val currentPendingStep: PendingStepPhase
+    get() = game.currentStepPhase as? PendingStepPhase ?: error("Current step is not ready")
+
+  private fun finishStep(action: PlayerAction): FinishedStepPhase? {
+    check(!game.finished) { "Game has been finished" }
     val current =
         game.currentStepPhase as? PendingStepPhase
             ?: error("Current step is not ready for player action")
     require(current.currentPlayer == action.player) { "Only current player can submit action" }
+
+    if (game.inputEffects.peek() != null) {
+      action.getEffect(current).apply(current)
+
+      if (action is ProvideRethrowDecisionAction) {
+        check(current.results.contains<DiceRollResult>()) {
+          "Rethrow decision did not produce dice result"
+        }
+        current.runTriggerables()
+      }
+      return null
+    }
+
     val finishedStep = current.submitPlayerAction(action)
     if (finishedStep != null) {
       game.steps.add(finishedStep)
