@@ -93,7 +93,7 @@ class FullGameSimulationSystemTest {
     step4Turn.results.set(IntermediateRollResult(DiceRollResult(alice, listOf(2))))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
     assertEquals(step4AliceBeforeAlice, alice.balance)
-    assertEquals(step4AliceBeforeBob + 2, bob.balance)
+    assertEquals(step4AliceBeforeBob, bob.balance)
     val fourthFinishedStep = driver.buyCard(alice, "cards.entertainment_park")
     assertNotNull(fourthFinishedStep)
     assertTrue(alice.canThrowTwoDice())
