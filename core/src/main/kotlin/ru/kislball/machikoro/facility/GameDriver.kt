@@ -32,9 +32,7 @@ class GameDriver(val game: Game) {
     val nextStep = game.nextStep()
     check(nextStep is PendingStepPhase) {
       WaitingStepTypeMismatchException(
-        expected = "PendingStepPhase",
-        actual = nextStep::class.simpleName
-      )
+          expected = "PendingStepPhase", actual = nextStep::class.simpleName)
     }
     return nextStep as PendingStepPhase
   }

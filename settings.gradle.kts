@@ -19,4 +19,4 @@ plugins {
 
 rootProject.name = "machi-koro-case"
 
-include("app")
+include("core")

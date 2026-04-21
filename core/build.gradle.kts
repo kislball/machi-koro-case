@@ -3,7 +3,7 @@
  */
 
 plugins {
-  id("buildlogic.kotlin-application-conventions")
+  id("buildlogic.kotlin-library-conventions")
   id("com.diffplug.spotless")
   id("io.gitlab.arturbosch.detekt") version "1.23.7"
 }
@@ -27,7 +27,4 @@ dependencies {
   testImplementation(kotlin("test"))
 }
 
-application {
-  // Define the main class for the application.
-  mainClass = "ru.kislball.machikoro.App"
-}
+

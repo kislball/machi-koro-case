@@ -84,10 +84,8 @@ class InvalidStepSubstitutionException : StepException("exception.step.substitut
 
 class CurrentStepNotReadyException : StepException("exception.step.not_ready")
 
-class WaitingStepTypeMismatchException(
-    val expected: String,
-    val actual: String?
-) : StepException("exception.step.type_mismatch")
+class WaitingStepTypeMismatchException(val expected: String, val actual: String?) :
+    StepException("exception.step.type_mismatch")
 
 class EffectNotAwaitingInputException(val effectId: String) :
     EffectException("exception.effect.not_awaiting_input")
@@ -106,4 +104,3 @@ class LocalisationKeyNotFoundException(key: String) :
 
 class InvalidLocalisationInputException(key: String) :
     LocalisationException("exception.localisation.input_invalid")
-
