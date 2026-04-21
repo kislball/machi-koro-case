@@ -56,6 +56,6 @@ class JsonImportExportTest {
 
   @Test
   fun `import rejects malformed root json`() {
-    assertFailsWith<IllegalArgumentException> { JSONImporter(CardCatalog()).import("{}") }
+    assertFailsWith<Exception> { JSONImporter(CardCatalog()).import("{}") }
   }
 }

@@ -6,6 +6,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.exceptions.GameException
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
@@ -44,9 +45,9 @@ class BuyCardActionTest {
         }
     val action = BuyCardAction(game, player, "cards.bakery")
 
-    val error = assertFailsWith<IllegalArgumentException> { action.checkValid(step) }
+    val error = assertFailsWith<GameException> { action.checkValid(step) }
 
-    assertTrue(error.message!!.contains("enough balance"))
+    assertTrue(error.key == "exception.insufficient_funds" || error.key == "exception.balance")
   }
 
   @Test
@@ -80,6 +81,6 @@ class BuyCardActionTest {
     val invalidStepPhase = object : StepPhase(game, player, 1) {}
     val action = BuyCardAction(game, player, "cards.bakery")
 
-    assertFailsWith<IllegalArgumentException> { action.getEffect(invalidStepPhase) }
+    assertFailsWith<GameException> { action.getEffect(invalidStepPhase) }
   }
 }

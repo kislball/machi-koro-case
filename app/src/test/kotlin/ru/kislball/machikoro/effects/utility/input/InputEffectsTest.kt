@@ -11,6 +11,9 @@ import ru.kislball.machikoro.actions.PlayerAction
 import ru.kislball.machikoro.effects.input.AwaitInputEffect
 import ru.kislball.machikoro.effects.input.InputEffect
 import ru.kislball.machikoro.effects.input.ProvideInputEffect
+import ru.kislball.machikoro.exceptions.EffectInputNotValidException
+import ru.kislball.machikoro.exceptions.GameException
+import ru.kislball.machikoro.exceptions.InputProvidedByNonOwnerException
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
@@ -36,7 +39,7 @@ class InputEffectsTest {
     val step = game.nextStep()
     val inputEffect = RecordingIntInputEffect(player)
 
-    assertFailsWith<IllegalArgumentException> { inputEffect.getEffect(-1) }
+    assertFailsWith<GameException> { inputEffect.getEffect(-1) }
 
     val effect = inputEffect.getEffect(2)
     effect.apply(step)
@@ -66,9 +69,7 @@ class InputEffectsTest {
     val inputEffect = RecordingIntInputEffect(player)
     game.inputEffects.enqueue(inputEffect)
 
-    assertFailsWith<IllegalArgumentException> {
-      ProvideInputEffect(inputEffect, -1, player).apply(step)
-    }
+    assertFailsWith<GameException> { ProvideInputEffect(inputEffect, -1, player).apply(step) }
 
     assertEquals(inputEffect, game.inputEffects.peek())
     assertEquals(emptyList(), inputEffect.appliedInputs)
@@ -83,7 +84,9 @@ class InputEffectsTest {
     val inputEffect = RecordingIntInputEffect(owner)
     game.inputEffects.enqueue(inputEffect)
 
-    assertFailsWith<IllegalStateException> { ProvideInputEffect(inputEffect, 4, other).apply(step) }
+    assertFailsWith<InputProvidedByNonOwnerException> {
+      ProvideInputEffect(inputEffect, 4, other).apply(step)
+    }
 
     assertEquals(inputEffect, game.inputEffects.peek())
     assertEquals(emptyList(), inputEffect.appliedInputs)
@@ -147,7 +150,7 @@ class InputEffectsTest {
     val inputEffect = InvalidOnStepInputEffect(player)
     game.inputEffects.enqueue(inputEffect)
 
-    assertFailsWith<IllegalArgumentException> {
+    assertFailsWith<EffectInputNotValidException> {
       ProvideInputEffect(inputEffect, 1, player).apply(step)
     }
 
@@ -169,7 +172,7 @@ class InputEffectsTest {
     assertNull(finishResult)
     assertEquals(inputEffect, game.inputEffects.peek())
 
-    assertFailsWith<IllegalStateException> {
+    assertFailsWith<InputProvidedByNonOwnerException> {
       ProvideInputEffect(inputEffect, 6, other).apply(rolled)
     }
 

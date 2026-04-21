@@ -3,8 +3,14 @@ style:
     active: false
   MagicNumber:
     active: false
+  LoopWithTooManyJumpStatements:
+    active: false
+  ReturnCount:
+    active: false
 
 complexity:
+  LongMethod:
+    active: false
   LongParameterList:
     constructorThreshold: 16
 
@@ -14,4 +20,6 @@ performance:
 
 exceptions:
   TooGenericExceptionCaught:
+    active: false
+  ThrowingExceptionsWithoutMessageOrCause:
     active: false

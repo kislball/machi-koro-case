@@ -6,10 +6,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.cards.standard.StandardCatalog
-import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
 import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
+import ru.kislball.machikoro.exceptions.NoFillerCardsAvailableException
 import ru.kislball.machikoro.facility.GameFactory
+import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.IntermediateRollResult
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.markers.canRethrowDice
@@ -52,8 +53,8 @@ class FullGameSimulationSystemTest {
         break
       }
 
-      require(selectedCardId != null) { "No filler cards available to finish step" }
-      val finishedStep = driver.buyCard(player, selectedCardId)
+      if (selectedCardId == null) throw NoFillerCardsAvailableException()
+      val finishedStep = driver.buyCard(player, selectedCardId!!)
       assertNotNull(finishedStep)
     }
 
@@ -172,18 +173,3 @@ class FullGameSimulationSystemTest {
     assertTrue(driver.game.inputEffects.peek() == null)
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -32,9 +32,9 @@ class RestaurantCard(
     return FineEffect(from = s.currentPlayer, to = possessor, amount = calculateReward(possessor))
   }
 
-    fun calculateReward(player: Player): Int {
-        return reward + player.getBonusForType(icon)
-    }
+  fun calculateReward(player: Player): Int {
+    return reward + player.getBonusForType(icon)
+  }
 
   private val trigger = AnyDiceTrigger(activationRange)
 

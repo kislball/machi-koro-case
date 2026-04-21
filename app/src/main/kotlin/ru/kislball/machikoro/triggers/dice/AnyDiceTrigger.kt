@@ -6,7 +6,8 @@ import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.game.utilities.getOrNull
 import ru.kislball.machikoro.triggers.Trigger
 
-class AnyDiceTrigger(private val dicePredicate: (List<Int>) -> Boolean) : Trigger("triggers.any-dice") {
+class AnyDiceTrigger(private val dicePredicate: (List<Int>) -> Boolean) :
+    Trigger("triggers.any-dice") {
   override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
     val rolled = stepPhase.results.getOrNull<DiceRollResult>() ?: return false
     return dicePredicate(rolled.diceThrown)

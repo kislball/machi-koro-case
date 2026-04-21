@@ -15,5 +15,8 @@ class PlayerDiceTrigger(val player: Player, private val dicePredicate: (List<Int
 
   constructor(player: Player, singleDice: Int) : this(player, { singleDice in it })
 
-  constructor(player: Player, dice: List<Int>) : this(player, { rolled -> rolled.any { it in dice } })
+  constructor(
+      player: Player,
+      dice: List<Int>
+  ) : this(player, { rolled -> rolled.any { it in dice } })
 }

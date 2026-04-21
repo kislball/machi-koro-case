@@ -1,5 +1,7 @@
 package ru.kislball.machikoro.effects
 
+import ru.kislball.machikoro.exceptions.EffectNotValidException
+import ru.kislball.machikoro.exceptions.require
 import ru.kislball.machikoro.game.step.StepPhase
 
 abstract class Effect(val id: String) {
@@ -14,7 +16,7 @@ abstract class Effect(val id: String) {
   protected abstract fun run(stepPhase: StepPhase)
 
   fun apply(stepPhase: StepPhase) {
-    require(isValid(stepPhase)) { "Effect is not valid" }
+    require(isValid(stepPhase)) { EffectNotValidException(id) }
     run(stepPhase)
   }
 }

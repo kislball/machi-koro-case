@@ -6,6 +6,7 @@ import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.money.FineEffect
 import ru.kislball.machikoro.effects.utility.CompoundEffect
+import ru.kislball.machikoro.exceptions.PossessorNotSetException
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.triggers.dice.PossessorDiceTrigger
@@ -17,11 +18,9 @@ class StadiumCard :
   private val trigger = PossessorDiceTrigger(listOf(6))
 
   override fun getEffect(s: StepPhase, possessor: Player?): Effect {
-    require(possessor != null) { "possessor must be set" }
+    val p = possessor ?: throw PossessorNotSetException()
     return CompoundEffect(
-        s.game.players
-            .filter { it != possessor }
-            .map { FineEffect(from = it, to = possessor, amount = 2) })
+        s.game.players.filter { it != p }.map { FineEffect(from = it, to = p, amount = 2) })
   }
 
   override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {

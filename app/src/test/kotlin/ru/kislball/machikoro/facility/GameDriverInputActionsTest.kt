@@ -90,6 +90,3 @@ class GameDriverInputActionsTest {
     assertEquals(p1, game.orderManager.peekNext())
   }
 }
-
-
-

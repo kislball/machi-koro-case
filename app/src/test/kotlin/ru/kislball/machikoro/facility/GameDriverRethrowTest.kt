@@ -8,6 +8,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.cards.standard.StandardCatalog
+import ru.kislball.machikoro.exceptions.GameException
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.IntermediateRollResult
@@ -54,7 +55,7 @@ class GameDriverRethrowTest {
     val driver = GameDriver(game)
     driver.rollDice(player, 1)
 
-    assertFailsWith<IllegalStateException> { driver.rollDice(player, 1) }
+    assertFailsWith<GameException> { driver.rollDice(player, 1) }
   }
 
   @Test

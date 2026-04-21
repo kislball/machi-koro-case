@@ -6,6 +6,7 @@ import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.money.MoneyTransferEffect
 import ru.kislball.machikoro.effects.money.MoneyTransferType
+import ru.kislball.machikoro.exceptions.PossessorNotSetException
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.markers.getBonusForType
 import ru.kislball.machikoro.game.step.StepPhase
@@ -23,16 +24,16 @@ class NatureCard(
 
   override fun getPrice(s: StepPhase): Int = price
 
-    fun calculateReward(player: Player): Int {
-        return reward + player.getBonusForType(icon)
-    }
+  fun calculateReward(player: Player): Int {
+    return reward + player.getBonusForType(icon)
+  }
 
   override fun getEffect(s: StepPhase, possessor: Player?): Effect {
-    require(possessor != null) { "possessor must not be null" }
+    val p = possessor ?: throw PossessorNotSetException()
     return MoneyTransferEffect(
-        player = possessor,
+        player = p,
         type = MoneyTransferType.Deposit,
-        amount = calculateReward(possessor),
+        amount = calculateReward(p),
     )
   }
 

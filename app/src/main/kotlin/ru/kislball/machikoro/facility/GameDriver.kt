@@ -9,6 +9,16 @@ import ru.kislball.machikoro.actions.SwapCardsAction
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.effects.dice.DiceRollInputEffect
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
+import ru.kislball.machikoro.exceptions.CurrentStepNotReadyException
+import ru.kislball.machikoro.exceptions.DiceAlreadyRolledException
+import ru.kislball.machikoro.exceptions.GameFinishedException
+import ru.kislball.machikoro.exceptions.InputEffectPendingException
+import ru.kislball.machikoro.exceptions.PlayerNotCurrentException
+import ru.kislball.machikoro.exceptions.RethrowDecisionPendingException
+import ru.kislball.machikoro.exceptions.StepNotFinishableException
+import ru.kislball.machikoro.exceptions.WaitingStepTypeMismatchException
+import ru.kislball.machikoro.exceptions.check
+import ru.kislball.machikoro.exceptions.require
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.IntermediateRollResult
@@ -21,25 +31,32 @@ class GameDriver(val game: Game) {
   fun nextStep(): PendingStepPhase {
     val nextStep = game.nextStep()
     check(nextStep is PendingStepPhase) {
-      "Expected WaitingDiceStep, got ${nextStep::class.simpleName}"
+      WaitingStepTypeMismatchException(
+        expected = "PendingStepPhase",
+        actual = nextStep::class.simpleName
+      )
     }
-    return nextStep
+    return nextStep as PendingStepPhase
   }
 
   fun rollDice(player: Player, numDice: Int): PendingStepPhase {
-    check(!game.finished) { "Game has been finished" }
-    val waitingStep =
-        when (val step = game.currentStepPhase) {
-          null -> nextStep()
-          is PendingStepPhase -> step
-          else -> error("Current step is not waiting for dice roll")
+    check(!game.finished) { GameFinishedException() }
+    val step = game.currentStepPhase
+    val waitingStep: PendingStepPhase =
+        when {
+          step == null -> nextStep()
+          step is PendingStepPhase -> step
+          else -> throw CurrentStepNotReadyException()
         }
+            as PendingStepPhase
 
-    require(waitingStep.currentPlayer == player) { "Only current player can roll dice" }
-    check(waitingStep.canBeFinished()) { "Step can't be finished" }
-    check(!waitingStep.results.contains<DiceRollResult>()) { "Dice have already been rolled" }
-    check(!waitingStep.results.contains<IntermediateRollResult>()) { "Rethrow decision is pending" }
-    check(game.inputEffects.peek() == null) { "Input is pending" }
+    require(waitingStep.currentPlayer == player) { PlayerNotCurrentException(player.name) }
+    check(waitingStep.canBeFinished()) { StepNotFinishableException() }
+    check(!waitingStep.results.contains<DiceRollResult>()) { DiceAlreadyRolledException() }
+    check(!waitingStep.results.contains<IntermediateRollResult>()) {
+      RethrowDecisionPendingException()
+    }
+    check(game.inputEffects.peek() == null) { InputEffectPendingException() }
 
     DiceRollInputEffect(player).applyWithInput(waitingStep, numDice)
 
@@ -86,22 +103,20 @@ class GameDriver(val game: Game) {
   }
 
   private val currentPendingStep: PendingStepPhase
-    get() = game.currentStepPhase as? PendingStepPhase ?: error("Current step is not ready")
+    get() = game.currentStepPhase as? PendingStepPhase ?: throw CurrentStepNotReadyException()
 
-  private fun finishStep(action: PlayerAction): FinishedStepPhase? {
-    check(!game.finished) { "Game has been finished" }
-    val current =
-        game.currentStepPhase as? PendingStepPhase
-            ?: error("Current step is not ready for player action")
-    require(current.currentPlayer == action.player) { "Only current player can submit action" }
+  internal fun finishStep(action: PlayerAction): FinishedStepPhase? {
+    check(!game.finished) { GameFinishedException() }
+    val current = game.currentStepPhase as? PendingStepPhase ?: throw CurrentStepNotReadyException()
+    require(current.currentPlayer == action.player) {
+      PlayerNotCurrentException(action.player.name)
+    }
 
     if (game.inputEffects.peek() != null) {
       action.getEffect(current).apply(current)
 
       if (action is ProvideRethrowDecisionAction) {
-        check(current.results.contains<DiceRollResult>()) {
-          "Rethrow decision did not produce dice result"
-        }
+        check(current.results.contains<DiceRollResult>()) { DiceAlreadyRolledException() }
         current.runTriggerables()
       }
       return null

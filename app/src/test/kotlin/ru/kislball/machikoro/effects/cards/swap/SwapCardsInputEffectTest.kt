@@ -5,6 +5,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.Card
+import ru.kislball.machikoro.exceptions.GameException
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 
@@ -40,9 +41,7 @@ class SwapCardsInputEffectTest {
     val step = game.nextStep()
     val input = SwapCardsInput(player, fromCard, toCard)
 
-    assertFailsWith<IllegalArgumentException> {
-      SwapCardsInputEffect(player).getEffect(input).apply(step)
-    }
+    assertFailsWith<GameException> { SwapCardsInputEffect(player).getEffect(input).apply(step) }
   }
 
   @Test
@@ -57,8 +56,6 @@ class SwapCardsInputEffectTest {
     val step = game.nextStep()
     val input = SwapCardsInput(from, fromCard, toCard)
 
-    assertFailsWith<IllegalArgumentException> {
-      SwapCardsInputEffect(to).getEffect(input).apply(step)
-    }
+    assertFailsWith<GameException> { SwapCardsInputEffect(to).getEffect(input).apply(step) }
   }
 }

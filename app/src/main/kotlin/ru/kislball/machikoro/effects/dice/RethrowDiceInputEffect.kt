@@ -2,6 +2,8 @@ package ru.kislball.machikoro.effects.dice
 
 import ru.kislball.machikoro.effects.input.AwaitInputEffect
 import ru.kislball.machikoro.effects.input.InputEffect
+import ru.kislball.machikoro.exceptions.DiceAlreadyRolledException
+import ru.kislball.machikoro.exceptions.check
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.IntermediateRollResult
 import ru.kislball.machikoro.game.Player
@@ -16,8 +18,8 @@ class RethrowDiceInputEffect(player: Player) :
   override fun applyWithInput(stepPhase: StepPhase, input: Boolean) {
     val intermediate = stepPhase.results.get<IntermediateRollResult>().result
     if (input) {
-      check(player.canRethrowDice()) { "Player ${player.name} can't rethrow dice" }
-      check(!stepPhase.results.contains<DiceRollResult>()) { "Dice have already been rolled" }
+      check(player.canRethrowDice()) { DiceAlreadyRolledException() }
+      check(!stepPhase.results.contains<DiceRollResult>()) { DiceAlreadyRolledException() }
       DiceRollInputEffect(player).applyWithInput(stepPhase, intermediate.diceThrown.size)
     } else {
       stepPhase.results.set(intermediate)

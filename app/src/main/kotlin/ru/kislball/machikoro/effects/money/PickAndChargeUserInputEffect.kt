@@ -2,6 +2,9 @@ package ru.kislball.machikoro.effects.money
 
 import ru.kislball.machikoro.effects.input.AwaitInputEffect
 import ru.kislball.machikoro.effects.input.InputEffect
+import ru.kislball.machikoro.exceptions.EffectInputTypeMismatchException
+import ru.kislball.machikoro.exceptions.PlayerCannotSwapWithSelfException
+import ru.kislball.machikoro.exceptions.require
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 
@@ -9,10 +12,8 @@ class PickAndChargeUserInputEffect(val to: Player, val amount: Int) :
     InputEffect<Player>("effects.money.pick_and_charge", to) {
 
   override fun checkInput(input: Player): Boolean {
-    // Suppression is needed since type-safety may have been violated
-    // by type erasure when using InputEffect<*>
-    @Suppress("USELESS_IS_CHECK") require(input is Player) { "Input must be a player" }
-    require(input != player) { "Player can't pick themselves" }
+    @Suppress("USELESS_IS_CHECK") require(input is Player) { EffectInputTypeMismatchException(id) }
+    require(input != player) { PlayerCannotSwapWithSelfException() }
 
     return true
   }

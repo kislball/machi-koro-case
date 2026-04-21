@@ -6,6 +6,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.exceptions.GameException
 
 class CardCatalogTest {
   @Test
@@ -25,8 +26,6 @@ class CardCatalogTest {
 
   @Test
   fun `constructor rejects duplicate ids`() {
-    assertFailsWith<IllegalArgumentException> {
-      CardCatalog(StubCard("cards.same"), StubCard("cards.same"))
-    }
+    assertFailsWith<GameException> { CardCatalog(StubCard("cards.same"), StubCard("cards.same")) }
   }
 }

@@ -4,6 +4,9 @@ import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.effects.Effect
+import ru.kislball.machikoro.exceptions.EmptyPlayersListException
+import ru.kislball.machikoro.exceptions.StepNotFinishableException
+import ru.kislball.machikoro.exceptions.require
 import ru.kislball.machikoro.game.step.FinishedStepPhase
 import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.step.StepPhase
@@ -54,7 +57,7 @@ class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrig
     get() = currentStepPhase?.currentPlayer
 
   init {
-    require(players.isNotEmpty()) { "Player list must not be empty" }
+    require(players.isNotEmpty()) { EmptyPlayersListException() }
   }
 
   fun getTriggerables(): Sequence<Pair<Triggerable, Player?>> {
@@ -77,7 +80,7 @@ class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrig
 
   fun nextStep(): StepPhase {
     val canAdvance = currentStepPhase == null || currentStepPhase is FinishedStepPhase
-    check(canAdvance) { "Step has not been finished" }
+    require(canAdvance) { StepNotFinishableException() }
 
     val nextStep =
         PendingStepPhase(

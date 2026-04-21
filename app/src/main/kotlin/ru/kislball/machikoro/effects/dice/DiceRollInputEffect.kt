@@ -1,6 +1,9 @@
 package ru.kislball.machikoro.effects.dice
 
 import ru.kislball.machikoro.effects.input.InputEffect
+import ru.kislball.machikoro.exceptions.InvalidDiceRollCountException
+import ru.kislball.machikoro.exceptions.InvalidDiceRollInputException
+import ru.kislball.machikoro.exceptions.require
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.IntermediateRollResult
 import ru.kislball.machikoro.game.Player
@@ -11,13 +14,13 @@ import ru.kislball.machikoro.game.utilities.contains
 
 class DiceRollInputEffect(player: Player) : InputEffect<Int>("effects.dice.roll", player) {
   override fun checkInput(input: Int): Boolean {
-    require(input in 1..2) { "Input must be between 1 and 2" }
-    require(input != 2 || player.canThrowTwoDice()) { "Player ${player.name} can't throw two dice" }
+    require(input in 1..2) { InvalidDiceRollCountException(player.name) }
+    require(input != 2 || player.canThrowTwoDice()) { InvalidDiceRollCountException(player.name) }
     return true
   }
 
   override fun applyWithInput(stepPhase: StepPhase, input: Int) {
-    require(checkInput(input)) { "Invalid dice roll input: $input" }
+    require(checkInput(input)) { InvalidDiceRollInputException(input) }
     val dice = (1..input).map { (DICE_MIN_VALUE..DICE_MAX_VALUE).random() }
     val result = DiceRollResult(player, dice)
 

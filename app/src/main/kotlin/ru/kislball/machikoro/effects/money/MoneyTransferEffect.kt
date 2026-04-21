@@ -3,6 +3,8 @@ package ru.kislball.machikoro.effects.money
 import kotlin.math.max
 import kotlin.math.min
 import ru.kislball.machikoro.effects.Effect
+import ru.kislball.machikoro.exceptions.InsufficientFundsException
+import ru.kislball.machikoro.exceptions.require
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 
@@ -17,7 +19,7 @@ class MoneyTransferEffect(val player: Player, val amount: Int, val type: MoneyTr
 
   override fun isValid(stepPhase: StepPhase): Boolean {
     if (type == MoneyTransferType.WithdrawExact) {
-      require(player.balance >= amount) { "Insufficient funds" }
+      require(player.balance >= amount) { InsufficientFundsException(player.name) }
     }
     return true
   }

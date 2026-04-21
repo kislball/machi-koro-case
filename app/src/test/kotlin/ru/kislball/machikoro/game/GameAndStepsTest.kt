@@ -8,6 +8,7 @@ import kotlin.test.assertTrue
 import ru.kislball.machikoro.CountingEffect
 import ru.kislball.machikoro.StubAction
 import ru.kislball.machikoro.StubCard
+import ru.kislball.machikoro.exceptions.GameException
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.markers.setThrowTwoDice
 import ru.kislball.machikoro.game.utilities.get
@@ -15,7 +16,7 @@ import ru.kislball.machikoro.game.utilities.get
 class GameAndStepsTest {
   @Test
   fun `game constructor rejects empty player list`() {
-    assertFailsWith<IllegalArgumentException> { Game(emptyList()) }
+    assertFailsWith<GameException> { Game(emptyList()) }
   }
 
   @Test

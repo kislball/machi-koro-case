@@ -5,6 +5,8 @@ import ru.kislball.machikoro.effects.cards.RemoveCardEffect
 import ru.kislball.machikoro.effects.input.AwaitInputEffect
 import ru.kislball.machikoro.effects.input.InputEffect
 import ru.kislball.machikoro.effects.utility.CompoundEffect
+import ru.kislball.machikoro.exceptions.PlayerCannotSwapWithSelfException
+import ru.kislball.machikoro.exceptions.require
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 
@@ -16,7 +18,7 @@ class SwapCardsInputEffect(
   }
 
   override fun isValid(stepPhase: StepPhase, input: SwapCardsInput): Boolean {
-    require(input.from != to) { "Player cannot swap cards with themselves" }
+    require(input.from != to) { PlayerCannotSwapWithSelfException() }
     getInnerEffect(input).isValid(stepPhase)
     return true
   }

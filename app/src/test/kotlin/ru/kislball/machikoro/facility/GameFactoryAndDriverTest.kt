@@ -5,10 +5,11 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.StubAction
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.cards.standard.StandardCatalog
+import ru.kislball.machikoro.exceptions.GameException
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
@@ -26,15 +27,9 @@ class GameFactoryAndDriverTest {
 
   @Test
   fun `createDriver validates input names`() {
-    assertFailsWith<IllegalArgumentException> {
-      GameFactory.createDriver(CardCatalog(), emptyList())
-    }
-    assertFailsWith<IllegalArgumentException> {
-      GameFactory.createDriver(CardCatalog(), listOf(" "))
-    }
-    assertFailsWith<IllegalArgumentException> {
-      GameFactory.createDriver(CardCatalog(), listOf("a", "a"))
-    }
+    assertFailsWith<GameException> { GameFactory.createDriver(CardCatalog(), emptyList()) }
+    assertFailsWith<GameException> { GameFactory.createDriver(CardCatalog(), listOf(" ")) }
+    assertFailsWith<GameException> { GameFactory.createDriver(CardCatalog(), listOf("a", "a")) }
   }
 
   @Test
@@ -67,7 +62,7 @@ class GameFactoryAndDriverTest {
     val game = Game(listOf(p1, p2))
     val driver = GameDriver(game)
 
-    assertFailsWith<IllegalArgumentException> { driver.rollDice(p2, 1) }
+    assertFailsWith<GameException> { driver.rollDice(p2, 1) }
   }
 
   @Test
@@ -76,7 +71,7 @@ class GameFactoryAndDriverTest {
     val game = Game(listOf(player))
     val driver = GameDriver(game)
 
-    assertFailsWith<IllegalArgumentException> { driver.rollDice(player, 2) }
+    assertFailsWith<GameException> { driver.rollDice(player, 2) }
   }
 
   @Test
