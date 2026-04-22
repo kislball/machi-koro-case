@@ -161,11 +161,13 @@ classDiagram
             +diceThrown: List~Int~
         }
         class ClassMap
-        class InputEffectsQueue {
-            +enqueue(effect: InputEffect~*~) void
-            +peek() InputEffect~*~?
-            +dequeue(effect: InputEffect~*~) void
-        }
+         class InputEffectsQueue {
+             +enqueue(effect: InputEffect~*~) void
+             +addToEnd(effect: InputEffect~*~) void
+             +peek() InputEffect~*~?
+             +dequeue(effect: InputEffect~*~) void
+             +hasEffect(effect: InputEffect~*~) Boolean
+         }
         class Game {
             +catalog: CardCatalog
             +players: List~Player~
@@ -195,12 +197,12 @@ classDiagram
         }
         class JSONExporter
         class JSONImporter
-        class GameDriver {
-            +game: Game
-            +nextStep() WaitingDiceStepPhase
-            +rollDice(player: Player, numDice: Int) WaitingDiceStepPhase
-            +finishStep(action: PlayerAction) FinishedActionStepPhase?
-        }
+          class GameDriver {
+             +game: Game
+             +nextStep() PendingStepPhase
+             +rollDice(player: Player, numDice: Int) PendingStepPhase
+             +finishStep(action: PlayerAction) FinishedStepPhase?
+         }
         class GameFactory {
             <<object>>
             +createDriver(catalog: CardCatalog, playerNames: List~String~) GameDriver
@@ -218,7 +220,7 @@ classDiagram
             +checkValid(GameDriver driver) bool
             +execute(GameDriver driver) void
         }
-        note for GameCommand "checkValid throws exception if command is invalid, returns true otherwise"
+      note for GameCommand "checkValid throws exception if command is invalid, returns true otherwise"
 
         class ReactiveGame {
             GameDriver +driver
@@ -318,36 +320,4 @@ classDiagram
 
 Для описания дальнейшей логики используется диаграмма классов выше. Далее перечислены моменты.
 
-#### Роль GameDriver
-Основная роль — ведение игры. В неё входит:
-1. Приём команд от игроков и проверка порядка хода.
-2. Переход между фазами (`WaitingDiceStepPhase -> FinishedActionStepPhase`).
-3. Поддержка отложенного завершения шага: `finishStep` может вернуть `null`, если в `Game.inputEffects` есть ожидающие инпут-эффекты.
-
-### Эффекты
-Эффекты — единственное, что может изменять состояние игры. Действия игроков и карточки порождают эффекты,
-которые отвечают за поддержку инвариантов.
-
-#### Input-эффекты
-Асинхронный ввод оформлен таким образом:
-1. `AwaitInputEffect` кладёт `InputEffect<T>` в `InputEffectsQueue` при применении.
-2. `PendingStepPhase.submitPlayerAction(...)` возвращает `null`, если очередь не пуста.
-3. `ProvideInputEffect.apply(...)` вызывает `Effect.isValid()`, который проверяет:
-   - `InputEffect.checkInput(input)` — синтаксическая валидация ввода
-   - `InputEffect.isValid(stepPhase, input)` — семантическая валидация в контексте игры
-   - корректность владельца эффекта и того, кто прислал ввод
-4. После успешной валидации `ProvideInputEffect.run()` снимает эффект из очереди и вызывает `InputEffect.applyWithInput(...)`.
-
-Это позволяет описывать карточки и действия, которым нужен дополнительный выбор игрока, без прямой мутации шага вне `Effect`-контракта.
-
-#### Пример: Business Centre Card (обмен карт)
-`BusinessCentreCard` триггеруется на кубик 8 и инициирует обмен карт между игроком-владельцем и соперником:
-1. `BusinessCentreCard.getEffect(...)` возвращает `SwapCardsInputEffect.getAwaiter(possessor)` — `AwaitInputEffect`.
-2. `AwaitInputEffect.run()` кладёт `SwapCardsInputEffect` в очередь.
-3. Игрок создаёт `ProvideInputEffect(SwapCardsInputEffect, SwapCardsInput(...), opponent)`.
-4. `SwapCardsInputEffect.isValid(...)` проверяет:
-   - что source и target — разные игроки (`from != to`)
-   - что target владеет предлагаемой картой (`to.cards.contains(toCard)`)
-   - что обе карты — не SIGHT и не SPECIAL (через `SwapCardsInput.checkInput()`)
-5. После валидации карты обмениваются через `RemoveCardEffect` и `GrantCardEffect`.
 
