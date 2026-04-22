@@ -92,7 +92,7 @@ class FullGameSimulationSystemTest {
     val step4Turn = driver.game.currentStepPhase as PendingStepPhase
     step4Turn.results.set(IntermediateRollResult(DiceRollResult(alice, listOf(2))))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
-    assertEquals(step4AliceBeforeAlice, alice.balance)
+    assertEquals(step4AliceBeforeAlice + 1, alice.balance)
     assertEquals(step4AliceBeforeBob, bob.balance)
     val fourthFinishedStep = driver.buyCard(alice, "cards.entertainment_park")
     assertNotNull(fourthFinishedStep)
@@ -110,7 +110,7 @@ class FullGameSimulationSystemTest {
     assertTrue(driver.game.inputEffects.peek() is RethrowDiceInputEffect)
     aliceTurn.results.set(IntermediateRollResult(DiceRollResult(alice, listOf(3, 3))))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
-    assertEquals(loopAliceBeforeAlice, alice.balance)
+    assertEquals(loopAliceBeforeAlice + 1, alice.balance)
     assertEquals(loopAliceBeforeBob, bob.balance)
 
     assertTrue(driver.game.inputEffects.peek() is GivePlayerAdditionalStepInputEffect)
