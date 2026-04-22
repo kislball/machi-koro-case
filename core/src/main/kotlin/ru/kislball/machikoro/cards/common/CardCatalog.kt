@@ -13,4 +13,6 @@ open class CardCatalog(vararg cards: Card) {
   operator fun get(id: String) = cardsMap[id]
 
   fun getCardList() = cardsMap.values.toList()
+
+  open fun getStarterCards(): List<Card> = listOf()
 }
