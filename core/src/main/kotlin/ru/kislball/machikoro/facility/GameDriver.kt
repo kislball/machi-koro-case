@@ -129,9 +129,6 @@ class GameDriver(val game: Game) {
     }
 
     val finishedStep = current.submitPlayerAction(action)
-    if (finishedStep != null) {
-      game.steps.add(finishedStep)
-    }
     return finishedStep
   }
 }

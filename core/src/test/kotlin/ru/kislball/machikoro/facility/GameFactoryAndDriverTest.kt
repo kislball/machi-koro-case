@@ -99,6 +99,19 @@ class GameFactoryAndDriverTest {
     val finished = driver.finishStep(StubAction(player))
 
     assertEquals(finished, game.currentStepPhase)
-    assertTrue(game.steps.size >= 2)
+    assertEquals(1, game.steps.size)
+  }
+
+  @Test
+  fun `buy card replaces current step instead of duplicating finished step`() {
+    val driver = GameFactory.createDriver(StandardCatalog, listOf("p1"))
+    val player = driver.game.players.single().apply { balance = 10 }
+
+    driver.rollDice(player, 1)
+    val finished = driver.buyCard(player, "cards.wheat")
+
+    assertNotNull(finished)
+    assertEquals(finished, driver.game.currentStepPhase)
+    assertEquals(1, driver.game.steps.size)
   }
 }
