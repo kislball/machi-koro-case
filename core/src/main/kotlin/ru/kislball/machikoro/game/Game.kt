@@ -31,6 +31,7 @@ class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrig
   var steps = mutableListOf<StepPhase>()
   var finished: Boolean = false
     private set
+  private val effectObservers = mutableListOf<(Effect, StepPhase) -> Unit>()
 
   private val finishedEffect =
       object : Effect("effects.game_finished") {
@@ -92,5 +93,17 @@ class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrig
     stepNumber++
     nextStep.activate()
     return nextStep
+  }
+
+  fun addEffectObserver(observer: (Effect, StepPhase) -> Unit) {
+    effectObservers.add(observer)
+  }
+
+  fun notifyEffectApplied(effect: Effect, stepPhase: StepPhase) {
+    effectObservers.forEach { it(effect, stepPhase) }
+  }
+
+  fun setFinished(value: Boolean) {
+    finished = value
   }
 }

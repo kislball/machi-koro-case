@@ -24,4 +24,8 @@ class InputEffectsQueue {
   fun hasEffect(effect: InputEffect<*>): Boolean {
     return effectsAwaitingInput.contains(effect)
   }
+
+  fun toList(): List<InputEffect<*>> {
+    return effectsAwaitingInput.toList()
+  }
 }

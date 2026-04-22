@@ -9,6 +9,7 @@ import ru.kislball.machikoro.actions.SwapCardsAction
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.effects.dice.DiceRollInputEffect
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
+import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.exceptions.CurrentStepNotReadyException
 import ru.kislball.machikoro.exceptions.DiceAlreadyRolledException
 import ru.kislball.machikoro.exceptions.GameFinishedException
@@ -28,6 +29,13 @@ import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.utilities.contains
 
 class GameDriver(val game: Game) {
+  fun observeEffects(observer: (Effect, PendingStepPhase) -> Unit) {
+    game.addEffectObserver { effect, stepPhase ->
+      val pendingStep = stepPhase as? PendingStepPhase ?: return@addEffectObserver
+      observer(effect, pendingStep)
+    }
+  }
+
   fun nextStep(): PendingStepPhase {
     val nextStep = game.nextStep()
     check(nextStep is PendingStepPhase) {
@@ -56,7 +64,7 @@ class GameDriver(val game: Game) {
     }
     check(game.inputEffects.peek() == null) { InputEffectPendingException() }
 
-    DiceRollInputEffect(player).applyWithInput(waitingStep, numDice)
+    DiceRollInputEffect(player).getEffect(numDice).apply(waitingStep)
 
     if (game.inputEffects.peek() != null) {
       return waitingStep

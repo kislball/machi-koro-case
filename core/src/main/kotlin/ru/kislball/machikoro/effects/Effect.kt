@@ -18,5 +18,6 @@ abstract class Effect(val id: String) {
   fun apply(stepPhase: StepPhase) {
     require(isValid(stepPhase)) { EffectNotValidException(id) }
     run(stepPhase)
+    stepPhase.game.notifyEffectApplied(this, stepPhase)
   }
 }
