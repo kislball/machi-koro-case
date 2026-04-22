@@ -10,12 +10,22 @@ import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
 object GameFactory {
-  fun createDriver(catalog: CardCatalog, playerNames: List<String>): GameDriver {
+  fun createDriver(
+      catalog: CardCatalog,
+      playerNames: List<String>,
+      initialBalance: Int = 3
+  ): GameDriver {
     require(playerNames.isNotEmpty()) { EmptyPlayersListException() }
     require(playerNames.all { it.isNotBlank() }) { PlayerNameBlankException() }
     require(playerNames.toSet().size == playerNames.size) { PlayerNamesNotUniqueException() }
 
-    val players = playerNames.map { Player(it) }
+    val players =
+        playerNames.map {
+          Player(it).apply {
+            balance = initialBalance
+            cards = catalog.getStarterCards().toMutableList()
+          }
+        }
     return GameDriver(Game(catalog, players, SightsCollectedTrigger()))
   }
 }

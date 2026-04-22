@@ -1,5 +1,6 @@
 package ru.kislball.machikoro.cards.standard
 
+import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.cards.common.CardIcon
 import ru.kislball.machikoro.cards.standard.enterprises.BusinessCentreCard
@@ -12,7 +13,7 @@ import ru.kislball.machikoro.cards.standard.sights.EntertainmentParkCard
 import ru.kislball.machikoro.cards.standard.sights.RailwayStationCard
 import ru.kislball.machikoro.cards.standard.sights.TVTowerCard
 
-val StandardCatalog =
+object StandardCatalog :
     CardCatalog(
         RestaurantCard(
             activationRange = listOf(3),
@@ -109,4 +110,13 @@ val StandardCatalog =
         RailwayStationCard(),
         TVTowerCard(),
         EntertainmentParkCard(),
+    ) {
+  override fun getStarterCards(): List<Card> {
+    return listOf(
+        this["cards.wheat"]
+            ?: throw IllegalStateException("Wheat card has not been added to standard catalog"),
+        this["cards.bakery"]
+            ?: throw IllegalStateException("Wheat card has not been added to standard catalog"),
     )
+  }
+}
