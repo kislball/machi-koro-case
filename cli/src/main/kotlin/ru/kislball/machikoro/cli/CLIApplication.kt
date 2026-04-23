@@ -72,7 +72,8 @@ class CLIApplication(
       is RethrowDiceInputEffect -> context.printLine("cli.awaiting.rethrow", input.player)
       is PickAndChargeUserInputEffect -> context.printLine("cli.awaiting.pick_player", input.player)
       is SwapCardsInputEffect -> context.printLine("cli.awaiting.swap", input.player)
-      is GivePlayerAdditionalStepInputEffect -> context.printLine("cli.awaiting.additional_step", input.player)
+      is GivePlayerAdditionalStepInputEffect ->
+          context.printLine("cli.awaiting.additional_step", input.player)
     }
   }
 

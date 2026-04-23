@@ -13,8 +13,8 @@ import ru.kislball.machikoro.cli.catalog.CLICatalogRegistry
 import ru.kislball.machikoro.cli.error.CLIException
 import ru.kislball.machikoro.cli.session.ActiveCliGame
 import ru.kislball.machikoro.facility.GameDriver
-import ru.kislball.machikoro.facility.json.JSONExporter
 import ru.kislball.machikoro.facility.json.GameJson
+import ru.kislball.machikoro.facility.json.JSONExporter
 import ru.kislball.machikoro.facility.json.JSONImporter
 
 data class TopEntry(val playerName: String, val wins: Int)

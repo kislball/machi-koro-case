@@ -11,9 +11,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.cards.common.OverrideStarterCardsCatalog
 import ru.kislball.machikoro.cards.standard.StandardCatalog
+import ru.kislball.machikoro.cli.CLIApplication
 import ru.kislball.machikoro.cli.catalog.CLICatalogDefinition
 import ru.kislball.machikoro.cli.catalog.CLICatalogRegistry
-import ru.kislball.machikoro.cli.CLIApplication
 import ru.kislball.machikoro.cli.io.CLIIO
 import ru.kislball.machikoro.cli.storage.CLIStorage
 
@@ -62,7 +62,10 @@ class CLIFlowIntegrationTest {
             "game(alice)> ",
         ),
     )
-    assertTrue(io.output.any { it.startsWith("Игрок alice: баланс ") && it.contains("Пшеница") && it.contains("Пекарня") })
+    assertTrue(
+        io.output.any {
+          it.startsWith("Игрок alice: баланс ") && it.contains("Пшеница") && it.contains("Пекарня")
+        })
     assertTrue(io.output.any { it.startsWith("Кости: ") })
     assertTrue(tempDir.resolve("demo.json").exists())
   }
@@ -159,10 +162,12 @@ class CLIFlowIntegrationTest {
     var currentIndex = 0
     for (expectedPart in expectedParts) {
       val foundIndex =
-          output.withIndex().firstOrNull { (index, line) ->
-            index >= currentIndex && line.contains(expectedPart)
-          }?.index ?: -1
-      assertTrue(foundIndex >= 0, "Missing output containing: $expectedPart\nActual output: $output")
+          output
+              .withIndex()
+              .firstOrNull { (index, line) -> index >= currentIndex && line.contains(expectedPart) }
+              ?.index ?: -1
+      assertTrue(
+          foundIndex >= 0, "Missing output containing: $expectedPart\nActual output: $output")
       currentIndex = foundIndex + 1
     }
   }

@@ -2,9 +2,9 @@ package ru.kislball.machikoro.cli.command
 
 import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.cli.error.CLIException
+import ru.kislball.machikoro.cli.session.ActiveCliGame
 import ru.kislball.machikoro.cli.session.CLIMode
 import ru.kislball.machikoro.cli.session.CLISession
-import ru.kislball.machikoro.cli.session.ActiveCliGame
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.game.DiceRollResult
@@ -41,7 +41,8 @@ internal fun gameCommands(session: CLISession): List<Command> {
       },
       object : Command("listCards", CLIMode.GAME) {
         override fun execute(arguments: List<String>, context: CommandContext) {
-          context.printLine("cli.cards.list", requireGame(session).driver.game.catalog.getCardList())
+          context.printLine(
+              "cli.cards.list", requireGame(session).driver.game.catalog.getCardList())
         }
       },
       object : Command("buyCard", CLIMode.GAME) {
@@ -87,8 +88,9 @@ internal fun gameCommands(session: CLISession): List<Command> {
       object : Command("addTwo", CLIMode.GAME) {
         override fun execute(arguments: List<String>, context: CommandContext) {
           val game = requireGame(session)
-          val step = game.driver.game.currentStepPhase as? PendingStepPhase
-              ?: throw IllegalArgumentException("No active step")
+          val step =
+              game.driver.game.currentStepPhase as? PendingStepPhase
+                  ?: throw IllegalArgumentException("No active step")
           step.results.getOrNull<DiceRollResult>()?.let {
             step.results.set(it.copy(diceThrown = it.diceThrown.map { value -> value + 2 }))
             return

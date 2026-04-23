@@ -47,28 +47,47 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
         "cli.cards.list" to
             { obj: Any ->
               val cards = obj as List<Card>
-              cards.joinToString("\n") { card ->
-                "${card.cardId} - ${cardName(card)}"
-              }
+              cards.joinToString("\n") { card -> "${card.cardId} - ${cardName(card)}" }
             },
         "cli.top.entry" to { obj: Any -> "${(obj as TopEntry).playerName}: ${obj.wins}" },
-        "cli.awaiting.rethrow" to { obj: Any -> "Ожидается решение о перебросе для ${(obj as Player).name}" },
-        "cli.awaiting.pick_player" to { obj: Any -> "Ожидается выбор игрока для ${(obj as Player).name}" },
+        "cli.awaiting.rethrow" to
+            { obj: Any ->
+              "Ожидается решение о перебросе для ${(obj as Player).name}"
+            },
+        "cli.awaiting.pick_player" to
+            { obj: Any ->
+              "Ожидается выбор игрока для ${(obj as Player).name}"
+            },
         "cli.awaiting.swap" to { obj: Any -> "Ожидается обмен карт для ${(obj as Player).name}" },
-        "cli.awaiting.additional_step" to { obj: Any -> "Ожидается решение о дополнительном ходе для ${(obj as Player).name}" },
+        "cli.awaiting.additional_step" to
+            { obj: Any ->
+              "Ожидается решение о дополнительном ходе для ${(obj as Player).name}"
+            },
         "cli.effect" to { obj: Any -> effectMessage(obj as Effect) },
         "cli.effect.effects.utility.compound" to { "Составной эффект применён" },
         "cli.effect.effects.utility.noop" to { "Пустой эффект применён" },
         "cli.effect.effects.utility.maybe" to { "Опциональный эффект применён" },
         "cli.effect.effects.provide_input" to { "Ввод применён" },
-        "cli.effect.effects.awaiter.money.pick_and_charge" to { "Ожидается выбор игрока для оплаты" },
+        "cli.effect.effects.awaiter.money.pick_and_charge" to
+            {
+              "Ожидается выбор игрока для оплаты"
+            },
         "cli.effect.effects.awaiter.cards.swap" to { "Ожидается выбор карт для обмена" },
         "cli.effect.effects.awaiter.dice.rethrow" to { "Ожидается решение о перебросе" },
-        "cli.effect.effects.awaiter.order.additional_step" to { "Ожидается решение о дополнительном ходе" },
+        "cli.effect.effects.awaiter.order.additional_step" to
+            {
+              "Ожидается решение о дополнительном ходе"
+            },
         "cli.effect.effects.dice.roll" to { "Кубики брошены" },
         "cli.effect.effects.sights.tv_tower.enable_rethrow" to { "Включена возможность переброса" },
-        "cli.effect.effects.sights.railway_station.enable_two_dice" to { "Включена возможность бросать 2 кубика" },
-        "cli.effect.effects.sights.shopping_centre.revenue_bonus" to { "Добавлен бонус к доходу магазинов и кафе" },
+        "cli.effect.effects.sights.railway_station.enable_two_dice" to
+            {
+              "Включена возможность бросать 2 кубика"
+            },
+        "cli.effect.effects.sights.shopping_centre.revenue_bonus" to
+            {
+              "Добавлен бонус к доходу магазинов и кафе"
+            },
         "cli.effect.effects.order.additional_step.execute" to { "Назначен дополнительный ход" },
         "cli.effect.effects.game_finished" to { "Игра завершена" },
         "cli.dice.current" to
@@ -110,7 +129,8 @@ private fun effectMessage(effect: Effect): String {
       val sign =
           when (effect.type) {
             MoneyTransferType.Deposit -> "+"
-            MoneyTransferType.Withdraw, MoneyTransferType.WithdrawExact -> "-"
+            MoneyTransferType.Withdraw,
+            MoneyTransferType.WithdrawExact -> "-"
           }
       "Баланс ${effect.player.name}: $sign${effect.getChange()}"
     }

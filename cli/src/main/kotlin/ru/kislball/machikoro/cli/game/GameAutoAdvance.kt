@@ -1,8 +1,8 @@
 package ru.kislball.machikoro.cli.game
 
+import ru.kislball.machikoro.cli.session.ActiveCliGame
 import ru.kislball.machikoro.effects.input.InputEffect
 import ru.kislball.machikoro.exceptions.CurrentStepNotReadyException
-import ru.kislball.machikoro.cli.session.ActiveCliGame
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.IntermediateRollResult
@@ -19,30 +19,35 @@ class GameAutoAdvance {
     while (true) {
       if (driver.game.finished) return
 
-      val current = driver.game.currentStepPhase
-      when (current) {
-        null -> {
-          startAndRoll(game)
-          if (shouldStop(driver.game.inputEffects.peek(), driver.currentPendingOrNull())) return
-        }
-
+      when (val current = driver.game.currentStepPhase) {
+        null,
         is FinishedStepPhase -> {
-          startAndRoll(game)
-          if (shouldStop(driver.game.inputEffects.peek(), driver.currentPendingOrNull())) return
+          if (advanceFromStepBoundary(game, driver)) return
         }
 
-        is PendingStepPhase -> {
-          if (driver.game.inputEffects.peek() != null) return
-          if (!current.results.contains<DiceRollResult>() &&
-              !current.results.contains<IntermediateRollResult>()) {
-            rollAutomatically(game, current)
-            if (shouldStop(driver.game.inputEffects.peek(), driver.currentPendingOrNull())) return
-            continue
-          }
-          return
-        }
+        is PendingStepPhase -> if (advancePendingStep(game, driver, current)) return
       }
     }
+  }
+
+  private fun advanceFromStepBoundary(game: ActiveCliGame, driver: GameDriver): Boolean {
+    startAndRoll(game)
+    return shouldStop(driver.game.inputEffects.peek(), driver.currentPendingOrNull())
+  }
+
+  private fun advancePendingStep(
+      game: ActiveCliGame,
+      driver: GameDriver,
+      current: PendingStepPhase,
+  ): Boolean {
+    if (driver.game.inputEffects.peek() != null) return true
+    if (current.results.contains<DiceRollResult>() ||
+        current.results.contains<IntermediateRollResult>()) {
+      return true
+    }
+
+    rollAutomatically(game, current)
+    return shouldStop(driver.game.inputEffects.peek(), driver.currentPendingOrNull())
   }
 
   private fun startAndRoll(game: ActiveCliGame) {
@@ -58,7 +63,8 @@ class GameAutoAdvance {
   private fun shouldStop(input: InputEffect<*>?, step: PendingStepPhase?): Boolean {
     if (input != null) return true
     if (step == null) return true
-    return step.results.contains<DiceRollResult>() || step.results.contains<IntermediateRollResult>()
+    return step.results.contains<DiceRollResult>() ||
+        step.results.contains<IntermediateRollResult>()
   }
 
   private fun GameDriver.currentPendingOrNull(): PendingStepPhase? {

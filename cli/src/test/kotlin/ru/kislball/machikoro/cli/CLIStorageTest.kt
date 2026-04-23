@@ -34,11 +34,8 @@ class CLIStorageTest {
   @Test
   fun `storage saves loads lists and deletes games`() {
     val storage = CLIStorage(tempDir, catalogs)
-    val game = ActiveCliGame(
-      GameFactory.createDriver(
-        StandardCatalog,
-        listOf("alice", "bob")),
-      "standard")
+    val game =
+        ActiveCliGame(GameFactory.createDriver(StandardCatalog, listOf("alice", "bob")), "standard")
 
     storage.save("demo", game)
 
@@ -59,13 +56,18 @@ class CLIStorageTest {
 
     storage.save(
         "finished1",
-        ActiveCliGame(GameDriver(Game(StandardCatalog, listOf(alice, bob), SightsCollectedTrigger(), alice)), "standard"))
+        ActiveCliGame(
+            GameDriver(Game(StandardCatalog, listOf(alice, bob), SightsCollectedTrigger(), alice)),
+            "standard"))
     storage.save(
         "finished2",
-        ActiveCliGame(GameDriver(Game(StandardCatalog, listOf(alice, bob), SightsCollectedTrigger(), alice)), "standard"))
+        ActiveCliGame(
+            GameDriver(Game(StandardCatalog, listOf(alice, bob), SightsCollectedTrigger(), alice)),
+            "standard"))
     storage.save(
         "unfinished",
-        ActiveCliGame(GameFactory.createDriver(StandardCatalog, listOf("alice", "bob")), "standard"))
+        ActiveCliGame(
+            GameFactory.createDriver(StandardCatalog, listOf("alice", "bob")), "standard"))
 
     assertEquals(listOf(TopEntry("alice", 2)), storage.top())
   }
@@ -87,7 +89,8 @@ class CLIStorageTest {
             defaultCatalogId = "standard",
         )
     val storage = CLIStorage(tempDir, registry)
-    val game = ActiveCliGame(GameFactory.createDriver(customCatalog, listOf("alice", "bob")), "custom")
+    val game =
+        ActiveCliGame(GameFactory.createDriver(customCatalog, listOf("alice", "bob")), "custom")
 
     storage.save("custom-save", game)
 
