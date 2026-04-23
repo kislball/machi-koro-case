@@ -14,10 +14,9 @@ import ru.kislball.machikoro.game.utilities.ClassMap
 import ru.kislball.machikoro.game.utilities.InputEffectsQueue
 import ru.kislball.machikoro.game.utilities.PlayerOrderManager
 import ru.kislball.machikoro.game.utilities.Triggerable
-import ru.kislball.machikoro.triggers.Trigger
 import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
-class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrigger: Trigger) {
+class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrigger: Triggerable) {
   constructor(players: List<Player>) : this(StandardCatalog, players, SightsCollectedTrigger())
 
   private var stepNumber: Int = 0
@@ -31,25 +30,16 @@ class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrig
   var steps = mutableListOf<StepPhase>()
   var finished: Boolean = false
     private set
+  var winner: Player? = null
+    private set
   private val effectObservers = mutableListOf<(Effect, StepPhase) -> Unit>()
 
-  private val finishedEffect =
-      object : Effect("effects.game_finished") {
-        override fun run(stepPhase: StepPhase) {
-          stepPhase.game.finished = true
-        }
-      }
-
-  private val finishedTriggerable =
-      object : Triggerable("triggerable.${gameFinishedTrigger.id}") {
-        override fun getEffect(s: StepPhase, possessor: Player?): Effect {
-          return finishedEffect
-        }
-
-        override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
-          return gameFinishedTrigger.isTriggered(stepPhase, possessor)
-        }
-      }
+  inner class SetWinnerEffect(private val player: Player) : Effect("effects.game_finished") {
+    override fun run(stepPhase: StepPhase) {
+      winner = player
+      finished = true
+    }
+  }
 
   val currentStepPhase: StepPhase?
     get() = steps.lastOrNull()
@@ -67,7 +57,7 @@ class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrig
             .asSequence()
             .flatMap { player -> player.cards.asSequence().map { it to player } }
             .map { (card, player) -> card as Triggerable to player }
-    val finished = finishedTriggerable to null
+    val finished = gameFinishedTrigger to null
     return sequenceOf(finished) + cardTriggerables
   }
 
@@ -103,7 +93,4 @@ class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrig
     effectObservers.forEach { it(effect, stepPhase) }
   }
 
-  fun setFinished(value: Boolean) {
-    finished = value
-  }
 }

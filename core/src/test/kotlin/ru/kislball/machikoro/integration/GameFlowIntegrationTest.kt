@@ -78,6 +78,7 @@ class GameFlowIntegrationTest {
     }
 
     assertTrue(driver.game.finished)
+    assertEquals(player, driver.game.winner)
     assertFailsWith<GameException> { driver.rollDice(player, 1) }
   }
 }
