@@ -35,3 +35,4 @@ build
 .kotlin
 
 kls_database.db
+.machikoro-cli
