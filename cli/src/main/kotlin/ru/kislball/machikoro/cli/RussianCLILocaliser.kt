@@ -26,6 +26,7 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
         "cli.games.saved" to { obj: Any -> "Игра сохранена: $obj" },
         "cli.games.loaded" to { obj: Any -> "Игра загружена: $obj" },
         "cli.games.deleted" to { obj: Any -> "Игра удалена: $obj" },
+        "cli.game.exited" to { "Выход в режим управления" },
         "cli.start.players_prompt" to { "Введите имена игроков через запятую" },
         "cli.start.players_invalid" to { "Нужно указать хотя бы одного игрока" },
         "cli.game.not_active" to { "Сейчас нет активной игры" },
@@ -54,6 +55,20 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
         "cli.awaiting.swap" to { obj: Any -> "Ожидается обмен карт для ${(obj as Player).name}" },
         "cli.awaiting.additional_step" to { obj: Any -> "Ожидается решение о дополнительном ходе для ${(obj as Player).name}" },
         "cli.effect" to { obj: Any -> effectMessage(obj as Effect) },
+        "cli.effect.effects.utility.compound" to { "Составной эффект применён" },
+        "cli.effect.effects.utility.noop" to { "Пустой эффект применён" },
+        "cli.effect.effects.utility.maybe" to { "Опциональный эффект применён" },
+        "cli.effect.effects.provide_input" to { "Ввод применён" },
+        "cli.effect.effects.awaiter.money.pick_and_charge" to { "Ожидается выбор игрока для оплаты" },
+        "cli.effect.effects.awaiter.cards.swap" to { "Ожидается выбор карт для обмена" },
+        "cli.effect.effects.awaiter.dice.rethrow" to { "Ожидается решение о перебросе" },
+        "cli.effect.effects.awaiter.order.additional_step" to { "Ожидается решение о дополнительном ходе" },
+        "cli.effect.effects.dice.roll" to { "Кубики брошены" },
+        "cli.effect.effects.sights.tv_tower.enable_rethrow" to { "Включена возможность переброса" },
+        "cli.effect.effects.sights.railway_station.enable_two_dice" to { "Включена возможность бросать 2 кубика" },
+        "cli.effect.effects.sights.shopping_centre.revenue_bonus" to { "Добавлен бонус к доходу магазинов и кафе" },
+        "cli.effect.effects.order.additional_step.execute" to { "Назначен дополнительный ход" },
+        "cli.effect.effects.game_finished" to { "Игра завершена" },
         "cli.dice.current" to
             { obj: Any ->
               val result = obj as DiceRollResult
@@ -101,8 +116,12 @@ private fun effectMessage(effect: Effect): String {
     is GrantCardEffect -> "${effect.player.name} получает карту ${cardName(effect.card)}"
     is RemoveCardEffect -> "${effect.from.name} теряет карту ${cardName(effect.card)}"
     is GivePlayerAdditionalStepEffect -> "${effect.player.name} получает дополнительный ход"
-    is AwaitInputEffect<*> -> "Ожидается ввод"
-    is ProvideInputEffect<*> -> "Ввод применён"
-    else -> effect.id
+    is AwaitInputEffect<*> -> localiseEffectById(effect.id)
+    is ProvideInputEffect<*> -> localiseEffectById(effect.id)
+    else -> localiseEffectById(effect.id)
   }
+}
+
+private fun localiseEffectById(id: String): String {
+  return CLI_LOCALE_MAP["cli.effect.$id"]?.invoke(Unit) ?: "Применён эффект"
 }

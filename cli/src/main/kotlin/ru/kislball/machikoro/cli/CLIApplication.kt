@@ -87,6 +87,13 @@ class CLIApplication(
             session.shouldExit = true
           }
         },
+        object : Command("exit", CLIMode.GAME) {
+          override fun execute(arguments: List<String>, context: CommandContext) {
+            session.activeGame = null
+            session.mode = CLIMode.MANAGEMENT
+            context.printLine("cli.game.exited")
+          }
+        },
         object : Command("list", CLIMode.MANAGEMENT) {
           override fun execute(arguments: List<String>, context: CommandContext) {
             val games = context.storage.list()
