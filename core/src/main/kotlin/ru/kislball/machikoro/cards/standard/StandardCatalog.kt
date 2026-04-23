@@ -11,6 +11,7 @@ import ru.kislball.machikoro.cards.standard.enterprises.StadiumCard
 import ru.kislball.machikoro.cards.standard.enterprises.TVCentreCard
 import ru.kislball.machikoro.cards.standard.sights.EntertainmentParkCard
 import ru.kislball.machikoro.cards.standard.sights.RailwayStationCard
+import ru.kislball.machikoro.cards.standard.sights.ShoppingCentreCard
 import ru.kislball.machikoro.cards.standard.sights.TVTowerCard
 
 object StandardCatalog :
@@ -108,6 +109,7 @@ object StandardCatalog :
         TVCentreCard(),
         BusinessCentreCard(),
         RailwayStationCard(),
+        ShoppingCentreCard(),
         TVTowerCard(),
         EntertainmentParkCard(),
     ) {

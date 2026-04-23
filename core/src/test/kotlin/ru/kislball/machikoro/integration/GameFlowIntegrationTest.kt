@@ -2,10 +2,14 @@ package ru.kislball.machikoro.integration
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.actions.BuyCardAction
 import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.cards.standard.StandardCatalog
+import ru.kislball.machikoro.exceptions.GameException
 import ru.kislball.machikoro.facility.GameFactory
 import ru.kislball.machikoro.facility.json.JSONExporter
 import ru.kislball.machikoro.facility.json.JSONImporter
@@ -51,5 +55,29 @@ class GameFlowIntegrationTest {
     assertEquals(
         listOf("cards.business_center", "cards.cafe"),
         importedPlayers.map { it.cards.single().cardId })
+  }
+
+  @Test
+  fun `player wins game after buying all sight cards`() {
+    val driver = GameFactory.createDriver(StandardCatalog, listOf("alice"), initialBalance = 100)
+    val player = driver.game.players.single()
+    val sights =
+        listOf(
+            "cards.railway_station",
+            "cards.shopping_centre",
+            "cards.entertainment_park",
+            "cards.tv_tower")
+
+    for (cardId in sights) {
+      driver.rollDice(player, 1)
+      val finished = driver.buyCard(player, cardId)
+      assertNotNull(finished)
+      if (!driver.game.finished) {
+        driver.nextStep()
+      }
+    }
+
+    assertTrue(driver.game.finished)
+    assertFailsWith<GameException> { driver.rollDice(player, 1) }
   }
 }

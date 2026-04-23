@@ -11,6 +11,7 @@ class CardFactoryTest {
     assertNotNull(StandardCatalog["cards.cafe"])
     assertNotNull(StandardCatalog["cards.family"])
     assertNotNull(StandardCatalog["cards.railway_station"])
+    assertNotNull(StandardCatalog["cards.shopping_centre"])
     assertNotNull(StandardCatalog["cards.tv_tower"])
   }
 

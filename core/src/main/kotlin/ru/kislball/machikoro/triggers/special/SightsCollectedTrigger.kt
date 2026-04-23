@@ -7,10 +7,10 @@ import ru.kislball.machikoro.triggers.Trigger
 
 class SightsCollectedTrigger : Trigger("triggers.sights_collected") {
   override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
-    if (possessor == null) return false
-    return stepPhase.game.catalog
-        .getCardList()
-        .filter { it.type == CardType.SIGHT }
-        .all { possessor.cards.any { playerCard -> playerCard.cardId == it.cardId } }
+    val sights = stepPhase.game.catalog.getCardList().filter { it.type == CardType.SIGHT }
+    if (sights.isEmpty()) return false
+    return stepPhase.game.players.any { player ->
+      sights.all { sight -> player.cards.any { playerCard -> playerCard.cardId == sight.cardId } }
+    }
   }
 }
