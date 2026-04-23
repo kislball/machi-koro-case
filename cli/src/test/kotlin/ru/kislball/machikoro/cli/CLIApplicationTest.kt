@@ -6,6 +6,7 @@ import kotlin.io.path.createTempDirectory
 import kotlin.io.path.deleteRecursively
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class CLIApplicationTest {
@@ -26,6 +27,30 @@ class CLIApplicationTest {
 
     assertTrue(io.output.any { it.contains("Игрок") })
     assertTrue(io.output.any { it.contains("Кости:") })
+  }
+
+  @Test
+  fun `exit in game mode returns to management mode`() {
+    val io = FakeIO(mutableListOf("alice,bob"))
+    val app = CLIApplication(io, CLIStorage(tempDir))
+
+    app.execute("start")
+    app.execute("exit")
+    app.execute("list")
+
+    assertTrue(io.output.any { it.contains("Выход в режим управления") })
+    assertTrue(io.output.any { it.contains("Нет сохранённых игр") })
+  }
+
+  @Test
+  fun `effects output does not contain raw effect ids`() {
+    val io = FakeIO(mutableListOf("alice,bob"))
+    val app = CLIApplication(io, CLIStorage(tempDir))
+
+    app.execute("start")
+    app.execute("buyCard cards.wheat")
+
+    assertFalse(io.output.any { it.contains("effects.") })
   }
 
   private class FakeIO(
