@@ -41,7 +41,7 @@ internal fun gameCommands(session: CLISession): List<Command> {
       },
       object : Command("listCards", CLIMode.GAME) {
         override fun execute(arguments: List<String>, context: CommandContext) {
-          context.printLine("cli.cards.list", context.catalog.getCardList())
+          context.printLine("cli.cards.list", requireGame(session).driver.game.catalog.getCardList())
         }
       },
       object : Command("buyCard", CLIMode.GAME) {

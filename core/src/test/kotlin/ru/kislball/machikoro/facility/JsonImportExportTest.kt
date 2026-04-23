@@ -71,6 +71,15 @@ class JsonImportExportTest {
   }
 
   @Test
+  fun `export includes catalog metadata when provided`() {
+    val game = Game(listOf(Player("alice")))
+
+    val json = JSONExporter("standard").export(game)
+
+    assertTrue(json.contains("\"catalogId\":\"standard\""))
+  }
+
+  @Test
   fun `import rejects malformed root json`() {
     assertFailsWith<Exception> { JSONImporter(CardCatalog()).import("{}") }
   }

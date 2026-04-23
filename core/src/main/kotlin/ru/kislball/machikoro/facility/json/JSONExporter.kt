@@ -4,7 +4,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import ru.kislball.machikoro.facility.GameExporter
 import ru.kislball.machikoro.game.Game
 
-class JSONExporter : GameExporter {
+class JSONExporter(
+    private val catalogId: String? = null,
+) : GameExporter {
   private val mapper = jacksonObjectMapper()
 
   override fun export(game: Game): String {
@@ -18,7 +20,7 @@ class JSONExporter : GameExporter {
                       cards = player.cards.map { it.cardId },
                   )
                 },
-            metadata = GameMetadataJson(winner = game.winner?.name),
+            metadata = GameMetadataJson(winner = game.winner?.name, catalogId = catalogId),
         )
     return mapper.writeValueAsString(payload)
   }

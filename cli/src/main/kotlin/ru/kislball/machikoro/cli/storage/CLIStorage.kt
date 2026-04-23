@@ -9,25 +9,26 @@ import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
+import ru.kislball.machikoro.cli.catalog.CLICatalogRegistry
 import ru.kislball.machikoro.cli.error.CLIException
 import ru.kislball.machikoro.cli.session.ActiveCliGame
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.facility.json.JSONExporter
+import ru.kislball.machikoro.facility.json.GameJson
 import ru.kislball.machikoro.facility.json.JSONImporter
-import ru.kislball.machikoro.cards.standard.StandardCatalog
 
 data class TopEntry(val playerName: String, val wins: Int)
 
-class CLIStorage(private val root: Path) {
-  private val exporter = JSONExporter()
-  private val importer = JSONImporter(StandardCatalog)
-
+class CLIStorage(
+    private val root: Path,
+    private val catalogs: CLICatalogRegistry = CLICatalogRegistry.default(),
+) {
   init {
     root.createDirectories()
   }
 
   fun save(name: String, game: ActiveCliGame) {
-    fileFor(name).writeText(exporter.export(game.driver.game))
+    fileFor(name).writeText(JSONExporter(game.catalogId).export(game.driver.game))
   }
 
   fun load(name: String): ActiveCliGame {
@@ -35,7 +36,11 @@ class CLIStorage(private val root: Path) {
     if (!path.exists()) {
       throw CLIException("cli.games.not_found", name)
     }
-    return ActiveCliGame(GameDriver(importer.import(path.readText())))
+    val content = path.readText()
+    val catalogId = parseCatalogId(content)
+    val catalog =
+        catalogs.get(catalogId)?.catalog ?: throw CLIException("cli.catalog.not_found", catalogId)
+    return ActiveCliGame(GameDriver(JSONImporter(catalog).import(content)), catalogId)
   }
 
   fun list(): List<String> {
@@ -67,11 +72,16 @@ class CLIStorage(private val root: Path) {
     return root.resolve("$name.json")
   }
 
+  private fun parseCatalogId(content: String): String {
+    val payload: GameJson = JSONImporter.parsePayload(content)
+    return payload.metadata?.catalogId ?: catalogs.defaultCatalogId
+  }
+
   companion object {
     fun default(): CLIStorage {
       val root = Path.of(System.getProperty("user.dir"), ".machikoro-cli")
       Files.createDirectories(root)
-      return CLIStorage(root)
+      return CLIStorage(root, CLICatalogRegistry.default())
     }
   }
 }

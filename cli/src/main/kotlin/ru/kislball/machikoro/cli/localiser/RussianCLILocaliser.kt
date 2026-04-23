@@ -24,6 +24,7 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
         "cli.games.invalid_name" to { "Имя игры не должно быть пустым" },
         "cli.games.empty" to { "Нет сохранённых игр" },
         "cli.games.not_found" to { obj: Any -> "Игра не найдена: $obj" },
+        "cli.catalog.not_found" to { obj: Any -> "Каталог не найден: $obj" },
         "cli.games.saved" to { obj: Any -> "Игра сохранена: $obj" },
         "cli.games.loaded" to { obj: Any -> "Игра загружена: $obj" },
         "cli.games.deleted" to { obj: Any -> "Игра удалена: $obj" },

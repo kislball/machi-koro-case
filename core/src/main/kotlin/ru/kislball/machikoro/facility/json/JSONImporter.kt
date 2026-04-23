@@ -36,4 +36,12 @@ class JSONImporter(val catalog: CardCatalog) : GameImporter {
 
   private fun parseCard(kindName: String) =
       catalog[kindName] ?: throw IllegalArgumentException("Invalid card kind: $kindName")
+
+  companion object {
+    private val mapper = jacksonObjectMapper()
+
+    fun parsePayload(content: String): GameJson {
+      return mapper.readValue(content)
+    }
+  }
 }

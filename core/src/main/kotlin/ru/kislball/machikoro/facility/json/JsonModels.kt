@@ -7,6 +7,7 @@ data class GameJson(
 
 data class GameMetadataJson(
     val winner: String? = null,
+    val catalogId: String? = null,
 )
 
 data class PlayerJson(val name: String, val balance: Int, val cards: List<String>)

@@ -10,5 +10,6 @@ data class CLISession(
 
 data class ActiveCliGame(
     val driver: GameDriver,
+    val catalogId: String,
     val effectLog: MutableList<String> = mutableListOf(),
 )

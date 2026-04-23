@@ -1,5 +1,6 @@
 package ru.kislball.machikoro.cli
 
+import ru.kislball.machikoro.cli.catalog.CLICatalogRegistry
 import ru.kislball.machikoro.cli.command.CommandContext
 import ru.kislball.machikoro.cli.command.gameCommands
 import ru.kislball.machikoro.cli.command.managementCommands
@@ -24,9 +25,10 @@ import ru.kislball.machikoro.localisation.localiseOrKey
 class CLIApplication(
     private val io: CLIIO = StdCLIIO,
     private val storage: CLIStorage = CLIStorage.default(),
+    catalogs: CLICatalogRegistry = CLICatalogRegistry.default(),
 ) {
   private val session = CLISession()
-  private val context = CommandContext(io, storage, session, GameAutoAdvance())
+  private val context = CommandContext(io, storage, session, GameAutoAdvance(), catalogs)
   private val commands = managementCommands(session) + gameCommands(session)
 
   fun run() {

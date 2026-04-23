@@ -59,7 +59,12 @@ internal fun managementCommands(session: CLISession): List<Command> {
           if (players.isEmpty()) {
             throw CLIException("cli.start.players_invalid")
           }
-          val game = ActiveCliGame(GameFactory.createDriver(context.catalog, players)).withObserver(context)
+          val game =
+              ActiveCliGame(
+                      driver = GameFactory.createDriver(context.defaultCatalog, players),
+                      catalogId = context.defaultCatalogId,
+                  )
+                  .withObserver(context)
           session.activeGame = game
           session.mode = CLIMode.GAME
         }
