@@ -8,6 +8,4 @@ dependencies {
   testImplementation(kotlin("test"))
 }
 
-application {
-  mainClass.set("ru.kislball.machikoro.cli.MainKt")
-}
+application { mainClass.set("ru.kislball.machikoro.cli.MainKt") }
