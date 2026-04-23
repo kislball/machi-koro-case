@@ -10,6 +10,7 @@ import ru.kislball.machikoro.facility.json.JSONExporter
 import ru.kislball.machikoro.facility.json.JSONImporter
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
 class JsonImportExportTest {
   @Test
@@ -52,6 +53,21 @@ class JsonImportExportTest {
 
     assertEquals("a\\\"b", game.players[0].name)
     assertEquals("x\\u0020y", game.players[1].name)
+  }
+
+  @Test
+  fun `export and import preserve winner metadata`() {
+    val catalog = CardCatalog()
+    val alice = Player("alice")
+    val bob = Player("bob")
+    val game = Game(catalog, listOf(alice, bob), SightsCollectedTrigger(), alice)
+
+    val json = JSONExporter().export(game)
+    val imported = JSONImporter(catalog).import(json)
+
+    assertTrue(json.contains("\"winner\":\"alice\""))
+    assertEquals("alice", imported.winner?.name)
+    assertTrue(imported.finished)
   }
 
   @Test

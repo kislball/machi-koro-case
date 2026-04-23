@@ -1,0 +1,114 @@
+package ru.kislball.machikoro.cli
+
+import ru.kislball.machikoro.cards.common.CardType
+import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
+import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
+import ru.kislball.machikoro.game.DiceRollResult
+import ru.kislball.machikoro.game.IntermediateRollResult
+import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.step.PendingStepPhase
+import ru.kislball.machikoro.game.utilities.getOrNull
+
+internal fun gameCommands(session: CLISession): List<Command> {
+  return listOf(
+      object : Command("exit", CLIMode.GAME) {
+        override fun execute(arguments: List<String>, context: CommandContext) {
+          session.activeGame = null
+          session.mode = CLIMode.MANAGEMENT
+          context.printLine("cli.game.exited")
+        }
+      },
+      object : Command("save", CLIMode.GAME) {
+        override fun execute(arguments: List<String>, context: CommandContext) {
+          require(arguments.size == 1) { "save <name>" }
+          context.storage.save(arguments.single(), requireGame(session))
+          context.printLine("cli.games.saved", arguments.single())
+        }
+      },
+      object : Command("info", CLIMode.GAME) {
+        override fun execute(arguments: List<String>, context: CommandContext) {
+          val game = requireGame(session).driver.game
+          val player =
+              arguments.singleOrNull()?.let { findPlayer(game.players, it) }
+                  ?: game.currentPlayer
+                  ?: throw CLIException("cli.player.current_missing")
+          context.printLine("cli.player.info", player)
+        }
+      },
+      object : Command("listCards", CLIMode.GAME) {
+        override fun execute(arguments: List<String>, context: CommandContext) {
+          context.printLine("cli.cards.list", context.catalog.getCardList())
+        }
+      },
+      object : Command("buyCard", CLIMode.GAME) {
+        override fun execute(arguments: List<String>, context: CommandContext) {
+          require(arguments.size == 1) { "buyCard <cardid>" }
+          val game = requireGame(session)
+          val player = currentPlayer(game)
+          game.driver.buyCard(player, arguments.single())
+        }
+      },
+      object : Command("pickPlayer", CLIMode.GAME) {
+        override fun execute(arguments: List<String>, context: CommandContext) {
+          require(arguments.size == 1) { "pickPlayer <playername>" }
+          val game = requireGame(session)
+          val player = currentPlayer(game)
+          val target = findPlayer(game.driver.game.players, arguments.single())
+          game.driver.pickAndChargePlayer(player, target)
+        }
+      },
+      object : Command("swap", CLIMode.GAME) {
+        override fun execute(arguments: List<String>, context: CommandContext) {
+          require(arguments.size == 2) { "swap <playername> <cardId>" }
+          val game = requireGame(session)
+          val player = currentPlayer(game)
+          val opponent = findPlayer(game.driver.game.players, arguments[0])
+          game.driver.game.inputEffects.peek() as? SwapCardsInputEffect
+              ?: throw CLIException("cli.swap.unexpected")
+          val fromCard =
+              opponent.cards.firstOrNull { it.cardId == arguments[1] }
+                  ?: throw CLIException("cli.swap.no_card", arguments[1])
+          val toCard =
+              player.cards.firstOrNull { it.type != CardType.SIGHT }
+                  ?: throw CLIException("cli.swap.no_own_card")
+          game.driver.swapCards(player, SwapCardsInput(opponent, fromCard, toCard))
+        }
+      },
+      object : Command("rethrow", CLIMode.GAME) {
+        override fun execute(arguments: List<String>, context: CommandContext) {
+          val game = requireGame(session)
+          game.driver.submitRethrowDecision(currentPlayer(game), true)
+        }
+      },
+      object : Command("addTwo", CLIMode.GAME) {
+        override fun execute(arguments: List<String>, context: CommandContext) {
+          val game = requireGame(session)
+          val step = game.driver.game.currentStepPhase as? PendingStepPhase
+              ?: throw IllegalArgumentException("No active step")
+          step.results.getOrNull<DiceRollResult>()?.let {
+            step.results.set(it.copy(diceThrown = it.diceThrown.map { value -> value + 2 }))
+            return
+          }
+          step.results.getOrNull<IntermediateRollResult>()?.let {
+            step.results.set(
+                IntermediateRollResult(
+                    it.result.copy(diceThrown = it.result.diceThrown.map { value -> value + 2 })))
+            return
+          }
+          throw CLIException("cli.dice.missing")
+        }
+      },
+  )
+}
+
+private fun requireGame(session: CLISession): ReactiveGame {
+  return session.activeGame ?: throw CLIException("cli.game.not_active")
+}
+
+private fun currentPlayer(game: ReactiveGame): Player {
+  return game.driver.game.currentPlayer ?: throw CLIException("cli.player.current_missing")
+}
+
+private fun findPlayer(players: List<Player>, name: String): Player {
+  return players.firstOrNull { it.name == name } ?: throw CLIException("cli.player.not_found", name)
+}

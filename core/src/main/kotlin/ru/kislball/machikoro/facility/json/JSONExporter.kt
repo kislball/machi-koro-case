@@ -18,6 +18,7 @@ class JSONExporter : GameExporter {
                       cards = player.cards.map { it.cardId },
                   )
                 },
+            metadata = GameMetadataJson(winner = game.winner?.name),
         )
     return mapper.writeValueAsString(payload)
   }

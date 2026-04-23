@@ -16,7 +16,12 @@ import ru.kislball.machikoro.game.utilities.PlayerOrderManager
 import ru.kislball.machikoro.game.utilities.Triggerable
 import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
-class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrigger: Triggerable) {
+class Game(
+    val catalog: CardCatalog,
+    players: List<Player>,
+    val gameFinishedTrigger: Triggerable,
+    winner: Player? = null,
+) {
   constructor(players: List<Player>) : this(StandardCatalog, players, SightsCollectedTrigger())
 
   private var stepNumber: Int = 0
@@ -30,7 +35,7 @@ class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrig
   var steps = mutableListOf<StepPhase>()
   var finished: Boolean = false
     private set
-  var winner: Player? = null
+  var winner: Player? = winner
     private set
   private val effectObservers = mutableListOf<(Effect, StepPhase) -> Unit>()
 
@@ -49,6 +54,9 @@ class Game(val catalog: CardCatalog, players: List<Player>, val gameFinishedTrig
 
   init {
     require(players.isNotEmpty()) { EmptyPlayersListException() }
+    if (winner != null) {
+      finished = true
+    }
   }
 
   fun getTriggerables(): Sequence<Pair<Triggerable, Player?>> {

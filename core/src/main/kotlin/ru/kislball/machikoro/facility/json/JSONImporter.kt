@@ -7,6 +7,7 @@ import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.facility.GameImporter
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
 class JSONImporter(val catalog: CardCatalog) : GameImporter {
   private val mapper = jacksonObjectMapper()
@@ -15,7 +16,12 @@ class JSONImporter(val catalog: CardCatalog) : GameImporter {
     return try {
       val parsed: GameJson = mapper.readValue(content)
       val players = parsed.players.map(::parsePlayer)
-      Game(players)
+      val winner =
+          parsed.metadata?.winner?.let { winnerName ->
+            players.firstOrNull { it.name == winnerName }
+                ?: throw IllegalArgumentException("Invalid winner: $winnerName")
+          }
+      Game(catalog, players, SightsCollectedTrigger(), winner)
     } catch (exception: JsonProcessingException) {
       throw IllegalArgumentException("Invalid JSON content", exception)
     }

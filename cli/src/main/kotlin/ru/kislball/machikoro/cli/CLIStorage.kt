@@ -9,11 +9,10 @@ import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
-import ru.kislball.machikoro.cards.standard.StandardCatalog
-import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.facility.json.JSONExporter
 import ru.kislball.machikoro.facility.json.JSONImporter
+import ru.kislball.machikoro.cards.standard.StandardCatalog
 
 data class TopEntry(val playerName: String, val wins: Int)
 
@@ -51,13 +50,7 @@ class CLIStorage(private val root: Path) {
   fun top(): List<TopEntry> {
     val wins = mutableMapOf<String, Int>()
     list().forEach { name ->
-      val game = load(name).driver.game
-      val allSights =
-          StandardCatalog.getCardList().filter { it.type == CardType.SIGHT }.map { it.cardId }.toSet()
-      val winner =
-          game.players.firstOrNull { player ->
-            player.cards.filter { it.type == CardType.SIGHT }.map { it.cardId }.toSet() == allSights
-          } ?: return@forEach
+      val winner = load(name).driver.game.winner ?: return@forEach
       wins[winner.name] = (wins[winner.name] ?: 0) + 1
     }
     return wins.entries

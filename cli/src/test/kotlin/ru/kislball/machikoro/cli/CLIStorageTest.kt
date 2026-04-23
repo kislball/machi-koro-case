@@ -8,7 +8,12 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import ru.kislball.machikoro.cards.standard.StandardCatalog
+import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.facility.GameFactory
+import ru.kislball.machikoro.game.Game
+import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
 class CLIStorageTest {
   private val tempDir = createTempDirectory("machikoro-cli-storage")
@@ -31,5 +36,24 @@ class CLIStorageTest {
     storage.delete("demo")
 
     assertTrue(storage.list().isEmpty())
+  }
+
+  @Test
+  fun `top counts wins from winner metadata`() {
+    val storage = CLIStorage(tempDir)
+    val alice = Player("alice")
+    val bob = Player("bob")
+
+    storage.save(
+        "finished1",
+        ReactiveGame(GameDriver(Game(StandardCatalog, listOf(alice, bob), SightsCollectedTrigger(), alice))))
+    storage.save(
+        "finished2",
+        ReactiveGame(GameDriver(Game(StandardCatalog, listOf(alice, bob), SightsCollectedTrigger(), alice))))
+    storage.save(
+        "unfinished",
+        ReactiveGame(GameFactory.createDriver(StandardCatalog, listOf("alice", "bob"))))
+
+    assertEquals(listOf(TopEntry("alice", 2)), storage.top())
   }
 }
