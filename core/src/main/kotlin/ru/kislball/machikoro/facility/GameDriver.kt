@@ -6,10 +6,10 @@ import ru.kislball.machikoro.actions.PlayerAction
 import ru.kislball.machikoro.actions.ProvideAdditionalStepDecisionAction
 import ru.kislball.machikoro.actions.ProvideRethrowDecisionAction
 import ru.kislball.machikoro.actions.SwapCardsAction
+import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.effects.dice.DiceRollInputEffect
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
-import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.exceptions.CurrentStepNotReadyException
 import ru.kislball.machikoro.exceptions.DiceAlreadyRolledException
 import ru.kislball.machikoro.exceptions.GameFinishedException

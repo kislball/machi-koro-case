@@ -35,8 +35,10 @@ class Game(
   var steps = mutableListOf<StepPhase>()
   var finished: Boolean = false
     private set
+
   var winner: Player? = winner
     private set
+
   private val effectObservers = mutableListOf<(Effect, StepPhase) -> Unit>()
 
   inner class SetWinnerEffect(private val player: Player) : Effect("effects.game_finished") {
@@ -100,5 +102,4 @@ class Game(
   fun notifyEffectApplied(effect: Effect, stepPhase: StepPhase) {
     effectObservers.forEach { it(effect, stepPhase) }
   }
-
 }

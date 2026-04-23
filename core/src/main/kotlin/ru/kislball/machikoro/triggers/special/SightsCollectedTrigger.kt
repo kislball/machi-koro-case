@@ -8,7 +8,8 @@ import ru.kislball.machikoro.game.utilities.Triggerable
 
 class SightsCollectedTrigger : Triggerable("triggers.sights_collected") {
   override fun getEffect(s: StepPhase, possessor: Player?): Effect {
-    val winner = findWinner(s) ?: error("SightsCollectedTrigger#getEffect called when not triggered")
+    val winner =
+        findWinner(s) ?: error("SightsCollectedTrigger#getEffect called when not triggered")
     return s.game.SetWinnerEffect(winner)
   }
 
