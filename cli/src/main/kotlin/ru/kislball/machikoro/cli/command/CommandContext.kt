@@ -1,6 +1,11 @@
-package ru.kislball.machikoro.cli
+package ru.kislball.machikoro.cli.command
 
 import ru.kislball.machikoro.cards.standard.StandardCatalog
+import ru.kislball.machikoro.cli.game.GameAutoAdvance
+import ru.kislball.machikoro.cli.io.CLIIO
+import ru.kislball.machikoro.cli.localiser.RussianCLILocaliser
+import ru.kislball.machikoro.cli.session.CLISession
+import ru.kislball.machikoro.cli.storage.CLIStorage
 import ru.kislball.machikoro.localisation.CompoundLocaliser
 import ru.kislball.machikoro.localisation.Localiser
 import ru.kislball.machikoro.localisation.RussianLocaliser

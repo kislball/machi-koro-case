@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.cli
+package ru.kislball.machikoro.cli.session
 
 import ru.kislball.machikoro.facility.GameDriver
 

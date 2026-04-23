@@ -8,6 +8,8 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import ru.kislball.machikoro.cli.io.CLIIO
+import ru.kislball.machikoro.cli.storage.CLIStorage
 
 class CLIApplicationTest {
   private val tempDir = createTempDirectory("machikoro-cli-app")

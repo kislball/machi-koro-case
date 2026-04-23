@@ -1,8 +1,9 @@
-package ru.kislball.machikoro.cli
+package ru.kislball.machikoro.cli.game
 
 import ru.kislball.machikoro.effects.dice.DiceRollInputEffect
 import ru.kislball.machikoro.effects.input.InputEffect
 import ru.kislball.machikoro.exceptions.CurrentStepNotReadyException
+import ru.kislball.machikoro.cli.session.ReactiveGame
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.IntermediateRollResult
 import ru.kislball.machikoro.game.markers.canThrowTwoDice

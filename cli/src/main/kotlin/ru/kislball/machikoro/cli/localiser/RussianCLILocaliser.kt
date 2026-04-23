@@ -1,6 +1,7 @@
-package ru.kislball.machikoro.cli
+package ru.kislball.machikoro.cli.localiser
 
 import ru.kislball.machikoro.cards.common.Card
+import ru.kislball.machikoro.cli.storage.TopEntry
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.GrantCardEffect
 import ru.kislball.machikoro.effects.cards.RemoveCardEffect

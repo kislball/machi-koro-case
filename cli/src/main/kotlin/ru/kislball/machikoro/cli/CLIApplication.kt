@@ -1,5 +1,15 @@
 package ru.kislball.machikoro.cli
 
+import ru.kislball.machikoro.cli.command.CommandContext
+import ru.kislball.machikoro.cli.command.gameCommands
+import ru.kislball.machikoro.cli.command.managementCommands
+import ru.kislball.machikoro.cli.error.CLIException
+import ru.kislball.machikoro.cli.game.GameAutoAdvance
+import ru.kislball.machikoro.cli.io.CLIIO
+import ru.kislball.machikoro.cli.io.StdCLIIO
+import ru.kislball.machikoro.cli.session.CLIMode
+import ru.kislball.machikoro.cli.session.CLISession
+import ru.kislball.machikoro.cli.storage.CLIStorage
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
 import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect

@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.cli
+package ru.kislball.machikoro.cli.io
 
 interface CLIIO {
   fun readLine(): String?

@@ -1,5 +1,9 @@
-package ru.kislball.machikoro.cli
+package ru.kislball.machikoro.cli.command
 
+import ru.kislball.machikoro.cli.error.CLIException
+import ru.kislball.machikoro.cli.session.CLIMode
+import ru.kislball.machikoro.cli.session.CLISession
+import ru.kislball.machikoro.cli.session.ReactiveGame
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.facility.GameFactory
 import ru.kislball.machikoro.game.step.PendingStepPhase

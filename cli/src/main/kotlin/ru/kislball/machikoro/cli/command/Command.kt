@@ -1,4 +1,6 @@
-package ru.kislball.machikoro.cli
+package ru.kislball.machikoro.cli.command
+
+import ru.kislball.machikoro.cli.session.CLIMode
 
 abstract class Command(
     val name: String,

@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.cli
+package ru.kislball.machikoro.cli.storage
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -9,6 +9,8 @@ import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
+import ru.kislball.machikoro.cli.error.CLIException
+import ru.kislball.machikoro.cli.session.ReactiveGame
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.facility.json.JSONExporter
 import ru.kislball.machikoro.facility.json.JSONImporter

@@ -9,6 +9,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.cards.standard.StandardCatalog
+import ru.kislball.machikoro.cli.session.ReactiveGame
+import ru.kislball.machikoro.cli.storage.CLIStorage
+import ru.kislball.machikoro.cli.storage.TopEntry
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.facility.GameFactory
 import ru.kislball.machikoro.game.Game
