@@ -1,9 +1,9 @@
 package ru.kislball.machikoro.cli.game
 
-import ru.kislball.machikoro.effects.dice.DiceRollInputEffect
 import ru.kislball.machikoro.effects.input.InputEffect
 import ru.kislball.machikoro.exceptions.CurrentStepNotReadyException
 import ru.kislball.machikoro.cli.session.ActiveCliGame
+import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.IntermediateRollResult
 import ru.kislball.machikoro.game.markers.canThrowTwoDice
@@ -61,7 +61,7 @@ class GameAutoAdvance {
     return step.results.contains<DiceRollResult>() || step.results.contains<IntermediateRollResult>()
   }
 
-  private fun ru.kislball.machikoro.facility.GameDriver.currentPendingOrNull(): PendingStepPhase? {
+  private fun GameDriver.currentPendingOrNull(): PendingStepPhase? {
     return try {
       game.currentStepPhase as? PendingStepPhase
     } catch (_: CurrentStepNotReadyException) {

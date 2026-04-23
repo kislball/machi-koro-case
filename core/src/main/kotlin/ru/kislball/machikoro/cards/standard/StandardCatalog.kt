@@ -115,12 +115,8 @@ object StandardCatalog :
     ) {
   override fun getStarterCards(): List<Card> {
     return listOf(
-        checkNotNull(this["cards.wheat"]) {
-          "Wheat card has not been added to standard catalog"
-        },
-        checkNotNull(this["cards.bakery"]) {
-          "Bakery card has not been added to standard catalog"
-        },
+        checkNotNull(this["cards.wheat"]) { "Wheat card has not been added to standard catalog" },
+        checkNotNull(this["cards.bakery"]) { "Bakery card has not been added to standard catalog" },
     )
   }
 }

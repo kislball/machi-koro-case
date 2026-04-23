@@ -29,7 +29,10 @@ class CLIStorageTest {
   @Test
   fun `storage saves loads lists and deletes games`() {
     val storage = CLIStorage(tempDir)
-    val game = ActiveCliGame(GameFactory.createDriver(ru.kislball.machikoro.cards.standard.StandardCatalog, listOf("alice", "bob")))
+    val game = ActiveCliGame(
+      GameFactory.createDriver(
+        StandardCatalog,
+        listOf("alice", "bob")))
 
     storage.save("demo", game)
 
