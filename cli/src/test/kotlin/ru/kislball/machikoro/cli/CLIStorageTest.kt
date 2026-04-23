@@ -9,7 +9,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.cards.standard.StandardCatalog
-import ru.kislball.machikoro.cli.session.ReactiveGame
+import ru.kislball.machikoro.cli.session.ActiveCliGame
 import ru.kislball.machikoro.cli.storage.CLIStorage
 import ru.kislball.machikoro.cli.storage.TopEntry
 import ru.kislball.machikoro.facility.GameDriver
@@ -29,7 +29,7 @@ class CLIStorageTest {
   @Test
   fun `storage saves loads lists and deletes games`() {
     val storage = CLIStorage(tempDir)
-    val game = ReactiveGame(GameFactory.createDriver(ru.kislball.machikoro.cards.standard.StandardCatalog, listOf("alice", "bob")))
+    val game = ActiveCliGame(GameFactory.createDriver(ru.kislball.machikoro.cards.standard.StandardCatalog, listOf("alice", "bob")))
 
     storage.save("demo", game)
 
@@ -49,13 +49,13 @@ class CLIStorageTest {
 
     storage.save(
         "finished1",
-        ReactiveGame(GameDriver(Game(StandardCatalog, listOf(alice, bob), SightsCollectedTrigger(), alice))))
+        ActiveCliGame(GameDriver(Game(StandardCatalog, listOf(alice, bob), SightsCollectedTrigger(), alice))))
     storage.save(
         "finished2",
-        ReactiveGame(GameDriver(Game(StandardCatalog, listOf(alice, bob), SightsCollectedTrigger(), alice))))
+        ActiveCliGame(GameDriver(Game(StandardCatalog, listOf(alice, bob), SightsCollectedTrigger(), alice))))
     storage.save(
         "unfinished",
-        ReactiveGame(GameFactory.createDriver(StandardCatalog, listOf("alice", "bob"))))
+        ActiveCliGame(GameFactory.createDriver(StandardCatalog, listOf("alice", "bob"))))
 
     assertEquals(listOf(TopEntry("alice", 2)), storage.top())
   }

@@ -4,7 +4,7 @@ import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.cli.error.CLIException
 import ru.kislball.machikoro.cli.session.CLIMode
 import ru.kislball.machikoro.cli.session.CLISession
-import ru.kislball.machikoro.cli.session.ReactiveGame
+import ru.kislball.machikoro.cli.session.ActiveCliGame
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.game.DiceRollResult
@@ -105,11 +105,11 @@ internal fun gameCommands(session: CLISession): List<Command> {
   )
 }
 
-private fun requireGame(session: CLISession): ReactiveGame {
+private fun requireGame(session: CLISession): ActiveCliGame {
   return session.activeGame ?: throw CLIException("cli.game.not_active")
 }
 
-private fun currentPlayer(game: ReactiveGame): Player {
+private fun currentPlayer(game: ActiveCliGame): Player {
   return game.driver.game.currentPlayer ?: throw CLIException("cli.player.current_missing")
 }
 

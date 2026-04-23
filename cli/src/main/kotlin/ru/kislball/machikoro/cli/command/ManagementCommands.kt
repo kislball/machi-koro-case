@@ -3,7 +3,7 @@ package ru.kislball.machikoro.cli.command
 import ru.kislball.machikoro.cli.error.CLIException
 import ru.kislball.machikoro.cli.session.CLIMode
 import ru.kislball.machikoro.cli.session.CLISession
-import ru.kislball.machikoro.cli.session.ReactiveGame
+import ru.kislball.machikoro.cli.session.ActiveCliGame
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.facility.GameFactory
 import ru.kislball.machikoro.game.step.PendingStepPhase
@@ -59,7 +59,7 @@ internal fun managementCommands(session: CLISession): List<Command> {
           if (players.isEmpty()) {
             throw CLIException("cli.start.players_invalid")
           }
-          val game = ReactiveGame(GameFactory.createDriver(context.catalog, players)).withObserver(context)
+          val game = ActiveCliGame(GameFactory.createDriver(context.catalog, players)).withObserver(context)
           session.activeGame = game
           session.mode = CLIMode.GAME
         }
@@ -67,7 +67,7 @@ internal fun managementCommands(session: CLISession): List<Command> {
   )
 }
 
-private fun ReactiveGame.withObserver(context: CommandContext): ReactiveGame {
+private fun ActiveCliGame.withObserver(context: CommandContext): ActiveCliGame {
   driver.observeEffects { effect: Effect, _: PendingStepPhase ->
     effectLog.add(context.localiser.localise("cli.effect", effect))
   }

@@ -10,7 +10,7 @@ import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import ru.kislball.machikoro.cli.error.CLIException
-import ru.kislball.machikoro.cli.session.ReactiveGame
+import ru.kislball.machikoro.cli.session.ActiveCliGame
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.facility.json.JSONExporter
 import ru.kislball.machikoro.facility.json.JSONImporter
@@ -26,16 +26,16 @@ class CLIStorage(private val root: Path) {
     root.createDirectories()
   }
 
-  fun save(name: String, game: ReactiveGame) {
+  fun save(name: String, game: ActiveCliGame) {
     fileFor(name).writeText(exporter.export(game.driver.game))
   }
 
-  fun load(name: String): ReactiveGame {
+  fun load(name: String): ActiveCliGame {
     val path = fileFor(name)
     if (!path.exists()) {
       throw CLIException("cli.games.not_found", name)
     }
-    return ReactiveGame(GameDriver(importer.import(path.readText())))
+    return ActiveCliGame(GameDriver(importer.import(path.readText())))
   }
 
   fun list(): List<String> {
