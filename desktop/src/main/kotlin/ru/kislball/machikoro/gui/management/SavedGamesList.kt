@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package ru.kislball.machikoro.gui.management
 
 import androidx.compose.foundation.background

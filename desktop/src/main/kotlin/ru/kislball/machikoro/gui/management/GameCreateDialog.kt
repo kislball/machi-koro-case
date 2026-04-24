@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming", "MatchingDeclarationName")
+
 package ru.kislball.machikoro.gui.management
 
 import androidx.compose.foundation.layout.Arrangement
@@ -60,7 +62,10 @@ fun GameCreateDialog(
                         currentPlayerName = ""
                       }
                     },
-                    enabled = trimmedPlayerName.isNotEmpty() && trimmedPlayerName !in playerNames,
+                    enabled =
+                        trimmedPlayerName.isNotEmpty() &&
+                            trimmedPlayerName !in playerNames &&
+                            playerNames.size < 4,
                 ) {
                   Icon(
                       imageVector = Icons.Default.Add,

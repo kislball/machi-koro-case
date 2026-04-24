@@ -6,19 +6,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import ru.kislball.machikoro.gui.game.GameScreen
 import ru.kislball.machikoro.gui.management.GameSelectionScreen
-import ru.kislball.machikoro.gui.management.ManagementViewModel
 
 @Composable
 fun App() {
-  var currentScreen by remember { mutableStateOf(Screen.GameSelection) }
-  val managementViewModel = remember { ManagementViewModel() }
+  val appViewModel = remember { AppViewModel() }
+  val uiState = appViewModel.uiState
 
   MaterialTheme {
     Column(
@@ -26,9 +23,14 @@ fun App() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-      when (currentScreen) {
-        Screen.GameSelection -> GameSelectionScreen(managementViewModel)
-        Screen.Game -> TODO()
+      when (uiState.currentScreen) {
+        Screen.GameSelection -> GameSelectionScreen(uiState = uiState, app = appViewModel)
+        Screen.Game ->
+            GameScreen(
+                currentGameId = requireNotNull(uiState.currentGame).id,
+                app = appViewModel,
+                onLeave = appViewModel::openManagement,
+            )
       }
     }
   }

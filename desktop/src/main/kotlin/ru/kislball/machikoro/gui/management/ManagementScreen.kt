@@ -1,3 +1,5 @@
+@file:Suppress("FunctionNaming")
+
 package ru.kislball.machikoro.gui.management
 
 import androidx.compose.foundation.layout.Arrangement
@@ -25,20 +27,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.kislball.machikoro.gui.AppUiState
+import ru.kislball.machikoro.gui.AppViewModel
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun GameSelectionScreen(viewModel: ManagementViewModel) {
+fun GameSelectionScreen(
+    uiState: AppUiState,
+    app: AppViewModel,
+) {
   var newGameTitle by remember { mutableStateOf("") }
   val savedGamesScrollState = rememberScrollState()
   var isCreateGameDialogOpen by remember { mutableStateOf(false) }
-  val uiState = viewModel.uiState
 
   if (isCreateGameDialogOpen) {
     GameCreateDialog(
         name = newGameTitle.trim(),
         onSubmit = { submission ->
-          viewModel.createGame(newGameTitle, submission.players)
+          app.createGame(newGameTitle, submission.players)
+          app.openGame(newGameTitle)
           isCreateGameDialogOpen = false
           newGameTitle = ""
         },
@@ -87,7 +94,7 @@ fun GameSelectionScreen(viewModel: ManagementViewModel) {
         uiState.savedGames.forEach { savedGame ->
           SavedGameListItem(
               savedGame = savedGame,
-              onClick = {},
+              onClick = { app.openGame(savedGame.name) },
           )
         }
       }
