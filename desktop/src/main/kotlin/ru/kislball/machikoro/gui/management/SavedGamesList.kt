@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.gui.screen.management
+package ru.kislball.machikoro.gui.management
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

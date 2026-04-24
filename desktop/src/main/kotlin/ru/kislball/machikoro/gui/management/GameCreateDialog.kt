@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.gui.screen.management
+package ru.kislball.machikoro.gui.management
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

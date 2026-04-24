@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.gui.screen.management
+package ru.kislball.machikoro.gui.management
 
 import java.nio.file.Files
 import java.nio.file.Path

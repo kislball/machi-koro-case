@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.gui.screen
+package ru.kislball.machikoro.gui
 
 enum class Screen {
   GameSelection,

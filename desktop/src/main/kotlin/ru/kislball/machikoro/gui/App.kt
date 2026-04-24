@@ -12,9 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import ru.kislball.machikoro.gui.screen.Screen
-import ru.kislball.machikoro.gui.screen.management.GameSelectionScreen
-import ru.kislball.machikoro.gui.screen.management.ManagementViewModel
+import ru.kislball.machikoro.gui.management.GameSelectionScreen
+import ru.kislball.machikoro.gui.management.ManagementViewModel
 
 @Composable
 fun App() {
