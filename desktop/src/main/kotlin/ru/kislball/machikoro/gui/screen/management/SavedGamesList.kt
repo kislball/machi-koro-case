@@ -22,20 +22,14 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.Date
-
-data class SavedGame(
-    val name: String,
-    val playerNames: List<String>,
-    val isFinished: Boolean,
-    val createdAt: Date,
-)
+import ru.kislball.machikoro.storage.SavedGameSummary
 
 @Composable
 fun SavedGameListItem(
-    savedGame: SavedGame,
+    savedGame: SavedGameSummary,
     onClick: () -> Unit,
 ) {
   Row(
@@ -53,7 +47,6 @@ fun SavedGameListItem(
         Spacer(Modifier.width(8.dp))
         Text(
             savedGame.createdAt
-                .toInstant()
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate()
                 .format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
@@ -66,7 +59,7 @@ fun SavedGameListItem(
             Modifier.size(16.dp)
                 .background(
                     color =
-                        if (savedGame.isFinished) {
+                        if (savedGame.finished) {
                           Color.Red
                         } else {
                           Color.Green
@@ -81,11 +74,13 @@ fun SavedGameListItem(
 fun SavedGamePreview() {
   SavedGameListItem(
       savedGame =
-          SavedGame(
+          SavedGameSummary(
               name = "test",
               playerNames = listOf("Alice", "Bob", "Chloe", "Dylan"),
-              isFinished = false,
-              createdAt = Date(),
+              finished = false,
+              createdAt = Instant.now(),
+              winnerName = null,
+              catalogId = "standard",
           ),
       onClick = {},
   )

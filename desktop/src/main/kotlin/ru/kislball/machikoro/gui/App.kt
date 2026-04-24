@@ -14,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import ru.kislball.machikoro.gui.screen.Screen
 import ru.kislball.machikoro.gui.screen.management.GameSelectionScreen
+import ru.kislball.machikoro.gui.screen.management.ManagementViewModel
 
 @Composable
 fun App() {
   var currentScreen by remember { mutableStateOf(Screen.GameSelection) }
+  val managementViewModel = remember { ManagementViewModel() }
 
   MaterialTheme {
     Column(
@@ -26,7 +28,7 @@ fun App() {
         verticalArrangement = Arrangement.Center,
     ) {
       when (currentScreen) {
-        Screen.GameSelection -> GameSelectionScreen()
+        Screen.GameSelection -> GameSelectionScreen(managementViewModel)
         Screen.Game -> TODO()
       }
     }

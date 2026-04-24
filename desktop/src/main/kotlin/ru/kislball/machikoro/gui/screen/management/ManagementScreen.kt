@@ -25,19 +25,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.util.Date
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun GameSelectionScreen() {
+fun GameSelectionScreen(viewModel: ManagementViewModel) {
   var newGameTitle by remember { mutableStateOf("") }
   val savedGamesScrollState = rememberScrollState()
   var isCreateGameDialogOpen by remember { mutableStateOf(false) }
+  val uiState = viewModel.uiState
 
   if (isCreateGameDialogOpen) {
     GameCreateDialog(
         name = newGameTitle.trim(),
-        onSubmit = { isCreateGameDialogOpen = false },
+        onSubmit = { submission ->
+          viewModel.createGame(newGameTitle, submission.players)
+          isCreateGameDialogOpen = false
+          newGameTitle = ""
+        },
         onDismiss = { isCreateGameDialogOpen = false },
     )
   }
@@ -80,14 +84,9 @@ fun GameSelectionScreen() {
                   .heightIn(max = savedGamesMaxHeight)
                   .verticalScroll(savedGamesScrollState),
       ) {
-        repeat(1000) {
+        uiState.savedGames.forEach { savedGame ->
           SavedGameListItem(
-              SavedGame(
-                  name = "test",
-                  playerNames = listOf("Alice", "Bob", "Chloe", "Dylan"),
-                  isFinished = false,
-                  createdAt = Date(),
-              ),
+              savedGame = savedGame,
               onClick = {},
           )
         }

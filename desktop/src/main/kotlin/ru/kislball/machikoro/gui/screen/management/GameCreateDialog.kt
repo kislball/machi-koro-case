@@ -79,7 +79,12 @@ fun GameCreateDialog(
         }
       },
       confirmButton = {
-        Button(onClick = { onSubmit(GameCreateSubmission(playerNames.toList())) }) { Text("OK") }
+        Button(
+            onClick = { onSubmit(GameCreateSubmission(playerNames.toList())) },
+            enabled = playerNames.isNotEmpty(),
+        ) {
+          Text("OK")
+        }
       },
   )
 }
