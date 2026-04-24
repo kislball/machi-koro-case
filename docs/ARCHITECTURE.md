@@ -1,20 +1,5 @@
 ## Основные модули
 
-### CLI
-- `CLIApplication` читает команды, выбирает нужную команду по текущему режиму и печатает вывод.
-- `CLISession` хранит состояние CLI-сессии: режим, текущую активную игру и флаг выхода.
-- `CommandContext` собирает зависимости CLI в один объект: `CLIIO`, `CLIStorage`, `GameAutoAdvance`, localiser и registry каталогов.
-- `CLIStorage` сохраняет JSON, загружает игру и выбирает `CardCatalog` по сохранённому `catalogId`.
-- `CLICatalogRegistry` хранит доступные каталоги и нужен на случай, если каталогов станет больше.
-- `GameAutoAdvance` автоматически продвигает шаг, пока не потребуется ввод пользователя.
-
-#### Поток CLI-запроса
-1. `MainKt.main()` создаёт `CLIApplication`.
-2. `CLIApplication.run()` читает строку из `CLIIO`.
-3. Команда выбирается по `CLIMode` из `managementCommands()` или `gameCommands()`.
-4. Команда работает через `CommandContext`, а игровая логика уходит в `GameDriver`.
-5. После команды CLI вызывает `flushGameState()`: продвигает игру дальше, печатает effect log и сообщает о pending input effect.
-
 ### Модель игры
 - `Game`: владеет игроками, историей шагов и очередью отложенных input-эффектов.
 - `Player`: хранит игрока, баланс и принадлежащие ему карты.
