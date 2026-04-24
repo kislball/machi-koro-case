@@ -9,6 +9,10 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import ru.kislball.machikoro.cards.common.Card
+import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.cards.common.CardIcon
+import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.cards.common.OverrideStarterCardsCatalog
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.cli.CLIApplication
@@ -16,6 +20,11 @@ import ru.kislball.machikoro.cli.catalog.CLICatalogDefinition
 import ru.kislball.machikoro.cli.catalog.CLICatalogRegistry
 import ru.kislball.machikoro.cli.io.CLIIO
 import ru.kislball.machikoro.cli.storage.CLIStorage
+import ru.kislball.machikoro.effects.Effect
+import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
+import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
+import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.step.StepPhase
 
 class CLIFlowIntegrationTest {
   private val tempDir = createTempDirectory("machikoro-cli-integration")
@@ -158,6 +167,81 @@ class CLIFlowIntegrationTest {
     )
   }
 
+  @Test
+  fun `run resolves pickPlayer for special card input`() {
+    val catalog = testCatalog(TestPickPlayerCard())
+    val io =
+        ScriptedCLIIO(
+            mutableListOf(
+                "start",
+                "alice,bob",
+                "pickPlayer bob",
+                "info alice",
+                "info bob",
+            ))
+    val catalogs = registryFor(catalog)
+    val app = CLIApplication(io, CLIStorage(tempDir, catalogs), catalogs)
+
+    app.run()
+
+    assertContainsInOrder(
+        io.output,
+        listOf(
+            "management> ",
+            "Введите имена игроков через запятую",
+            "Ожидается ввод",
+            "game(alice)> ",
+            "Ввод применён",
+        ),
+    )
+    assertTrue(io.output.any { it.contains("Ожидается выбор игрока для alice") })
+    assertTrue(io.output.any { it.contains("Игрок alice: баланс ") && it.contains("cards.cli_test_pick") })
+    assertTrue(io.output.any { it.contains("Игрок bob: баланс 1") })
+  }
+
+  @Test
+  fun `run resolves swap for special card input`() {
+    val catalog = testCatalog(TestSwapCard())
+    val io =
+        ScriptedCLIIO(
+            mutableListOf(
+                "start",
+                "alice,bob",
+                "swap bob cards.cli_test_beta",
+                "save swapped",
+            ))
+    val catalogs = registryFor(catalog)
+    val storage = CLIStorage(tempDir, catalogs)
+    val app = CLIApplication(io, storage, catalogs)
+
+    app.run()
+
+    assertContainsInOrder(
+        io.output,
+        listOf(
+            "management> ",
+            "Введите имена игроков через запятую",
+            "Ожидается ввод",
+            "game(alice)> ",
+            "Ввод применён",
+            "Игра сохранена: swapped",
+        ),
+    )
+    assertTrue(io.output.any { it.contains("Ожидается обмен карт для alice") })
+
+    val savedGame = storage.load("swapped").driver.game
+    val alice = savedGame.players.first { it.name == "alice" }
+    val bob = savedGame.players.first { it.name == "bob" }
+    assertEquals(
+        listOf("cards.cli_test_beta", "cards.cli_test_beta", "cards.cli_test_swap").sorted(),
+        alice.cards.map { it.cardId }.sorted(),
+    )
+    assertEquals(
+        listOf("cards.cli_test_alpha", "cards.cli_test_alpha", "cards.cli_test_swap").sorted(),
+        bob.cards.map { it.cardId }.sorted(),
+    )
+  }
+
   private fun assertContainsInOrder(output: List<String>, expectedParts: List<String>) {
     var currentIndex = 0
     for (expectedPart in expectedParts) {
@@ -172,7 +256,7 @@ class CLIFlowIntegrationTest {
     }
   }
 
-  private fun registryFor(catalog: OverrideStarterCardsCatalog): CLICatalogRegistry {
+  private fun registryFor(catalog: CardCatalog): CLICatalogRegistry {
     return CLICatalogRegistry(
         definitions =
             listOf(
@@ -181,6 +265,57 @@ class CLIFlowIntegrationTest {
             ),
         defaultCatalogId = "custom",
     )
+  }
+
+  private fun testCatalog(card: Card): CardCatalog {
+    val first = TestBasicCard("cards.cli_test_alpha")
+    val second = TestBasicCard("cards.cli_test_beta")
+    return object : CardCatalog(listOf(first, second, card)) {
+      override fun getStarterCards(): List<Card> {
+        return listOf(
+            checkNotNull(this[first.cardId]),
+            checkNotNull(this[second.cardId]),
+            checkNotNull(this[card.cardId]),
+        )
+      }
+    }
+  }
+
+  private class TestBasicCard(cardId: String) :
+      Card(cardId, CardType.ENTERPRISE, icon = CardIcon.SHOP) {
+    override fun getPrice(s: StepPhase): Int = 1
+
+    override fun getEffect(s: StepPhase, possessor: Player?): Effect {
+      error("TestBasicCard should never trigger")
+    }
+
+    override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean = false
+  }
+
+  private class TestPickPlayerCard :
+      Card("cards.cli_test_pick", CardType.ENTERPRISE, icon = CardIcon.SPECIAL) {
+    override fun getPrice(s: StepPhase): Int = 1
+
+    override fun getEffect(s: StepPhase, possessor: Player?): Effect {
+      return PickAndChargeUserInputEffect.getAwaiter(checkNotNull(possessor), 2)
+    }
+
+    override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
+      return possessor == stepPhase.currentPlayer
+    }
+  }
+
+  private class TestSwapCard :
+      Card("cards.cli_test_swap", CardType.ENTERPRISE, icon = CardIcon.SPECIAL) {
+    override fun getPrice(s: StepPhase): Int = 1
+
+    override fun getEffect(s: StepPhase, possessor: Player?): Effect {
+      return SwapCardsInputEffect.getAwaiter(checkNotNull(possessor))
+    }
+
+    override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
+      return possessor == stepPhase.currentPlayer
+    }
   }
 
   private class ScriptedCLIIO(
