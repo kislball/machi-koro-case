@@ -8,6 +8,7 @@ plugins {
 }
 
 repositories {
+    google()
     // Use Maven Central for resolving dependencies.
     mavenCentral()
 }

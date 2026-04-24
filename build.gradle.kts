@@ -4,6 +4,7 @@ import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 plugins {
   id("com.diffplug.spotless") version "7.0.4" apply false
   id("io.gitlab.arturbosch.detekt") version "1.23.7" apply false
+  id("org.jetbrains.kotlin.plugin.compose") version "2.3.0" apply false
 }
 
 subprojects {

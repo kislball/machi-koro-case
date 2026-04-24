@@ -27,6 +27,7 @@ replay_pid*
 .kotlin/
 # Ignore Gradle project-specific cache directory
 .gradle
+.gradle-local
 
 # Ignore Gradle build output directory
 build

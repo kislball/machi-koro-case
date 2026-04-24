@@ -7,6 +7,7 @@
 
 pluginManagement {
   repositories {
+    google()
     mavenCentral()
     gradlePluginPortal()
   }
@@ -19,5 +20,4 @@ plugins {
 
 rootProject.name = "machi-koro-case"
 
-include("core")
-include("cli")
+include("cli", "core", "desktop")
