@@ -19,13 +19,13 @@ import ru.kislball.machikoro.cli.CLIApplication
 import ru.kislball.machikoro.cli.catalog.CLICatalogDefinition
 import ru.kislball.machikoro.cli.catalog.CLICatalogRegistry
 import ru.kislball.machikoro.cli.io.CLIIO
-import ru.kislball.machikoro.cli.storage.CLIStorage
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
 import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
+import ru.kislball.machikoro.storage.GameStorage
 
 class CLIFlowIntegrationTest {
   private val tempDir = createTempDirectory("machikoro-cli-integration")
@@ -50,7 +50,7 @@ class CLIFlowIntegrationTest {
                 "info alice",
             ))
     val catalogs = CLICatalogRegistry.default()
-    val app = CLIApplication(io, CLIStorage(tempDir, catalogs), catalogs)
+    val app = CLIApplication(io, storageFor(catalogs), catalogs)
 
     app.run()
 
@@ -103,7 +103,7 @@ class CLIFlowIntegrationTest {
                 "save upgraded",
             ))
     val catalogs = registryFor(catalog)
-    val storage = CLIStorage(tempDir, catalogs)
+    val storage = storageFor(catalogs)
     val app = CLIApplication(io, storage, catalogs)
 
     app.run()
@@ -153,7 +153,7 @@ class CLIFlowIntegrationTest {
         )
     val io = ScriptedCLIIO(mutableListOf("start", "alice,bob", "rethrow", "exit"))
     val catalogs = registryFor(catalog)
-    val app = CLIApplication(io, CLIStorage(tempDir, catalogs), catalogs)
+    val app = CLIApplication(io, storageFor(catalogs), catalogs)
 
     app.run()
 
@@ -207,7 +207,7 @@ class CLIFlowIntegrationTest {
                 "info bob",
             ))
     val catalogs = registryFor(catalog)
-    val app = CLIApplication(io, CLIStorage(tempDir, catalogs), catalogs)
+    val app = CLIApplication(io, storageFor(catalogs), catalogs)
 
     app.run()
 
@@ -239,7 +239,7 @@ class CLIFlowIntegrationTest {
                 "save swapped",
             ))
     val catalogs = registryFor(catalog)
-    val storage = CLIStorage(tempDir, catalogs)
+    val storage = storageFor(catalogs)
     val app = CLIApplication(io, storage, catalogs)
 
     app.run()
@@ -340,6 +340,12 @@ class CLIFlowIntegrationTest {
             ),
         defaultCatalogId = "custom",
     )
+  }
+
+  private fun storageFor(catalogs: CLICatalogRegistry): GameStorage {
+    return GameStorage(tempDir, catalogs.defaultCatalogId) { catalogId ->
+      catalogs.get(catalogId)?.catalog
+    }
   }
 
   private fun testCatalog(card: Card): CardCatalog {

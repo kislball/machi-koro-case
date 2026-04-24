@@ -21,7 +21,8 @@ class JSONImporter(val catalog: CardCatalog) : GameImporter {
             players.firstOrNull { it.name == winnerName }
                 ?: throw IllegalArgumentException("Invalid winner: $winnerName")
           }
-      Game(catalog, players, SightsCollectedTrigger(), winner)
+      val finished = parsed.metadata?.finished ?: (winner != null)
+      Game(catalog, players, SightsCollectedTrigger(), winner, finished)
     } catch (exception: JsonProcessingException) {
       throw IllegalArgumentException("Invalid JSON content", exception)
     }

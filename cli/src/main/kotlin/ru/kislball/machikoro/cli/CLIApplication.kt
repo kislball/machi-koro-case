@@ -1,5 +1,7 @@
 package ru.kislball.machikoro.cli
 
+import java.nio.file.Files
+import java.nio.file.Path
 import ru.kislball.machikoro.cli.catalog.CLICatalogRegistry
 import ru.kislball.machikoro.cli.command.CommandContext
 import ru.kislball.machikoro.cli.command.gameCommands
@@ -10,7 +12,6 @@ import ru.kislball.machikoro.cli.io.CLIIO
 import ru.kislball.machikoro.cli.io.StdCLIIO
 import ru.kislball.machikoro.cli.session.CLIMode
 import ru.kislball.machikoro.cli.session.CLISession
-import ru.kislball.machikoro.cli.storage.CLIStorage
 import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
@@ -22,10 +23,11 @@ import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.utilities.getOrNull
 import ru.kislball.machikoro.localisation.localiseOrKey
+import ru.kislball.machikoro.storage.GameStorage
 
 class CLIApplication(
     private val io: CLIIO = StdCLIIO,
-    private val storage: CLIStorage = CLIStorage.default(),
+    private val storage: GameStorage = defaultStorage(),
     catalogs: CLICatalogRegistry = CLICatalogRegistry.default(),
 ) {
   private val session = CLISession()
@@ -94,5 +96,16 @@ class CLIApplication(
               )
         }
     io.writeLine(prompt)
+  }
+
+  companion object {
+    private fun defaultStorage(): GameStorage {
+      val root = Path.of(System.getProperty("user.dir"), ".machikoro-cli")
+      Files.createDirectories(root)
+      val catalogs = CLICatalogRegistry.default()
+      return GameStorage(root, catalogs.defaultCatalogId) { catalogId ->
+        catalogs.get(catalogId)?.catalog
+      }
+    }
   }
 }

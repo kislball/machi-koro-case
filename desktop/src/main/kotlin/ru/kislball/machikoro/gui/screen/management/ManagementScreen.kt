@@ -37,12 +37,8 @@ fun GameSelectionScreen() {
   if (isCreateGameDialogOpen) {
     GameCreateDialog(
         name = newGameTitle.trim(),
-        onSubmit = {
-          isCreateGameDialogOpen = false
-        },
-        onDismiss = {
-          isCreateGameDialogOpen = false
-        },
+        onSubmit = { isCreateGameDialogOpen = false },
+        onDismiss = { isCreateGameDialogOpen = false },
     )
   }
 

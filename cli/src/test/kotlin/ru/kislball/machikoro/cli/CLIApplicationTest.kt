@@ -8,8 +8,9 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.cli.io.CLIIO
-import ru.kislball.machikoro.cli.storage.CLIStorage
+import ru.kislball.machikoro.storage.GameStorage
 
 class CLIApplicationTest {
   private val tempDir = createTempDirectory("machikoro-cli-app")
@@ -22,7 +23,7 @@ class CLIApplicationTest {
   @Test
   fun `start command creates a game and info prints player state`() {
     val io = FakeIO(mutableListOf("alice,bob"))
-    val app = CLIApplication(io, CLIStorage(tempDir))
+    val app = CLIApplication(io, GameStorage(tempDir, "standard") { StandardCatalog })
 
     app.execute("start")
     app.execute("info")
@@ -34,7 +35,7 @@ class CLIApplicationTest {
   @Test
   fun `exit in game mode returns to management mode`() {
     val io = FakeIO(mutableListOf("alice,bob"))
-    val app = CLIApplication(io, CLIStorage(tempDir))
+    val app = CLIApplication(io, GameStorage(tempDir, "standard") { StandardCatalog })
 
     app.execute("start")
     app.execute("exit")
@@ -47,7 +48,7 @@ class CLIApplicationTest {
   @Test
   fun `effects output does not contain raw effect ids`() {
     val io = FakeIO(mutableListOf("alice,bob"))
-    val app = CLIApplication(io, CLIStorage(tempDir))
+    val app = CLIApplication(io, GameStorage(tempDir, "standard") { StandardCatalog })
 
     app.execute("start")
     app.execute("buyCard cards.wheat")

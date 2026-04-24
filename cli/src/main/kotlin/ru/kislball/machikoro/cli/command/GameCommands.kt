@@ -13,6 +13,9 @@ import ru.kislball.machikoro.game.IntermediateRollResult
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.utilities.getOrNull
+import ru.kislball.machikoro.storage.InvalidSaveNameException
+import ru.kislball.machikoro.storage.SaveNotFoundException
+import ru.kislball.machikoro.storage.UnknownCatalogException
 
 internal fun gameCommands(session: CLISession): List<Command> {
   return listOf(
@@ -26,7 +29,10 @@ internal fun gameCommands(session: CLISession): List<Command> {
       object : Command("save", CLIMode.GAME) {
         override fun execute(arguments: List<String>, context: CommandContext) {
           require(arguments.size == 1) { "save <name>" }
-          context.storage.save(arguments.single(), requireGame(session))
+          val game = requireGame(session)
+          withStorageErrors {
+            context.storage.save(arguments.single(), game.driver, game.catalogId)
+          }
           context.printLine("cli.games.saved", arguments.single())
         }
       },
@@ -156,4 +162,21 @@ private fun currentPlayer(game: ActiveCliGame): Player {
 
 private fun findPlayer(players: List<Player>, name: String): Player {
   return players.firstOrNull { it.name == name } ?: throw CLIException("cli.player.not_found", name)
+}
+
+inline fun <T> withStorageErrors(action: () -> T): T {
+  return try {
+    action()
+  } catch (exception: RuntimeException) {
+    val mapped =
+        when (exception) {
+          is SaveNotFoundException ->
+              CLIException("cli.games.not_found", exception.saveName, exception)
+          is UnknownCatalogException ->
+              CLIException("cli.catalog.not_found", exception.catalogId, exception)
+          is InvalidSaveNameException -> CLIException("cli.games.invalid_name", cause = exception)
+          else -> throw exception
+        }
+    throw mapped
+  }
 }

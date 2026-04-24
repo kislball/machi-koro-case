@@ -22,6 +22,7 @@ class JSONExporter(
                 },
             metadata = GameMetadataJson(winner = game.winner?.name, catalogId = catalogId),
         )
-    return mapper.writeValueAsString(payload)
+    return mapper.writeValueAsString(
+        payload.copy(metadata = payload.metadata?.copy(finished = game.finished)))
   }
 }

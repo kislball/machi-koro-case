@@ -1,12 +1,12 @@
 package ru.kislball.machikoro.gui.screen.management
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,42 +42,41 @@ fun GameCreateDialog(
       onDismissRequest = onDismiss,
       title = { Text("Создание игры $name") },
       text = {
-          Column {
-              Row(
-                  verticalAlignment = Alignment.CenterVertically,
-                  horizontalArrangement = Arrangement.SpaceBetween,
-                  modifier = Modifier.fillMaxWidth()
-              ) {
-                  TextField(
-                      value = currentPlayerName,
-                      onValueChange = { currentPlayerName = it },
-                      label = { Text("Имя игрока") },
-                      modifier = Modifier.fillMaxWidth(0.85F),
+        Column {
+          Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.SpaceBetween,
+              modifier = Modifier.fillMaxWidth()) {
+                TextField(
+                    value = currentPlayerName,
+                    onValueChange = { currentPlayerName = it },
+                    label = { Text("Имя игрока") },
+                    modifier = Modifier.fillMaxWidth(0.85F),
+                )
+                Button(
+                    onClick = {
+                      if (trimmedPlayerName.isNotEmpty()) {
+                        playerNames.add(trimmedPlayerName)
+                        currentPlayerName = ""
+                      }
+                    },
+                    enabled = trimmedPlayerName.isNotEmpty() && trimmedPlayerName !in playerNames,
+                ) {
+                  Icon(
+                      imageVector = Icons.Default.Add,
+                      contentDescription = "Добавить игрока",
                   )
-                  Button(
-                      onClick = {
-                          if (trimmedPlayerName.isNotEmpty()) {
-                              playerNames.add(trimmedPlayerName)
-                              currentPlayerName = ""
-                          }
-                      },
-                      enabled = trimmedPlayerName.isNotEmpty() && trimmedPlayerName !in playerNames,
-                  ) {
-                      Icon(
-                          imageVector = Icons.Default.Add,
-                          contentDescription = "Добавить игрока",
-                      )
-                  }
+                }
               }
-              Column {
-                  playerNames.forEach { playerName ->
-                      PlayerListItem(
-                          playerName = playerName,
-                          onDelete = { playerNames.remove(playerName) },
-                      )
-                  }
-              }
+          Column {
+            playerNames.forEach { playerName ->
+              PlayerListItem(
+                  playerName = playerName,
+                  onDelete = { playerNames.remove(playerName) },
+              )
+            }
           }
+        }
       },
       confirmButton = {
         Button(onClick = { onSubmit(GameCreateSubmission(playerNames.toList())) }) { Text("OK") }
@@ -90,17 +89,16 @@ fun PlayerListItem(
     playerName: String,
     onDelete: () -> Unit,
 ) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
+  Row(
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.fillMaxWidth()) {
         Text(playerName)
         IconButton(onClick = onDelete) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Удалить игрока",
-            )
+          Icon(
+              imageVector = Icons.Default.Close,
+              contentDescription = "Удалить игрока",
+          )
         }
-    }
+      }
 }
