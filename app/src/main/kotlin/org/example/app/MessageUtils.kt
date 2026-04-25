@@ -3,8 +3,6 @@
  */
 package org.example.app
 
-class MessageUtils {
-    companion object {
-        fun getMessage(): String = "Hello      World!"
-    }
+object MessageUtils {
+  const val MESSAGE: String = "Hello      World!"
 }

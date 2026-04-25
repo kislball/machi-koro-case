@@ -3,12 +3,11 @@
  */
 package org.example.app
 
+import org.apache.commons.text.WordUtils
 import org.example.utilities.StringUtils
 
-import org.apache.commons.text.WordUtils
-
 fun main() {
-    val tokens = StringUtils.split(MessageUtils.getMessage())
-    val result = StringUtils.join(tokens)
-    println(WordUtils.capitalize(result))
+  val tokens = StringUtils.split(MessageUtils.MESSAGE)
+  val result = StringUtils.join(tokens)
+  println(WordUtils.capitalize(result))
 }

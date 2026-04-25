@@ -4,6 +4,19 @@
 
 plugins {
     id("buildlogic.kotlin-application-conventions")
+    id("com.diffplug.spotless")
+    id("io.gitlab.arturbosch.detekt") version "1.23.7"
+}
+
+spotless {
+    kotlin {
+        target("**/*.kt")
+        ktfmt()
+    }
+}
+
+detekt {
+    toolVersion = "1.23.7"
 }
 
 dependencies {

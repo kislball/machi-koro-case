@@ -1,0 +1,4 @@
+# ktfmt configuration
+# https://github.com/facebook/ktfmt
+
+max-width = 100
