@@ -195,7 +195,8 @@ class CLIFlowIntegrationTest {
         ),
     )
     assertTrue(io.output.any { it.contains("Ожидается выбор игрока для alice") })
-    assertTrue(io.output.any { it.contains("Игрок alice: баланс ") && it.contains("cards.cli_test_pick") })
+    assertTrue(
+        io.output.any { it.contains("Игрок alice: баланс ") && it.contains("cards.cli_test_pick") })
     assertTrue(io.output.any { it.contains("Игрок bob: баланс 1") })
   }
 
