@@ -21,27 +21,28 @@ import ru.kislball.machikoro.cards.standard.sights.TVTowerCard
 import ru.kislball.machikoro.gui.cards.CardImage
 
 enum class PlayerDisplayAlignment {
-    Top,
-    Left,
-    Right,
-    Bottom
+  Top,
+  Left,
+  Right,
+  Bottom
 }
 
 fun PlayerDisplayAlignment.toAlignment(): Alignment {
-    return when (this) {
-        PlayerDisplayAlignment.Top -> Alignment.TopCenter
-        PlayerDisplayAlignment.Left -> Alignment.CenterStart
-        PlayerDisplayAlignment.Right -> Alignment.CenterEnd
-        PlayerDisplayAlignment.Bottom -> Alignment.BottomCenter
-    }
+  return when (this) {
+    PlayerDisplayAlignment.Top -> Alignment.TopCenter
+    PlayerDisplayAlignment.Left -> Alignment.CenterStart
+    PlayerDisplayAlignment.Right -> Alignment.CenterEnd
+    PlayerDisplayAlignment.Bottom -> Alignment.BottomCenter
+  }
 }
 
-fun PlayerDisplayAlignment.isVertical() = when (this) {
-    PlayerDisplayAlignment.Top -> false
-    PlayerDisplayAlignment.Left -> true
-    PlayerDisplayAlignment.Right -> true
-    PlayerDisplayAlignment.Bottom -> false
-}
+fun PlayerDisplayAlignment.isVertical() =
+    when (this) {
+      PlayerDisplayAlignment.Top -> false
+      PlayerDisplayAlignment.Left -> true
+      PlayerDisplayAlignment.Right -> true
+      PlayerDisplayAlignment.Bottom -> false
+    }
 
 @Composable
 fun PlayerDisplay(
@@ -50,48 +51,48 @@ fun PlayerDisplay(
     cards: List<Card>,
     alignment: PlayerDisplayAlignment,
     modifier: Modifier = Modifier,
-){
+) {
   when (alignment) {
-      PlayerDisplayAlignment.Bottom -> {
-          Column(
-              horizontalAlignment = Alignment.CenterHorizontally,
-              modifier = modifier,
-          ) {
-              Text("$name ($balance)", fontSize = 24.sp)
-              Spacer(Modifier.height(8.dp))
-              Row { cards.forEach { CardImage(it) } }
-          }
+    PlayerDisplayAlignment.Bottom -> {
+      Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = modifier,
+      ) {
+        Text("$name ($balance)", fontSize = 24.sp)
+        Spacer(Modifier.height(8.dp))
+        Row { cards.forEach { CardImage(it) } }
       }
-      PlayerDisplayAlignment.Top -> {
-          Column(
-              horizontalAlignment = Alignment.CenterHorizontally,
-              modifier = modifier,
-          ) {
-              Row { cards.forEach { CardImage(it) } }
-              Spacer(Modifier.height(8.dp))
-              Text("$name ($balance)", fontSize = 24.sp)
-          }
+    }
+    PlayerDisplayAlignment.Top -> {
+      Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = modifier,
+      ) {
+        Row { cards.forEach { CardImage(it) } }
+        Spacer(Modifier.height(8.dp))
+        Text("$name ($balance)", fontSize = 24.sp)
       }
-      PlayerDisplayAlignment.Left -> {
-          Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = modifier,
-          ) {
-              Column { cards.forEach { CardImage(it) } }
-              Spacer(Modifier.width(8.dp))
-              Text("$name ($balance)", modifier = Modifier.rotate(90F), fontSize = 24.sp)
-          }
+    }
+    PlayerDisplayAlignment.Left -> {
+      Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = modifier,
+      ) {
+        Column { cards.forEach { CardImage(it) } }
+        Spacer(Modifier.width(8.dp))
+        Text("$name ($balance)", modifier = Modifier.rotate(90F), fontSize = 24.sp)
       }
-      PlayerDisplayAlignment.Right -> {
-          Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = modifier,
-          ) {
-              Text("$name ($balance)", modifier = Modifier.rotate(90F), fontSize = 24.sp)
-              Spacer(Modifier.width(8.dp))
-              Column { cards.forEach { CardImage(it) } }
-          }
+    }
+    PlayerDisplayAlignment.Right -> {
+      Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = modifier,
+      ) {
+        Text("$name ($balance)", modifier = Modifier.rotate(90F), fontSize = 24.sp)
+        Spacer(Modifier.width(8.dp))
+        Column { cards.forEach { CardImage(it) } }
       }
+    }
   }
 }
 

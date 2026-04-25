@@ -3,7 +3,6 @@ package ru.kislball.machikoro.storage
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
-import java.time.Instant
 import kotlin.io.path.createDirectories
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.exists
@@ -12,33 +11,12 @@ import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.exceptions.InvalidSaveNameException
+import ru.kislball.machikoro.exceptions.SaveNotFoundException
+import ru.kislball.machikoro.exceptions.UnknownCatalogException
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.facility.json.JSONExporter
 import ru.kislball.machikoro.facility.json.JSONImporter
-
-data class TopEntry(val playerName: String, val wins: Int)
-
-data class StoredGame(
-    val driver: GameDriver,
-    val catalogId: String,
-)
-
-data class SavedGameSummary(
-    val name: String,
-    val playerNames: List<String>,
-    val createdAt: Instant,
-    val finished: Boolean,
-    val winnerName: String?,
-    val catalogId: String,
-)
-
-class SaveNotFoundException(val saveName: String) :
-    NoSuchElementException("Saved game not found: $saveName")
-
-class InvalidSaveNameException : IllegalArgumentException("Save name must not be blank")
-
-class UnknownCatalogException(val catalogId: String) :
-    IllegalArgumentException("Unknown catalog: $catalogId")
 
 class GameStorage(
     private val root: Path,
