@@ -26,6 +26,7 @@ class GameViewModel(
 
   var showOnCenter = mutableStateOf(false)
 
+  @Suppress("TooManyFunctions")
   class ObservableGameDriver(driver: GameDriver) : GameDriver(driver.game) {
     private var version by mutableStateOf(0)
 

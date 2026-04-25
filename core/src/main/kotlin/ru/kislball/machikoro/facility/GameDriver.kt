@@ -35,6 +35,7 @@ import ru.kislball.machikoro.game.step.FinishedStepPhase
 import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.utilities.contains
 
+@Suppress("TooManyFunctions")
 open class GameDriver(open val game: Game) {
   open fun observeEffects(observer: (Effect, PendingStepPhase) -> Unit) {
     game.addEffectObserver { effect, stepPhase ->
