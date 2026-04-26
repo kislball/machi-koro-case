@@ -16,10 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
-import ru.kislball.machikoro.game.DiceRollResult
-import ru.kislball.machikoro.game.utilities.contains
-import ru.kislball.machikoro.game.utilities.get
 import ru.kislball.machikoro.gui.AppViewModel
+import ru.kislball.machikoro.gui.game.prompts.DiceInputPrompt
 
 @Composable
 fun GameScreen(
@@ -31,22 +29,34 @@ fun GameScreen(
   val driver = gameViewModel.driver
   val game = driver.game
   val players = game.players
+  val currentStep = game.currentStepPhase
+  val currentDiceResult = gameViewModel.currentDiceResult
+  val shouldPromptDiceChoice = gameViewModel.shouldPromptDiceChoice
+  val eventLog = gameViewModel.eventLog
+  val eventLogTitle = gameViewModel.eventLogTitle
+  val pendingInputMarker = gameViewModel.pendingInputMarker
 
-  LaunchedEffect(driver, players) {
-    if (!driver.game.resources.contains<DiceRollResult>()) {
-      driver.rollDice(players.first(), 1)
-    }
+  LaunchedEffect(currentStep, game.finished, shouldPromptDiceChoice, currentDiceResult) {
+    gameViewModel.advanceGame()
   }
 
   Box(
       modifier = Modifier.fillMaxSize(),
   ) {
     Box(Modifier.align(Alignment.Center)) {
-      if (driver.game.resources.contains<DiceRollResult>()) {
-        val result = driver.game.resources.get<DiceRollResult>()!!
-        DiceRoll(result.diceThrown)
-      } else {
-        Text("Rolling...")
+      when {
+        shouldPromptDiceChoice -> {
+          DiceInputPrompt(
+              canRollTwoDice = true,
+              playerName = currentStep?.currentPlayer?.name ?: players.first().name,
+              onSelect = gameViewModel::submitDiceChoice)
+        }
+        currentDiceResult != null -> {
+          DiceRoll(currentDiceResult.diceThrown)
+        }
+        else -> {
+          Text("Rolling...")
+        }
       }
     }
     IconButton(
@@ -54,6 +64,11 @@ fun GameScreen(
         modifier = Modifier.pointerHoverIcon(PointerIcon.Hand).align(Alignment.TopStart)) {
           Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Leave")
         }
+    GameLogPanel(
+        title = eventLogTitle,
+        entries = eventLog,
+        pendingInputMarker = pendingInputMarker,
+        modifier = Modifier.align(Alignment.TopEnd))
 
     val alignments =
         listOf(
@@ -69,7 +84,8 @@ fun GameScreen(
           player.balance,
           player.cards,
           alignment = alignment,
-          modifier = Modifier.align(alignment.toAlignment()))
+          modifier = Modifier.align(alignment.toAlignment()),
+          isCurrent = game.currentPlayer == player)
     }
   }
 }

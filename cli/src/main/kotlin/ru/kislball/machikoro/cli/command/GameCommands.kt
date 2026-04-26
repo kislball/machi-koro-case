@@ -9,7 +9,9 @@ import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
+import ru.kislball.machikoro.exceptions.CardNotFoundException
 import ru.kislball.machikoro.exceptions.InvalidSaveNameException
+import ru.kislball.machikoro.exceptions.PlayerNotFoundException
 import ru.kislball.machikoro.exceptions.SaveNotFoundException
 import ru.kislball.machikoro.exceptions.UnknownCatalogException
 import ru.kislball.machikoro.game.DiceRollResult
@@ -26,6 +28,30 @@ internal fun gameCommands(session: CLISession): List<Command> {
           session.mode = CLIMode.MANAGEMENT
           context.printLine("cli.game.exited")
         }
+      },
+      object : Command("admin.give-card", CLIMode.GAME) {
+          override fun execute(
+              arguments: List<String>,
+              context: CommandContext
+          ) {
+              val game = checkNotNull(context.session.activeGame?.driver?.game)
+              require(arguments.size == 2) { "admin.give-card <user> <card>" }
+              val player = game.players.find { it.name == arguments[0] } ?: throw PlayerNotFoundException(arguments[0])
+              val card = game.catalog[arguments[1]] ?: throw CardNotFoundException(arguments[1])
+              player.cards.add(card)
+          }
+      },
+      object : Command("admin.remove-card", CLIMode.GAME) {
+          override fun execute(
+              arguments: List<String>,
+              context: CommandContext
+          ) {
+              val game = checkNotNull(context.session.activeGame?.driver?.game)
+              require(arguments.size == 2) { "admin.give-card <user> <card>" }
+              val player = game.players.find { it.name == arguments[0] } ?: throw PlayerNotFoundException(arguments[0])
+              val card = game.catalog[arguments[1]] ?: throw CardNotFoundException(arguments[1])
+              player.cards.remove(card)
+          }
       },
       object : Command("save", CLIMode.GAME) {
         override fun execute(arguments: List<String>, context: CommandContext) {

@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,6 +50,7 @@ fun PlayerDisplay(
     name: String,
     balance: Int,
     cards: List<Card>,
+    isCurrent: Boolean,
     alignment: PlayerDisplayAlignment,
     modifier: Modifier = Modifier,
 ) {
@@ -58,7 +60,10 @@ fun PlayerDisplay(
           horizontalAlignment = Alignment.CenterHorizontally,
           modifier = modifier,
       ) {
-        Text("$name ($balance)", fontSize = 24.sp)
+        Text(
+            "$name ($balance)",
+            fontSize = 24.sp,
+            textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
         Spacer(Modifier.height(8.dp))
         Row { cards.forEach { CardImage(it) } }
       }
@@ -70,7 +75,10 @@ fun PlayerDisplay(
       ) {
         Row { cards.forEach { CardImage(it) } }
         Spacer(Modifier.height(8.dp))
-        Text("$name ($balance)", fontSize = 24.sp)
+        Text(
+            "$name ($balance)",
+            fontSize = 24.sp,
+            textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
       }
     }
     PlayerDisplayAlignment.Left -> {
@@ -80,7 +88,11 @@ fun PlayerDisplay(
       ) {
         Column { cards.forEach { CardImage(it) } }
         Spacer(Modifier.width(8.dp))
-        Text("$name ($balance)", modifier = Modifier.rotate(90F), fontSize = 24.sp)
+        Text(
+            "$name ($balance)",
+            modifier = Modifier.rotate(90F),
+            fontSize = 24.sp,
+            textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
       }
     }
     PlayerDisplayAlignment.Right -> {
@@ -88,7 +100,11 @@ fun PlayerDisplay(
           verticalAlignment = Alignment.CenterVertically,
           modifier = modifier,
       ) {
-        Text("$name ($balance)", modifier = Modifier.rotate(90F), fontSize = 24.sp)
+        Text(
+            "$name ($balance)",
+            modifier = Modifier.rotate(90F),
+            fontSize = 24.sp,
+            textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
         Spacer(Modifier.width(8.dp))
         Column { cards.forEach { CardImage(it) } }
       }
@@ -111,6 +127,7 @@ fun PlayerDisplayPreview() {
                 TVCentreCard(),
             ),
         alignment = PlayerDisplayAlignment.Top,
+        isCurrent = true
     )
   }
 }

@@ -12,4 +12,5 @@ data class ActiveCliGame(
     val driver: GameDriver,
     val catalogId: String,
     val effectLog: MutableList<String> = mutableListOf(),
+    var loggedDiceResultKey: Pair<Int, List<Int>>? = null,
 )

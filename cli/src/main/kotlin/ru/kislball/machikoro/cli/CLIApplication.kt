@@ -65,6 +65,7 @@ class CLIApplication(
   private fun flushGameState() {
     val game = session.activeGame ?: return
     context.autoAdvance.advance(game)
+    appendResultLogs(game)
     game.effectLog.forEach(context::printRaw)
     game.effectLog.clear()
 
@@ -73,7 +74,6 @@ class CLIApplication(
       context.printLine("cli.awaiting.roll", current.currentPlayer)
       return
     }
-    current.results.getOrNull<DiceRollResult>()?.let { context.printLine("cli.dice.current", it) }
     val input = game.driver.game.inputEffects.peek()
     when (input) {
       is RethrowDiceInputEffect -> context.printLine("cli.awaiting.rethrow", input.player)
@@ -83,6 +83,16 @@ class CLIApplication(
       is GivePlayerAdditionalStepInputEffect ->
           context.printLine("cli.awaiting.additional_step", input.player)
     }
+  }
+
+  private fun appendResultLogs(game: ru.kislball.machikoro.cli.session.ActiveCliGame) {
+    val current = game.driver.game.currentStepPhase as? PendingStepPhase ?: return
+    val result = current.results.getOrNull<DiceRollResult>() ?: return
+    val resultKey = current.stepNumber to result.diceThrown
+    if (game.loggedDiceResultKey == resultKey) return
+
+    game.loggedDiceResultKey = resultKey
+    game.effectLog.add(context.localiser.localise("cli.result.dice.current", result))
   }
 
   private fun printPrompt() {

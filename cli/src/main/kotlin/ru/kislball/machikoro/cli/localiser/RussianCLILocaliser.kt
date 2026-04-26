@@ -100,6 +100,11 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
             },
         "cli.effect.effects.order.additional_step.execute" to { "Назначен дополнительный ход" },
         "cli.effect.effects.game_finished" to { "Игра завершена" },
+        "cli.result.dice.current" to
+            { obj: Any ->
+              val result = obj as DiceRollResult
+              "Кости: ${result.diceThrown.joinToString(", ")}"
+            },
         "cli.dice.current" to
             { obj: Any ->
               val result = obj as DiceRollResult
