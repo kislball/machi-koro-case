@@ -9,11 +9,16 @@ plugins {
 
 repositories {
     // Use the plugin portal to apply community plugins in convention plugins.
-    gradlePluginPortal()
     mavenCentral()
+    gradlePluginPortal()
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 dependencies {
     implementation(libs.kotlin.gradle.plugin)
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:7.0.4")
 }

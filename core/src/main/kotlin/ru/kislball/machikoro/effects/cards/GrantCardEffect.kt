@@ -1,0 +1,12 @@
+package ru.kislball.machikoro.effects.cards
+
+import ru.kislball.machikoro.cards.common.Card
+import ru.kislball.machikoro.effects.Effect
+import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.step.StepPhase
+
+class GrantCardEffect(val player: Player, val card: Card) : Effect("effects.cards.grant") {
+  override fun run(stepPhase: StepPhase) {
+    player.cards.add(card)
+  }
+}

@@ -1,0 +1,51 @@
+package ru.kislball.machikoro.cards.standard.enterprises
+
+import ru.kislball.machikoro.cards.common.Card
+import ru.kislball.machikoro.cards.common.CardIcon
+import ru.kislball.machikoro.cards.common.CardType
+import ru.kislball.machikoro.effects.Effect
+import ru.kislball.machikoro.effects.money.MoneyTransferEffect
+import ru.kislball.machikoro.effects.money.MoneyTransferType
+import ru.kislball.machikoro.exceptions.PossessorNotSetException
+import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.markers.getBonusForType
+import ru.kislball.machikoro.game.step.StepPhase
+import ru.kislball.machikoro.triggers.dice.PossessorDiceTrigger
+
+class MediumEnterpriseCard(
+    id: String,
+    icon: CardIcon,
+    val price: Int,
+    activationRange: List<Int>,
+    val revenueFrom: CardIcon?,
+    val reward: Int,
+    totalCards: Int = 4,
+) : Card(totalCards = totalCards, cardId = id, icon = icon, type = CardType.ENTERPRISE) {
+  private val trigger = PossessorDiceTrigger(activationRange)
+
+  private fun calculateMultiplier(player: Player): Int {
+    revenueFrom ?: return 1
+    return player.cards.count { it.icon == revenueFrom }
+  }
+
+  fun calculateReward(player: Player): Int {
+    return calculateMultiplier(player) * reward + player.getBonusForType(icon)
+  }
+
+  override fun getPrice(s: StepPhase): Int {
+    return price
+  }
+
+  override fun getEffect(s: StepPhase, possessor: Player?): Effect {
+    val p = possessor ?: throw PossessorNotSetException()
+    return MoneyTransferEffect(
+        player = p,
+        type = MoneyTransferType.Deposit,
+        amount = calculateReward(p),
+    )
+  }
+
+  override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
+    return trigger.isTriggered(stepPhase, possessor)
+  }
+}
