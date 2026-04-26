@@ -5,15 +5,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import ru.kislball.machikoro.StubCard
+import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardIcon
 import ru.kislball.machikoro.cards.common.CardType
-import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
-import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
 import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
 import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
 import ru.kislball.machikoro.game.DiceRollResult

@@ -1,6 +1,5 @@
 package ru.kislball.machikoro.facility
 
-import ru.kislball.machikoro.actions.BuyCardAction
 import ru.kislball.machikoro.actions.BuyCardInputAction
 import ru.kislball.machikoro.actions.PickAndChargePlayerAction
 import ru.kislball.machikoro.actions.PlayerAction
@@ -186,7 +185,9 @@ class GameDriver(val game: Game) {
     if (game.finished) return
     if (!step.results.contains<DiceRollResult>()) return
     if (step.results.contains<BuyCardDecisionResolved>()) return
-    if (game.inputEffects.toList().any { it is BuyCardInputEffect && it.player == step.currentPlayer }) {
+    if (game.inputEffects.toList().any {
+      it is BuyCardInputEffect && it.player == step.currentPlayer
+    }) {
       return
     }
 

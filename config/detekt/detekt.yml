@@ -13,6 +13,8 @@ complexity:
     active: false
   LongParameterList:
     constructorThreshold: 16
+  TooManyFunctions:
+    active: false
 
 performance:
   SpreadOperator:
