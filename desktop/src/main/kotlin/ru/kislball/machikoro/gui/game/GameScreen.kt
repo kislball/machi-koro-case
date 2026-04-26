@@ -66,7 +66,10 @@ fun GameScreen(
       modifier = Modifier.fillMaxSize(),
   ) {
     IconButton(
-        onClick = onLeave,
+        onClick = {
+          gameViewModel.saveGame()
+          onLeave()
+        },
         modifier = Modifier.pointerHoverIcon(PointerIcon.Hand).align(Alignment.TopStart)) {
           Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Leave")
         }

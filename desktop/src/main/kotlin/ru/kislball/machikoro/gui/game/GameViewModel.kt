@@ -171,6 +171,13 @@ class GameViewModel(
     driver.buyCard(step.currentPlayer, cardId)
   }
 
+  fun saveGame() {
+    app.saveGame(
+        gameId,
+        driver,
+    )
+  }
+
   fun skipCardPurchase() {
     val step = currentPendingStep ?: return
     driver.skipCardPurchase(step.currentPlayer)

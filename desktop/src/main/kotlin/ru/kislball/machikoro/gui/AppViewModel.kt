@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import java.nio.file.Files
 import java.nio.file.Path
+import ru.kislball.machikoro.cards.common.catalogId
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.facility.GameFactory
@@ -39,6 +40,14 @@ class AppViewModel(
 
   fun loadGame(id: String): GameDriver {
     return storage.load(id).driver
+  }
+
+  fun saveGame(id: String, catalogId: String, driver: GameDriver) {
+    storage.save(id, driver, catalogId)
+  }
+
+  fun saveGame(id: String, driver: GameDriver) {
+    saveGame(id, driver.game.catalog.catalogId, driver)
   }
 
   fun createGame(name: String, players: List<String>) {
