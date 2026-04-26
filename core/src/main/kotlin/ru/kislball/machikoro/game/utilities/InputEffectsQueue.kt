@@ -10,7 +10,7 @@ class InputEffectsQueue {
   }
 
   fun addToEnd(effect: InputEffect<*>) {
-    enqueue(effect)
+    effectsAwaitingInput.add(0, effect)
   }
 
   fun peek(): InputEffect<*>? {

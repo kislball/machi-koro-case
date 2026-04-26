@@ -15,6 +15,7 @@ import ru.kislball.machikoro.exceptions.EffectInputNotValidException
 import ru.kislball.machikoro.exceptions.GameException
 import ru.kislball.machikoro.exceptions.InputProvidedByNonOwnerException
 import ru.kislball.machikoro.facility.GameDriver
+import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
@@ -127,9 +128,8 @@ class InputEffectsTest {
   fun `provide input effect resolves queued input from awaiting flow`() {
     val player = Player("p1")
     val game = Game(listOf(player))
-    val driver = GameDriver(game)
-    val rolled = driver.nextStep()
-    driver.rollDice(player, 1)
+    val rolled = game.nextStep() as ru.kislball.machikoro.game.step.PendingStepPhase
+    rolled.results.set(DiceRollResult(player, listOf(1)))
     val inputEffect = RecordingIntInputEffect(player)
 
     val finishResult = rolled.submitPlayerAction(AwaitingInputAction(player, inputEffect))

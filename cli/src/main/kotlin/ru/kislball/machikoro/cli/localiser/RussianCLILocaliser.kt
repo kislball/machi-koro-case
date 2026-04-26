@@ -34,6 +34,7 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
         "cli.game.not_active" to { "Сейчас нет активной игры" },
         "cli.player.current_missing" to { "Текущий игрок не найден" },
         "cli.player.not_found" to { obj: Any -> "Игрок не найден: $obj" },
+        "cli.buy.unexpected" to { "Сейчас покупка карты не ожидается" },
         "cli.swap.unexpected" to { "Сейчас обмен не ожидается" },
         "cli.swap.no_card" to { obj: Any -> "Карта не найдена: $obj" },
         "cli.swap.no_own_card" to { obj: Any -> "У текущего игрока нет карты: $obj" },
@@ -63,6 +64,10 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
               "Ожидается выбор игрока для ${(obj as Player).name}"
             },
         "cli.awaiting.swap" to { obj: Any -> "Ожидается обмен карт для ${(obj as Player).name}" },
+        "cli.awaiting.buy_card" to
+            { obj: Any ->
+              "Ожидается покупка карты для ${(obj as Player).name}"
+            },
         "cli.awaiting.additional_step" to
             { obj: Any ->
               "Ожидается решение о дополнительном ходе для ${(obj as Player).name}"
@@ -77,6 +82,7 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
               "Ожидается выбор игрока для оплаты"
             },
         "cli.effect.effects.awaiter.cards.swap" to { "Ожидается выбор карт для обмена" },
+        "cli.effect.effects.awaiter.cards.buy" to { "Ожидается покупка карты" },
         "cli.effect.effects.awaiter.dice.rethrow" to { "Ожидается решение о перебросе" },
         "cli.effect.effects.awaiter.order.additional_step" to
             {

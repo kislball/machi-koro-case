@@ -6,7 +6,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.StubCard
-import ru.kislball.machikoro.actions.BuyCardAction
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.exceptions.GameException
@@ -25,7 +24,7 @@ class GameFlowIntegrationTest {
     alice.balance = 10
 
     driver.rollDice(alice, 1)
-    driver.finishStep(BuyCardAction(driver.game, alice, "cards.tv_station"))
+    driver.buyCard(alice, "cards.tv_station")
 
     assertEquals(9, alice.balance)
     assertEquals("cards.tv_station", alice.cards.single().cardId)

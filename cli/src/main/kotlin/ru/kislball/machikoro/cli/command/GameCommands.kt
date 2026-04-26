@@ -6,6 +6,7 @@ import ru.kislball.machikoro.cli.session.ActiveCliGame
 import ru.kislball.machikoro.cli.session.CLIMode
 import ru.kislball.machikoro.cli.session.CLISession
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
+import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.IntermediateRollResult
@@ -50,7 +51,18 @@ internal fun gameCommands(session: CLISession): List<Command> {
           require(arguments.size == 1) { "buyCard <cardid>" }
           val game = requireGame(session)
           val player = currentPlayer(game)
+          game.driver.game.inputEffects.peek() as? BuyCardInputEffect
+              ?: throw CLIException("cli.buy.unexpected")
           game.driver.buyCard(player, arguments.single())
+        }
+      },
+      object : Command("skipBuy", CLIMode.GAME) {
+        override fun execute(arguments: List<String>, context: CommandContext) {
+          val game = requireGame(session)
+          val player = currentPlayer(game)
+          game.driver.game.inputEffects.peek() as? BuyCardInputEffect
+              ?: throw CLIException("cli.buy.unexpected")
+          game.driver.skipCardPurchase(player)
         }
       },
       object : Command("roll", CLIMode.GAME) {

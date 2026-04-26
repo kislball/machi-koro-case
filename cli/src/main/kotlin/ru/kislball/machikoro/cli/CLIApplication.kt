@@ -11,6 +11,7 @@ import ru.kislball.machikoro.cli.io.StdCLIIO
 import ru.kislball.machikoro.cli.session.CLIMode
 import ru.kislball.machikoro.cli.session.CLISession
 import ru.kislball.machikoro.cli.storage.CLIStorage
+import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
 import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
@@ -76,6 +77,7 @@ class CLIApplication(
       is RethrowDiceInputEffect -> context.printLine("cli.awaiting.rethrow", input.player)
       is PickAndChargeUserInputEffect -> context.printLine("cli.awaiting.pick_player", input.player)
       is SwapCardsInputEffect -> context.printLine("cli.awaiting.swap", input.player)
+      is BuyCardInputEffect -> context.printLine("cli.awaiting.buy_card", input.player)
       is GivePlayerAdditionalStepInputEffect ->
           context.printLine("cli.awaiting.additional_step", input.player)
     }

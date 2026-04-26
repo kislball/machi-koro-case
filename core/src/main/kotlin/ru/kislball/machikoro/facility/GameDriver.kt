@@ -1,16 +1,20 @@
 package ru.kislball.machikoro.facility
 
 import ru.kislball.machikoro.actions.BuyCardAction
+import ru.kislball.machikoro.actions.BuyCardInputAction
 import ru.kislball.machikoro.actions.PickAndChargePlayerAction
 import ru.kislball.machikoro.actions.PlayerAction
 import ru.kislball.machikoro.actions.ProvideAdditionalStepDecisionAction
 import ru.kislball.machikoro.actions.ProvideRethrowDecisionAction
 import ru.kislball.machikoro.actions.SwapCardsAction
 import ru.kislball.machikoro.effects.Effect
+import ru.kislball.machikoro.effects.cards.buy.BuyCardDecisionResolved
+import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.effects.dice.DiceRollInputEffect
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
+import ru.kislball.machikoro.effects.input.AwaitInputEffect
 import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
 import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
 import ru.kislball.machikoro.exceptions.CurrentStepNotReadyException
@@ -75,6 +79,7 @@ class GameDriver(val game: Game) {
     }
 
     waitingStep.runTriggerables()
+    enqueueBuyCardPrompt(waitingStep)
 
     return waitingStep
   }
@@ -104,6 +109,10 @@ class GameDriver(val game: Game) {
     return currentInputMatches(player) { it is GivePlayerAdditionalStepInputEffect }
   }
 
+  fun needsBuyCardDecision(player: Player): Boolean {
+    return currentInputMatches(player) { it is BuyCardInputEffect }
+  }
+
   fun submitRethrowDecision(player: Player, shouldRethrow: Boolean): PendingStepPhase {
     finishStep(ProvideRethrowDecisionAction(player, shouldRethrow))
     return currentPendingStep
@@ -128,7 +137,11 @@ class GameDriver(val game: Game) {
   }
 
   fun buyCard(player: Player, cardId: String): FinishedStepPhase? {
-    return finishStep(BuyCardAction(game, player, cardId))
+    return finishStep(BuyCardInputAction(player, cardId))
+  }
+
+  fun skipCardPurchase(player: Player): FinishedStepPhase? {
+    return finishStep(BuyCardInputAction(player, null))
   }
 
   private val currentPendingStep: PendingStepPhase
@@ -156,11 +169,33 @@ class GameDriver(val game: Game) {
       if (action is ProvideRethrowDecisionAction) {
         check(current.results.contains<DiceRollResult>()) { DiceAlreadyRolledException() }
         current.runTriggerables()
+        enqueueBuyCardPrompt(current)
+      }
+
+      if (action is BuyCardInputAction && game.inputEffects.peek() == null) {
+        return current.finish()
       }
       return null
     }
 
     val finishedStep = current.submitPlayerAction(action)
     return finishedStep
+  }
+
+  private fun enqueueBuyCardPrompt(step: PendingStepPhase) {
+    if (game.finished) return
+    if (!step.results.contains<DiceRollResult>()) return
+    if (step.results.contains<BuyCardDecisionResolved>()) return
+    if (game.inputEffects.toList().any { it is BuyCardInputEffect && it.player == step.currentPlayer }) {
+      return
+    }
+
+    AwaitInputEffect(
+            id = "effects.awaiter.cards.buy",
+            player = step.currentPlayer,
+            targetEffect = BuyCardInputEffect(step.currentPlayer),
+            addToEnd = true,
+        )
+        .apply(step)
   }
 }

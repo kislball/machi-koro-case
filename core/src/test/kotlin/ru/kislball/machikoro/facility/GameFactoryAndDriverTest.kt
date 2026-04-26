@@ -92,7 +92,8 @@ class GameFactoryAndDriverTest {
     val card = StubCard("cards.bakery")
     val game = Game(CardCatalog(card), listOf(player), SightsCollectedTrigger())
     val driver = GameDriver(game)
-    val rolled = driver.rollDice(player, 1)
+    val rolled = driver.nextStep()
+    rolled.results.set(DiceRollResult(player, listOf(1)))
     assertNotNull(rolled)
 
     val finished = driver.finishStep(StubAction(player))

@@ -115,6 +115,8 @@ class CLIFlowIntegrationTest {
             "Введите имена игроков через запятую",
             "Ожидается выбор количества кубиков для alice",
             "game(alice)> ",
+            "Ожидается покупка карты для alice",
+            "game(alice)> ",
             "game(bob)> ",
             "Игрок alice: баланс ",
             "Игра сохранена: upgraded",
@@ -166,6 +168,28 @@ class CLIFlowIntegrationTest {
             "Ввод применён",
             "game(alice)> ",
             "Выход в режим управления",
+        ),
+    )
+  }
+
+  @Test
+  fun `run allows skipping card purchase`() {
+    val io = ScriptedCLIIO(mutableListOf("start", "alice,bob", "skipBuy", "info bob"))
+    val catalogs = CLICatalogRegistry.default()
+    val app = CLIApplication(io, CLIStorage(tempDir, catalogs), catalogs)
+
+    app.run()
+
+    assertContainsInOrder(
+        io.output,
+        listOf(
+            "management> ",
+            "Введите имена игроков через запятую",
+            "Ожидается покупка карты для alice",
+            "game(alice)> ",
+            "Ввод применён",
+            "game(bob)> ",
+            "Игрок bob: баланс ",
         ),
     )
   }

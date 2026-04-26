@@ -49,7 +49,7 @@ class GameAndStepsTest {
     val driver = GameDriver(game)
 
     val step1 = driver.nextStep()
-    driver.rollDice(step1.currentPlayer, 1)
+    step1.results.set(DiceRollResult(step1.currentPlayer, listOf(1)))
     val finished = step1.submitPlayerAction(StubAction(step1.currentPlayer))
     assertNotNull(finished)
     val step2 = game.nextStep()
@@ -104,7 +104,7 @@ class GameAndStepsTest {
     val game = Game(listOf(player))
     val driver = GameDriver(game)
     val waiting = driver.nextStep()
-    driver.rollDice(player, 1)
+    waiting.results.set(DiceRollResult(player, listOf(1)))
     val action = StubAction(player)
 
     val finished = waiting.submitPlayerAction(action)
@@ -121,7 +121,7 @@ class GameAndStepsTest {
     val game = Game(listOf(player))
     val driver = GameDriver(game)
     val waiting = driver.nextStep()
-    driver.rollDice(player, 1)
+    waiting.results.set(DiceRollResult(player, listOf(1)))
 
     val finished = waiting.submitPlayerAction(StubAction(player, effect))
 

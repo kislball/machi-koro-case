@@ -7,9 +7,14 @@ import ru.kislball.machikoro.game.step.StepPhase
 class AwaitInputEffect<T>(
     id: String,
     val player: Player,
-    private val targetEffect: InputEffect<T>
+    private val targetEffect: InputEffect<T>,
+    private val addToEnd: Boolean = false,
 ) : Effect(id) {
   override fun run(stepPhase: StepPhase) {
-    stepPhase.game.inputEffects.enqueue(targetEffect)
+    if (addToEnd) {
+      stepPhase.game.inputEffects.addToEnd(targetEffect)
+    } else {
+      stepPhase.game.inputEffects.enqueue(targetEffect)
+    }
   }
 }

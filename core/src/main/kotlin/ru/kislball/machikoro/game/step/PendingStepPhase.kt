@@ -3,6 +3,7 @@ package ru.kislball.machikoro.game.step
 import ru.kislball.machikoro.actions.PlayerAction
 import ru.kislball.machikoro.exceptions.DiceNotRolledException
 import ru.kislball.machikoro.exceptions.GameFinishedException
+import ru.kislball.machikoro.exceptions.InputEffectPendingException
 import ru.kislball.machikoro.exceptions.StepNotFinishableException
 import ru.kislball.machikoro.exceptions.check
 import ru.kislball.machikoro.game.DiceRollResult
@@ -23,9 +24,15 @@ class PendingStepPhase(game: Game, currentPlayer: Player, stepNumber: Int) :
     this.runTriggerables()
 
     return if (game.inputEffects.peek() == null) {
-      substitute(FinishedStepPhase(game, this))
+      finish()
     } else {
       null
     }
+  }
+
+  internal fun finish(): FinishedStepPhase {
+    check(canBeFinished()) { StepNotFinishableException() }
+    check(game.inputEffects.peek() == null) { InputEffectPendingException() }
+    return substitute(FinishedStepPhase(game, this))
   }
 }
