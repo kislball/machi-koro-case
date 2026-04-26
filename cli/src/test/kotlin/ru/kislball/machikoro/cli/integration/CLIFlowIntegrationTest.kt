@@ -113,8 +113,8 @@ class CLIFlowIntegrationTest {
         listOf(
             "management> ",
             "Введите имена игроков через запятую",
-            "Ожидается выбор количества кубиков для alice",
             "game(alice)> ",
+            "Кубики брошены",
             "Ожидается покупка карты для alice",
             "game(alice)> ",
             "game(bob)> ",
@@ -279,7 +279,7 @@ class CLIFlowIntegrationTest {
         )
     val io = ScriptedCLIIO(mutableListOf("start", "alice,bob", "roll 2", "exit"))
     val catalogs = registryFor(catalog)
-    val app = CLIApplication(io, CLIStorage(tempDir, catalogs), catalogs)
+    val app = CLIApplication(io, storageFor(catalogs), catalogs)
 
     app.run()
 
@@ -288,9 +288,9 @@ class CLIFlowIntegrationTest {
         listOf(
             "management> ",
             "Введите имена игроков через запятую",
-            "Ожидается выбор количества кубиков для alice",
             "game(alice)> ",
             "Кубики брошены",
+            "Ожидается покупка карты для alice",
         ),
     )
   }
@@ -300,7 +300,7 @@ class CLIFlowIntegrationTest {
     val catalog = testCatalog(TestAdditionalStepCard())
     val io = ScriptedCLIIO(mutableListOf("start", "alice,bob", "takeAdditionalStep", "exit"))
     val catalogs = registryFor(catalog)
-    val app = CLIApplication(io, CLIStorage(tempDir, catalogs), catalogs)
+    val app = CLIApplication(io, storageFor(catalogs), catalogs)
 
     app.run()
 
