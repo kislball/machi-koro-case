@@ -1,5 +1,7 @@
 package ru.kislball.machikoro.gui.game.composables
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -52,61 +54,70 @@ fun PlayerDisplay(
     cards: List<Card>,
     isCurrent: Boolean,
     alignment: PlayerDisplayAlignment,
+    selectable: Boolean,
+    onSelect: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-  when (alignment) {
-    PlayerDisplayAlignment.Bottom -> {
-      Column(
-          horizontalAlignment = Alignment.CenterHorizontally,
-          modifier = modifier,
-      ) {
-        Text(
-            "$name ($balance)",
-            fontSize = 24.sp,
-            textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
-        Spacer(Modifier.height(8.dp))
-        Row { cards.forEach { CardImage(it) } }
+  Box(
+      modifier =
+          modifier.clickable(
+              selectable,
+              onClick = onSelect,
+          ),
+  ) {
+    when (alignment) {
+      PlayerDisplayAlignment.Bottom -> {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+          Text(
+              "$name ($balance)",
+              fontSize = 24.sp,
+              textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
+          Spacer(Modifier.height(8.dp))
+          Row { cards.forEach { CardImage(it) } }
+        }
       }
-    }
-    PlayerDisplayAlignment.Top -> {
-      Column(
-          horizontalAlignment = Alignment.CenterHorizontally,
-          modifier = modifier,
-      ) {
-        Row { cards.forEach { CardImage(it) } }
-        Spacer(Modifier.height(8.dp))
-        Text(
-            "$name ($balance)",
-            fontSize = 24.sp,
-            textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
+
+      PlayerDisplayAlignment.Top -> {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+          Row { cards.forEach { CardImage(it) } }
+          Spacer(Modifier.height(8.dp))
+          Text(
+              "$name ($balance)",
+              fontSize = 24.sp,
+              textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
+        }
       }
-    }
-    PlayerDisplayAlignment.Left -> {
-      Row(
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = modifier,
-      ) {
-        Column { cards.forEach { CardImage(it) } }
-        Spacer(Modifier.width(8.dp))
-        Text(
-            "$name ($balance)",
-            modifier = Modifier.rotate(90F),
-            fontSize = 24.sp,
-            textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
+
+      PlayerDisplayAlignment.Left -> {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Column { cards.forEach { CardImage(it) } }
+          Spacer(Modifier.width(8.dp))
+          Text(
+              "$name ($balance)",
+              modifier = Modifier.rotate(90F),
+              fontSize = 24.sp,
+              textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
+        }
       }
-    }
-    PlayerDisplayAlignment.Right -> {
-      Row(
-          verticalAlignment = Alignment.CenterVertically,
-          modifier = modifier,
-      ) {
-        Text(
-            "$name ($balance)",
-            modifier = Modifier.rotate(90F),
-            fontSize = 24.sp,
-            textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
-        Spacer(Modifier.width(8.dp))
-        Column { cards.forEach { CardImage(it) } }
+
+      PlayerDisplayAlignment.Right -> {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Text(
+              "$name ($balance)",
+              modifier = Modifier.rotate(90F),
+              fontSize = 24.sp,
+              textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
+          Spacer(Modifier.width(8.dp))
+          Column { cards.forEach { CardImage(it) } }
+        }
       }
     }
   }
@@ -127,6 +138,9 @@ fun PlayerDisplayPreview() {
                 TVCentreCard(),
             ),
         alignment = PlayerDisplayAlignment.Top,
-        isCurrent = true)
+        isCurrent = true,
+        onSelect = {},
+        selectable = false,
+    )
   }
 }

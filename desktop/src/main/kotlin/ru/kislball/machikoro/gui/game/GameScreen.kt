@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -44,6 +45,7 @@ fun GameScreen(
   val currentDiceResult = gameViewModel.currentDiceResult
   val shouldPromptDiceChoice = gameViewModel.shouldPromptDiceChoice
   val shouldPromptBuyCard = gameViewModel.shouldPromptBuyCard
+  val shouldPromptPickPlayer = gameViewModel.shouldPromptPickPlayer
   val eventLog = gameViewModel.eventLog
   val eventLogTitle = gameViewModel.eventLogTitle
   val pendingInputMarker = gameViewModel.pendingInputMarker
@@ -88,14 +90,20 @@ fun GameScreen(
         )
     players.forEachIndexed { index, player ->
       val alignment = alignments[index % alignments.size]
-        PlayerDisplay(
-            player.name,
-            player.balance,
-            player.cards,
-            alignment = alignment,
-            modifier = Modifier.align(alignment.toAlignment()),
-            isCurrent = game.currentPlayer == player
-        )
+      PlayerDisplay(
+          player.name,
+          player.balance,
+          player.cards,
+          alignment = alignment,
+          modifier = Modifier.align(alignment.toAlignment()),
+          isCurrent = game.currentPlayer == player,
+          selectable = shouldPromptPickPlayer && game.currentPlayer != player,
+          onSelect = {
+            if (shouldPromptPickPlayer) {
+              gameViewModel.submitPickPlayer(player)
+            }
+          },
+      )
     }
     Box(Modifier.align(Alignment.Center)) {
       when {
@@ -122,21 +130,21 @@ fun GameScreen(
               onSelect = gameViewModel::submitCardPurchase,
               onSkip = gameViewModel::skipCardPurchase)
         }
+        shouldPromptPickPlayer -> {
+          Card { Text("Выберите игрока, с которого хотите взять деньги") }
+        }
         currentDiceResult != null -> {
-            Row {
-                DiceRoll(currentDiceResult.diceThrown)
-            }
+          Row { DiceRoll(currentDiceResult.diceThrown) }
         }
         else -> {
           Text("Rolling...")
         }
       }
     }
-      GameLogPanel(
-          title = eventLogTitle,
-          entries = eventLog,
-          pendingInputMarker = pendingInputMarker,
-          modifier = Modifier.align(Alignment.TopEnd)
-      )
+    GameLogPanel(
+        title = eventLogTitle,
+        entries = eventLog,
+        pendingInputMarker = pendingInputMarker,
+        modifier = Modifier.align(Alignment.TopEnd))
   }
 }

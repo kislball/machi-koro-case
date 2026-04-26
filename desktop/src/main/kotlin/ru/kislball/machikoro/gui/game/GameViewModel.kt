@@ -131,6 +131,16 @@ class GameViewModel(
       return driver.needsBuyCardDecision(step.currentPlayer)
     }
 
+  val shouldPromptPickPlayer: Boolean
+    get() {
+      val step = currentPendingStep ?: return false
+      return driver.needsPickAndChargeDecision(step.currentPlayer)
+    }
+
+  fun submitPickPlayer(targetPlayer: Player) {
+    driver.pickAndChargePlayer(checkNotNull(currentPendingStep?.currentPlayer), targetPlayer)
+  }
+
   data class BuyCardOption(
       val card: Card,
       val title: String,
