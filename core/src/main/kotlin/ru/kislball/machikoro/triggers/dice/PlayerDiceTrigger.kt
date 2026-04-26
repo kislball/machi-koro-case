@@ -13,10 +13,10 @@ class PlayerDiceTrigger(val player: Player, private val dicePredicate: (List<Int
     return rolled.player == player && dicePredicate(rolled.diceThrown)
   }
 
-  constructor(player: Player, singleDice: Int) : this(player, { rolled -> rolled.sum() == singleDice })
-
   constructor(
       player: Player,
-      dice: List<Int>
-  ) : this(player, { rolled -> rolled.sum() in dice })
+      singleDice: Int
+  ) : this(player, { rolled -> rolled.sum() == singleDice })
+
+  constructor(player: Player, dice: List<Int>) : this(player, { rolled -> rolled.sum() in dice })
 }

@@ -1,6 +1,5 @@
 package ru.kislball.machikoro.facility
 
-import ru.kislball.machikoro.actions.BuyCardAction
 import ru.kislball.machikoro.actions.BuyCardInputAction
 import ru.kislball.machikoro.actions.PickAndChargePlayerAction
 import ru.kislball.machikoro.actions.PlayerAction
