@@ -3,6 +3,9 @@ package ru.kislball.machikoro.gui.game
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
+import ru.kislball.machikoro.actions.BuyCardAction
+import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
@@ -28,6 +31,11 @@ class GameViewModel(
     val app: AppViewModel,
     val gameId: String,
 ) {
+  companion object {
+    private const val STEP_TRANSITION_DELAY_MS = 1_000L
+    private const val AUTO_ROLL_DELAY_MS = 1_000L
+  }
+
   val driver = ObservableGameDriver(app.loadGame(gameId))
   private val localiser: Localiser =
       CompoundLocaliser(RussianDesktopGameLocaliser(), RussianLocaliser())
@@ -55,6 +63,8 @@ class GameViewModel(
             localiser.localise("gui.game.log.pending.swap", player)
         driver.needsAdditionalStepDecision(player) ->
             localiser.localise("gui.game.log.pending.additional_step", player)
+        driver.needsBuyCardDecision(player) ->
+            localiser.localise("gui.game.log.pending.buy_card", player)
         else -> null
       }
     }
@@ -81,7 +91,7 @@ class GameViewModel(
           !step.results.contains<IntermediateRollResult>()
     }
 
-  fun advanceGame() {
+  suspend fun advanceGame() {
     if (driver.game.finished) return
 
     while (true) {
@@ -90,8 +100,10 @@ class GameViewModel(
       when (val current = driver.game.currentStepPhase) {
         null,
         is FinishedStepPhase -> {
+          delay(STEP_TRANSITION_DELAY_MS)
           val pending = driver.nextStep()
           if (pending.currentPlayer.canThrowTwoDice()) return
+          delay(AUTO_ROLL_DELAY_MS)
           driver.rollDice(pending.currentPlayer, 1)
           return
         }
@@ -104,6 +116,7 @@ class GameViewModel(
           }
           if (current.currentPlayer.canThrowTwoDice()) return
 
+          delay(AUTO_ROLL_DELAY_MS)
           driver.rollDice(current.currentPlayer, 1)
           return
         }
@@ -114,6 +127,57 @@ class GameViewModel(
   fun submitDiceChoice(numDice: Int) {
     val step = currentPendingStep ?: return
     driver.rollDice(step.currentPlayer, numDice)
+  }
+
+  val shouldPromptBuyCard: Boolean
+    get() {
+      val step = currentPendingStep ?: return false
+      return driver.needsBuyCardDecision(step.currentPlayer)
+    }
+
+  data class BuyCardOption(
+      val card: Card,
+      val title: String,
+      val price: Int,
+      val remainingCopies: Int,
+      val enabled: Boolean,
+  )
+
+  val buyCardOptions: List<BuyCardOption>
+    get() {
+      val step = currentPendingStep ?: return emptyList()
+      val player = step.currentPlayer
+      return driver.game.catalog
+          .getCardList()
+          .map { card ->
+            val remainingCopies = card.totalCards - driver.game.countCardsOfKind(card)
+            BuyCardOption(
+                card = card,
+                title = localiseCardName(card),
+                price = card.getPrice(step),
+                remainingCopies = remainingCopies,
+                enabled =
+                    remainingCopies > 0 &&
+                        runCatching { BuyCardAction(driver.game, player, card.cardId).checkValid(step) }
+                            .isSuccess,
+            )
+          }
+          .filter { it.remainingCopies > 0 }
+          .sortedWith(compareBy<BuyCardOption> { it.price }.thenBy { it.title })
+    }
+
+  fun submitCardPurchase(cardId: String) {
+    val step = currentPendingStep ?: return
+    driver.buyCard(step.currentPlayer, cardId)
+  }
+
+  fun skipCardPurchase() {
+    val step = currentPendingStep ?: return
+    driver.skipCardPurchase(step.currentPlayer)
+  }
+
+  private fun localiseCardName(card: Card): String {
+    return runCatching { localiser.localise(card.cardNameKey) }.getOrDefault(card.cardId)
   }
 
   private fun appendDiceResultIfNeeded() {
@@ -186,6 +250,11 @@ class GameViewModel(
       return super.needsAdditionalStepDecision(player)
     }
 
+    override fun needsBuyCardDecision(player: Player): Boolean {
+      version
+      return super.needsBuyCardDecision(player)
+    }
+
     override fun submitRethrowDecision(player: Player, shouldRethrow: Boolean): PendingStepPhase {
       return super.submitRethrowDecision(player, shouldRethrow).also { refresh() }
     }
@@ -207,6 +276,10 @@ class GameViewModel(
 
     override fun buyCard(player: Player, cardId: String): FinishedStepPhase? {
       return super.buyCard(player, cardId).also { refresh() }
+    }
+
+    override fun skipCardPurchase(player: Player): FinishedStepPhase? {
+      return super.skipCardPurchase(player).also { refresh() }
     }
   }
 }

@@ -118,6 +118,10 @@ open class GameDriver(open val game: Game) {
     return currentPendingStep
   }
 
+  open fun needsBuyCardDecision(player: Player): Boolean {
+    return currentInputMatches<BuyCardInputEffect>(player)
+  }
+
   open fun pickAndChargePlayer(player: Player, targetPlayer: Player): PendingStepPhase {
     finishStep(PickAndChargePlayerAction(player, targetPlayer))
     return currentPendingStep

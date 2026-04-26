@@ -36,6 +36,10 @@ private val DESKTOP_GAME_LOCALE_MAP: Map<String, (Any) -> String> =
             { obj: Any ->
               "Ожидается решение о дополнительном ходе от ${(obj as ru.kislball.machikoro.game.Player).name}"
             },
+        "gui.game.log.pending.buy_card" to
+            { obj: Any ->
+              "Ожидается выбор покупки от ${(obj as ru.kislball.machikoro.game.Player).name}"
+            },
         "gui.game.log.effect" to { obj: Any -> effectMessage(obj as Effect) },
         "gui.game.log.effect.effects.utility.compound" to { "Составной эффект применён" },
         "gui.game.log.effect.effects.utility.noop" to { "Пустой эффект применён" },
@@ -46,6 +50,7 @@ private val DESKTOP_GAME_LOCALE_MAP: Map<String, (Any) -> String> =
               "Ожидается выбор игрока для оплаты"
             },
         "gui.game.log.effect.effects.awaiter.cards.swap" to { "Ожидается выбор карт для обмена" },
+        "gui.game.log.effect.effects.awaiter.cards.buy" to { "Ожидается выбор покупки" },
         "gui.game.log.effect.effects.awaiter.dice.rethrow" to { "Ожидается решение о перебросе" },
         "gui.game.log.effect.effects.awaiter.order.additional_step" to
             {

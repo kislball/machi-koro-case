@@ -11,12 +11,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import ru.kislball.machikoro.gui.AppViewModel
+import ru.kislball.machikoro.gui.game.prompts.BuyCardOptionUi
+import ru.kislball.machikoro.gui.game.prompts.BuyCardPrompt
 import ru.kislball.machikoro.gui.game.prompts.DiceInputPrompt
 
 @Composable
@@ -25,6 +31,7 @@ fun GameScreen(
     app: AppViewModel,
     onLeave: () -> Unit,
 ) {
+  val buyPromptDelayMs = 1_000L
   val gameViewModel = remember { GameViewModel(app, currentGameId) }
   val driver = gameViewModel.driver
   val game = driver.game
@@ -32,43 +39,37 @@ fun GameScreen(
   val currentStep = game.currentStepPhase
   val currentDiceResult = gameViewModel.currentDiceResult
   val shouldPromptDiceChoice = gameViewModel.shouldPromptDiceChoice
+  val shouldPromptBuyCard = gameViewModel.shouldPromptBuyCard
   val eventLog = gameViewModel.eventLog
   val eventLogTitle = gameViewModel.eventLogTitle
   val pendingInputMarker = gameViewModel.pendingInputMarker
+  var buyPromptVisible by remember(currentGameId) { mutableStateOf(false) }
 
-  LaunchedEffect(currentStep, game.finished, shouldPromptDiceChoice, currentDiceResult) {
+  LaunchedEffect(shouldPromptBuyCard, currentDiceResult, currentStep?.stepNumber) {
+    if (!shouldPromptBuyCard) {
+      buyPromptVisible = false
+      return@LaunchedEffect
+    }
+
+    buyPromptVisible = false
+    if (currentDiceResult != null) {
+      delay(buyPromptDelayMs)
+    }
+    buyPromptVisible = true
+  }
+
+  LaunchedEffect(currentStep, game.finished, shouldPromptDiceChoice, shouldPromptBuyCard, currentDiceResult) {
     gameViewModel.advanceGame()
   }
 
   Box(
       modifier = Modifier.fillMaxSize(),
   ) {
-    Box(Modifier.align(Alignment.Center)) {
-      when {
-        shouldPromptDiceChoice -> {
-          DiceInputPrompt(
-              canRollTwoDice = true,
-              playerName = currentStep?.currentPlayer?.name ?: players.first().name,
-              onSelect = gameViewModel::submitDiceChoice)
-        }
-        currentDiceResult != null -> {
-          DiceRoll(currentDiceResult.diceThrown)
-        }
-        else -> {
-          Text("Rolling...")
-        }
-      }
-    }
     IconButton(
         onClick = onLeave,
         modifier = Modifier.pointerHoverIcon(PointerIcon.Hand).align(Alignment.TopStart)) {
           Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Leave")
         }
-    GameLogPanel(
-        title = eventLogTitle,
-        entries = eventLog,
-        pendingInputMarker = pendingInputMarker,
-        modifier = Modifier.align(Alignment.TopEnd))
 
     val alignments =
         listOf(
@@ -87,5 +88,43 @@ fun GameScreen(
           modifier = Modifier.align(alignment.toAlignment()),
           isCurrent = game.currentPlayer == player)
     }
+      Box(Modifier.align(Alignment.Center)) {
+          when {
+              shouldPromptDiceChoice -> {
+                  DiceInputPrompt(
+                      canRollTwoDice = true,
+                      playerName = currentStep?.currentPlayer?.name ?: players.first().name,
+                      onSelect = gameViewModel::submitDiceChoice)
+              }
+              shouldPromptBuyCard && buyPromptVisible -> {
+                  BuyCardPrompt(
+                      playerName = currentStep?.currentPlayer?.name ?: players.first().name,
+                      options =
+                          gameViewModel.buyCardOptions.map { option ->
+                              BuyCardOptionUi(
+                                  card = option.card,
+                                  cardId = option.card.cardId,
+                                  title = option.title,
+                                  priceLabel = "Цена: ${option.price}",
+                                  remainingLabel = "Осталось: ${option.remainingCopies}",
+                                  enabled = option.enabled,
+                              )
+                          },
+                      onSelect = gameViewModel::submitCardPurchase,
+                      onSkip = gameViewModel::skipCardPurchase)
+              }
+              currentDiceResult != null -> {
+                  DiceRoll(currentDiceResult.diceThrown)
+              }
+              else -> {
+                  Text("Rolling...")
+              }
+          }
+      }
+      GameLogPanel(
+          title = eventLogTitle,
+          entries = eventLog,
+          pendingInputMarker = pendingInputMarker,
+          modifier = Modifier.align(Alignment.TopEnd))
   }
 }
