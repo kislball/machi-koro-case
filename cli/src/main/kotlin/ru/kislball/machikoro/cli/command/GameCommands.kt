@@ -7,6 +7,7 @@ import ru.kislball.machikoro.cli.session.CLIMode
 import ru.kislball.machikoro.cli.session.CLISession
 import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
+import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.IntermediateRollResult

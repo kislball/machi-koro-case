@@ -13,6 +13,7 @@ import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
+import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
 import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
 import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
 import ru.kislball.machikoro.game.DiceRollResult
