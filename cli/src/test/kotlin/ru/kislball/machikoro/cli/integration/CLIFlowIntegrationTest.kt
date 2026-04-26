@@ -176,7 +176,7 @@ class CLIFlowIntegrationTest {
   fun `run allows skipping card purchase`() {
     val io = ScriptedCLIIO(mutableListOf("start", "alice,bob", "skipBuy", "info bob"))
     val catalogs = CLICatalogRegistry.default()
-    val app = CLIApplication(io, CLIStorage(tempDir, catalogs), catalogs)
+    val app = CLIApplication(io, storageFor(catalogs), catalogs)
 
     app.run()
 
