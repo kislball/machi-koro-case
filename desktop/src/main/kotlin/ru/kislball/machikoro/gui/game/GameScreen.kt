@@ -1,6 +1,7 @@
 package ru.kislball.machikoro.gui.game
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -116,7 +117,9 @@ fun GameScreen(
               onSkip = gameViewModel::skipCardPurchase)
         }
         currentDiceResult != null -> {
-          DiceRoll(currentDiceResult.diceThrown)
+            Row {
+                DiceRoll(currentDiceResult.diceThrown)
+            }
         }
         else -> {
           Text("Rolling...")
