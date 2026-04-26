@@ -31,8 +31,13 @@ class GameAutoAdvance {
   }
 
   private fun advanceFromStepBoundary(game: ActiveCliGame, driver: GameDriver): Boolean {
-    startAndRoll(game)
-    return shouldStop(driver.game.inputEffects.peek(), driver.currentPendingOrNull())
+    val pending = game.driver.nextStep()
+    return if (pending.currentPlayer.canThrowTwoDice()) {
+      true
+    } else {
+      rollAutomatically(game, pending)
+      shouldStop(driver.game.inputEffects.peek(), driver.currentPendingOrNull())
+    }
   }
 
   private fun advancePendingStep(
@@ -45,14 +50,10 @@ class GameAutoAdvance {
         current.results.contains<IntermediateRollResult>()) {
       return true
     }
+    if (current.currentPlayer.canThrowTwoDice()) return true
 
     rollAutomatically(game, current)
     return shouldStop(driver.game.inputEffects.peek(), driver.currentPendingOrNull())
-  }
-
-  private fun startAndRoll(game: ActiveCliGame) {
-    val pending = game.driver.nextStep()
-    rollAutomatically(game, pending)
   }
 
   private fun rollAutomatically(game: ActiveCliGame, step: PendingStepPhase) {

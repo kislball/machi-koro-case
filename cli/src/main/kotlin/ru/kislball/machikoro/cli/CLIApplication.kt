@@ -66,6 +66,10 @@ class CLIApplication(
     game.effectLog.clear()
 
     val current = game.driver.game.currentStepPhase as? PendingStepPhase ?: return
+    if (game.driver.needsRollDecision(current.currentPlayer)) {
+      context.printLine("cli.awaiting.roll", current.currentPlayer)
+      return
+    }
     current.results.getOrNull<DiceRollResult>()?.let { context.printLine("cli.dice.current", it) }
     val input = game.driver.game.inputEffects.peek()
     when (input) {

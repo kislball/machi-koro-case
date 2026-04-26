@@ -36,7 +36,7 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
         "cli.player.not_found" to { obj: Any -> "Игрок не найден: $obj" },
         "cli.swap.unexpected" to { "Сейчас обмен не ожидается" },
         "cli.swap.no_card" to { obj: Any -> "Карта не найдена: $obj" },
-        "cli.swap.no_own_card" to { "Нет доступной карты для обмена" },
+        "cli.swap.no_own_card" to { obj: Any -> "У текущего игрока нет карты: $obj" },
         "cli.dice.missing" to { "Сейчас нет броска, который можно изменить" },
         "cli.player.info" to
             { obj: Any ->
@@ -50,6 +50,10 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
               cards.joinToString("\n") { card -> "${card.cardId} - ${cardName(card)}" }
             },
         "cli.top.entry" to { obj: Any -> "${(obj as TopEntry).playerName}: ${obj.wins}" },
+        "cli.awaiting.roll" to
+            { obj: Any ->
+              "Ожидается выбор количества кубиков для ${(obj as Player).name}"
+            },
         "cli.awaiting.rethrow" to
             { obj: Any ->
               "Ожидается решение о перебросе для ${(obj as Player).name}"

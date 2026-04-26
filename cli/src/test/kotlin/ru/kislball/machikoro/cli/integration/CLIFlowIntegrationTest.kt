@@ -23,6 +23,7 @@ import ru.kislball.machikoro.cli.storage.CLIStorage
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
+import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 
@@ -96,6 +97,7 @@ class CLIFlowIntegrationTest {
             mutableListOf(
                 "start",
                 "alice,bob",
+                "roll 2",
                 "buyCard cards.supermarket",
                 "info alice",
                 "save upgraded",
@@ -111,6 +113,7 @@ class CLIFlowIntegrationTest {
         listOf(
             "management> ",
             "Введите имена игроков через запятую",
+            "Ожидается выбор количества кубиков для alice",
             "game(alice)> ",
             "game(bob)> ",
             "Игрок alice: баланс ",
@@ -208,7 +211,7 @@ class CLIFlowIntegrationTest {
             mutableListOf(
                 "start",
                 "alice,bob",
-                "swap bob cards.cli_test_beta",
+                "swap bob cards.cli_test_beta cards.cli_test_alpha",
                 "save swapped",
             ))
     val catalogs = registryFor(catalog)
@@ -241,6 +244,53 @@ class CLIFlowIntegrationTest {
         listOf("cards.cli_test_alpha", "cards.cli_test_alpha", "cards.cli_test_swap").sorted(),
         bob.cards.map { it.cardId }.sorted(),
     )
+  }
+
+  @Test
+  fun `run shows awaiting roll choice when player can throw two dice`() {
+    val catalog =
+        OverrideStarterCardsCatalog(
+            StandardCatalog.getCardList(),
+            listOf("cards.wheat", "cards.bakery", "cards.railway_station"),
+        )
+    val io = ScriptedCLIIO(mutableListOf("start", "alice,bob", "roll 2", "exit"))
+    val catalogs = registryFor(catalog)
+    val app = CLIApplication(io, CLIStorage(tempDir, catalogs), catalogs)
+
+    app.run()
+
+    assertContainsInOrder(
+        io.output,
+        listOf(
+            "management> ",
+            "Введите имена игроков через запятую",
+            "Ожидается выбор количества кубиков для alice",
+            "game(alice)> ",
+            "Кубики брошены",
+        ),
+    )
+  }
+
+  @Test
+  fun `run resolves additional step decision for special card input`() {
+    val catalog = testCatalog(TestAdditionalStepCard())
+    val io = ScriptedCLIIO(mutableListOf("start", "alice,bob", "takeAdditionalStep", "exit"))
+    val catalogs = registryFor(catalog)
+    val app = CLIApplication(io, CLIStorage(tempDir, catalogs), catalogs)
+
+    app.run()
+
+    assertContainsInOrder(
+        io.output,
+        listOf(
+            "management> ",
+            "Введите имена игроков через запятую",
+            "Ожидается ввод",
+            "game(alice)> ",
+            "Ввод применён",
+        ),
+    )
+    assertTrue(io.output.any { it.contains("Ожидается решение о дополнительном ходе для alice") })
   }
 
   private fun assertContainsInOrder(output: List<String>, expectedParts: List<String>) {
@@ -312,6 +362,19 @@ class CLIFlowIntegrationTest {
 
     override fun getEffect(s: StepPhase, possessor: Player?): Effect {
       return SwapCardsInputEffect.getAwaiter(checkNotNull(possessor))
+    }
+
+    override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {
+      return possessor == stepPhase.currentPlayer
+    }
+  }
+
+  private class TestAdditionalStepCard :
+      Card("cards.cli_test_additional_step", CardType.ENTERPRISE, icon = CardIcon.SPECIAL) {
+    override fun getPrice(s: StepPhase): Int = 1
+
+    override fun getEffect(s: StepPhase, possessor: Player?): Effect {
+      return GivePlayerAdditionalStepInputEffect.getAwaiter(checkNotNull(possessor))
     }
 
     override fun isTriggered(stepPhase: StepPhase, possessor: Player?): Boolean {

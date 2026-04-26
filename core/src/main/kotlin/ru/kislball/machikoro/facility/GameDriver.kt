@@ -8,8 +8,11 @@ import ru.kislball.machikoro.actions.ProvideRethrowDecisionAction
 import ru.kislball.machikoro.actions.SwapCardsAction
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
+import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.effects.dice.DiceRollInputEffect
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
+import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
+import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
 import ru.kislball.machikoro.exceptions.CurrentStepNotReadyException
 import ru.kislball.machikoro.exceptions.DiceAlreadyRolledException
 import ru.kislball.machikoro.exceptions.GameFinishedException
@@ -24,6 +27,7 @@ import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.IntermediateRollResult
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.game.markers.canThrowTwoDice
 import ru.kislball.machikoro.game.step.FinishedStepPhase
 import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.utilities.contains
@@ -76,9 +80,28 @@ class GameDriver(val game: Game) {
   }
 
   fun needsRethrowDecision(player: Player): Boolean {
+    return currentInputMatches(player) { it is RethrowDiceInputEffect }
+  }
+
+  fun needsRollDecision(player: Player): Boolean {
     val current = game.currentStepPhase as? PendingStepPhase ?: return false
     if (current.currentPlayer != player) return false
-    return game.inputEffects.peek() is RethrowDiceInputEffect
+    if (game.inputEffects.peek() != null) return false
+    if (current.results.contains<DiceRollResult>()) return false
+    if (current.results.contains<IntermediateRollResult>()) return false
+    return player.canThrowTwoDice()
+  }
+
+  fun needsPickAndChargeDecision(player: Player): Boolean {
+    return currentInputMatches(player) { it is PickAndChargeUserInputEffect }
+  }
+
+  fun needsSwapCardsDecision(player: Player): Boolean {
+    return currentInputMatches(player) { it is SwapCardsInputEffect }
+  }
+
+  fun needsAdditionalStepDecision(player: Player): Boolean {
+    return currentInputMatches(player) { it is GivePlayerAdditionalStepInputEffect }
   }
 
   fun submitRethrowDecision(player: Player, shouldRethrow: Boolean): PendingStepPhase {
@@ -110,6 +133,15 @@ class GameDriver(val game: Game) {
 
   private val currentPendingStep: PendingStepPhase
     get() = game.currentStepPhase as? PendingStepPhase ?: throw CurrentStepNotReadyException()
+
+  private inline fun currentInputMatches(
+      player: Player,
+      matches: (Any?) -> Boolean,
+  ): Boolean {
+    val current = game.currentStepPhase as? PendingStepPhase ?: return false
+    if (current.currentPlayer != player) return false
+    return matches(game.inputEffects.peek())
+  }
 
   internal fun finishStep(action: PlayerAction): FinishedStepPhase? {
     check(!game.finished) { GameFinishedException() }

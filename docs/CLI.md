@@ -104,7 +104,7 @@ classDiagram
 - `CommandContext` хранит все зависимости CLI в одном месте: I/O, storage, session, auto-advance, localiser и registry каталогов.
 - Команды разделены на два набора:
   - `managementCommands()` для `start`, `load`, `list`, `delete`, `top`, `exit`
-  - `gameCommands()` для `save`, `info`, `buyCard`, `pickPlayer`, `swap`, `rethrow`, `listCards`, `addTwo`
+- `gameCommands()` для `save`, `info`, `buyCard`, `roll`, `pickPlayer`, `swap`, `rethrow`, `keep`, `takeAdditionalStep`, `skipAdditionalStep`, `listCards`, `addTwo`
 - После каждой команды `CLIApplication` вызывает `flushGameState()`: продвигает игру дальше, печатает effect log и показывает ожидаемый input effect, если он есть.
 
 ### Каталоги и сохранения
@@ -117,11 +117,15 @@ classDiagram
 1. `save <name>` --- сохранить игру под данным названием
 2. `info [playername]` --- информация об игроке, если не указан, то выводится информация о текущем игроке
 3. `buyCard <cardid>` --- купить карточку, если у этого игрока есть такая возможность
-4. `pickPlayer <playername>` --- выбрать игрока, с которого необходимо взять оплату
-5. `swap <playername> <cardId>` --- обмен карточками с игроком
-6. `rethrow` --- перебросить кубик, если у игрока есть такая возможность
-7. `listCards` --- выводит список карточек
-8. `addTwo` --- добавить 2 к числам на кубике
+4. `roll <1|2>` --- бросить 1 или 2 кубика, если игра ожидает выбор количества кубиков
+5. `pickPlayer <playername>` --- выбрать игрока, с которого необходимо взять оплату
+6. `swap <playername> <theirCardId> <yourCardId>` --- обменяться выбранными карточками с игроком
+7. `rethrow` --- перебросить кубики, если у игрока есть такая возможность
+8. `keep` --- оставить текущий бросок без переброса
+9. `takeAdditionalStep` --- согласиться на дополнительный ход
+10. `skipAdditionalStep` --- отказаться от дополнительного хода
+11. `listCards` --- выводит список карточек
+12. `addTwo` --- добавить 2 к числам на кубике
 
 ## Режим управления
 1. `top` --- топ игроков по выйгрышам
