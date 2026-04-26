@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.gui.game
+package ru.kislball.machikoro.gui.localisation
 
 import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.effects.Effect
@@ -11,6 +11,7 @@ import ru.kislball.machikoro.effects.money.MoneyTransferEffect
 import ru.kislball.machikoro.effects.money.MoneyTransferType
 import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepEffect
 import ru.kislball.machikoro.game.DiceRollResult
+import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.localisation.MapLocaliser
 
 private val DESKTOP_GAME_LOCALE_MAP: Map<String, (Any) -> String> =
@@ -18,27 +19,27 @@ private val DESKTOP_GAME_LOCALE_MAP: Map<String, (Any) -> String> =
         "gui.game.log.title" to { "События" },
         "gui.game.log.pending.roll_choice" to
             { obj: Any ->
-              "Ожидается выбор количества кубиков от ${(obj as ru.kislball.machikoro.game.Player).name}"
+              "Ожидается выбор количества кубиков от ${(obj as Player).name}"
             },
         "gui.game.log.pending.rethrow" to
             { obj: Any ->
-              "Ожидается решение о перебросе от ${(obj as ru.kislball.machikoro.game.Player).name}"
+              "Ожидается решение о перебросе от ${(obj as Player).name}"
             },
         "gui.game.log.pending.pick_player" to
             { obj: Any ->
-              "Ожидается выбор игрока от ${(obj as ru.kislball.machikoro.game.Player).name}"
+              "Ожидается выбор игрока от ${(obj as Player).name}"
             },
         "gui.game.log.pending.swap" to
             { obj: Any ->
-              "Ожидается выбор карт для обмена от ${(obj as ru.kislball.machikoro.game.Player).name}"
+              "Ожидается выбор карт для обмена от ${(obj as Player).name}"
             },
         "gui.game.log.pending.additional_step" to
             { obj: Any ->
-              "Ожидается решение о дополнительном ходе от ${(obj as ru.kislball.machikoro.game.Player).name}"
+              "Ожидается решение о дополнительном ходе от ${(obj as Player).name}"
             },
         "gui.game.log.pending.buy_card" to
             { obj: Any ->
-              "Ожидается выбор покупки от ${(obj as ru.kislball.machikoro.game.Player).name}"
+              "Ожидается выбор покупки от ${(obj as Player).name}"
             },
         "gui.game.log.effect" to { obj: Any -> effectMessage(obj as Effect) },
         "gui.game.log.effect.effects.utility.compound" to { "Составной эффект применён" },

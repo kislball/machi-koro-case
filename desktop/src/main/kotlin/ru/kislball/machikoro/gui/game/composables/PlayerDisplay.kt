@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.gui.game
+package ru.kislball.machikoro.gui.game.composables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

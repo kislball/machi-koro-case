@@ -20,6 +20,11 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import kotlinx.coroutines.delay
 import ru.kislball.machikoro.gui.AppViewModel
+import ru.kislball.machikoro.gui.composables.DiceRoll
+import ru.kislball.machikoro.gui.game.composables.GameLogPanel
+import ru.kislball.machikoro.gui.game.composables.PlayerDisplay
+import ru.kislball.machikoro.gui.game.composables.PlayerDisplayAlignment
+import ru.kislball.machikoro.gui.game.composables.toAlignment
 import ru.kislball.machikoro.gui.game.prompts.BuyCardOptionUi
 import ru.kislball.machikoro.gui.game.prompts.BuyCardPrompt
 import ru.kislball.machikoro.gui.game.prompts.DiceInputPrompt
@@ -83,13 +88,14 @@ fun GameScreen(
         )
     players.forEachIndexed { index, player ->
       val alignment = alignments[index % 4]
-      PlayerDisplay(
-          player.name,
-          player.balance,
-          player.cards,
-          alignment = alignment,
-          modifier = Modifier.align(alignment.toAlignment()),
-          isCurrent = game.currentPlayer == player)
+        PlayerDisplay(
+            player.name,
+            player.balance,
+            player.cards,
+            alignment = alignment,
+            modifier = Modifier.align(alignment.toAlignment()),
+            isCurrent = game.currentPlayer == player
+        )
     }
     Box(Modifier.align(Alignment.Center)) {
       when {
@@ -126,10 +132,11 @@ fun GameScreen(
         }
       }
     }
-    GameLogPanel(
-        title = eventLogTitle,
-        entries = eventLog,
-        pendingInputMarker = pendingInputMarker,
-        modifier = Modifier.align(Alignment.TopEnd))
+      GameLogPanel(
+          title = eventLogTitle,
+          entries = eventLog,
+          pendingInputMarker = pendingInputMarker,
+          modifier = Modifier.align(Alignment.TopEnd)
+      )
   }
 }

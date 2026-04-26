@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.gui.game
+package ru.kislball.machikoro.gui.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

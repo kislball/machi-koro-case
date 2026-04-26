@@ -19,6 +19,7 @@ import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.utilities.contains
 import ru.kislball.machikoro.game.utilities.getOrNull
 import ru.kislball.machikoro.gui.AppViewModel
+import ru.kislball.machikoro.gui.localisation.RussianDesktopGameLocaliser
 import ru.kislball.machikoro.localisation.CompoundLocaliser
 import ru.kislball.machikoro.localisation.Localiser
 import ru.kislball.machikoro.localisation.RussianLocaliser
