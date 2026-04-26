@@ -87,7 +87,7 @@ fun GameScreen(
             PlayerDisplayAlignment.Top,
         )
     players.forEachIndexed { index, player ->
-      val alignment = alignments[index % 4]
+      val alignment = alignments[index % alignments.size]
         PlayerDisplay(
             player.name,
             player.balance,
