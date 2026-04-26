@@ -36,7 +36,10 @@ fun GameLogPanel(
         Text(title, style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(12.dp))
         pendingInputMarker?.let { marker ->
-          Text(marker, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.primary)
+          Text(
+              marker,
+              style = MaterialTheme.typography.bodyMedium,
+              color = MaterialTheme.colorScheme.primary)
           Spacer(Modifier.height(12.dp))
         }
         Column(modifier = Modifier.fillMaxWidth().verticalScroll(scrollState)) {

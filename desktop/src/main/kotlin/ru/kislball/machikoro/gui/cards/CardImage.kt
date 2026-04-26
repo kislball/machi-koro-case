@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming")
-
 package ru.kislball.machikoro.gui.cards
 
 import androidx.compose.foundation.Image

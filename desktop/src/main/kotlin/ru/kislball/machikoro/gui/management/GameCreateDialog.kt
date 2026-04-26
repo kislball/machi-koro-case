@@ -1,5 +1,3 @@
-@file:Suppress("FunctionNaming", "MatchingDeclarationName")
-
 package ru.kislball.machikoro.gui.management
 
 import androidx.compose.foundation.layout.Arrangement

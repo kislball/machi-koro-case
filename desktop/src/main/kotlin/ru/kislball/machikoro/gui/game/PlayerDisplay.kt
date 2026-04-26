@@ -127,7 +127,6 @@ fun PlayerDisplayPreview() {
                 TVCentreCard(),
             ),
         alignment = PlayerDisplayAlignment.Top,
-        isCurrent = true
-    )
+        isCurrent = true)
   }
 }

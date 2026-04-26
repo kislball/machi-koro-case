@@ -8,10 +8,6 @@ import ru.kislball.machikoro.actions.BuyCardAction
 import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
-import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
-import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
-import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
-import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
@@ -53,8 +49,7 @@ class GameViewModel(
       val player = step.currentPlayer
 
       return when {
-        shouldPromptDiceChoice ->
-            localiser.localise("gui.game.log.pending.roll_choice", player)
+        shouldPromptDiceChoice -> localiser.localise("gui.game.log.pending.roll_choice", player)
         driver.needsRethrowDecision(player) ->
             localiser.localise("gui.game.log.pending.rethrow", player)
         driver.needsPickAndChargeDecision(player) ->
@@ -158,7 +153,9 @@ class GameViewModel(
                 remainingCopies = remainingCopies,
                 enabled =
                     remainingCopies > 0 &&
-                        runCatching { BuyCardAction(driver.game, player, card.cardId).checkValid(step) }
+                        runCatching {
+                              BuyCardAction(driver.game, player, card.cardId).checkValid(step)
+                            }
                             .isSuccess,
             )
           }

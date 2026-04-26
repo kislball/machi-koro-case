@@ -12,8 +12,15 @@ complexity:
   LongMethod:
     active: false
   LongParameterList:
+    functionThreshold: 7
     constructorThreshold: 16
   TooManyFunctions:
+    active: false
+
+naming:
+  FunctionNaming:
+    functionPattern: '[a-zA-Z][a-zA-Z0-9]*'
+  MatchingDeclarationName:
     active: false
 
 performance:
