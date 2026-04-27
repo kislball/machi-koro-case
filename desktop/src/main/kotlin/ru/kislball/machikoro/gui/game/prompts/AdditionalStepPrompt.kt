@@ -16,13 +16,13 @@ fun AdditionalStepPrompt(
     onSelect: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Card(modifier = modifier.width(920.dp)) {
-        Column {
-            Text("$playerName, выпал дубль. Вы походить ещё раз")
-            Row {
-                Button(onClick = { onSelect(true) }) { Text("Хочу") }
-                Button(onClick = { onSelect(false) }) { Text("Пропуск") }
-            }
-        }
+  Card(modifier = modifier.width(920.dp)) {
+    Column {
+      Text("$playerName, выпал дубль. Вы походить ещё раз")
+      Row {
+        Button(onClick = { onSelect(true) }) { Text("Хочу") }
+        Button(onClick = { onSelect(false) }) { Text("Пропуск") }
+      }
     }
+  }
 }
