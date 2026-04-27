@@ -65,7 +65,7 @@ fun GameScreen(
   }
 
   LaunchedEffect(
-      currentStep, game.finished, shouldPromptDiceChoice, shouldPromptBuyCard, currentDiceResult) {
+      currentStep, game.finished, shouldPromptDiceChoice, shouldPromptBuyCard, shouldPromptPickPlayer, currentDiceResult) {
         gameViewModel.advanceGame()
       }
 
