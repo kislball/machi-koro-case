@@ -1,36 +1,22 @@
 package ru.kislball.machikoro.gui.game
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
-import kotlinx.coroutines.delay
 import ru.kislball.machikoro.gui.AppViewModel
-import ru.kislball.machikoro.gui.composables.DiceRoll
 import ru.kislball.machikoro.gui.game.composables.GameLogPanel
 import ru.kislball.machikoro.gui.game.composables.PlayerDisplay
 import ru.kislball.machikoro.gui.game.composables.PlayerDisplayAlignment
 import ru.kislball.machikoro.gui.game.composables.toAlignment
-import ru.kislball.machikoro.gui.game.prompts.AdditionalStepPrompt
-import ru.kislball.machikoro.gui.game.prompts.BuyCardOptionUi
-import ru.kislball.machikoro.gui.game.prompts.BuyCardPrompt
-import ru.kislball.machikoro.gui.game.prompts.DiceInputPrompt
-import ru.kislball.machikoro.gui.game.prompts.RethrowPrompt
 
 @Composable
 fun GameScreen(
@@ -43,42 +29,9 @@ fun GameScreen(
   val driver = gameViewModel.driver
   val game = driver.game
   val players = game.players
-  val currentStep = game.currentStepPhase
-  val currentDiceResult = gameViewModel.currentDiceResult
-  val shouldPromptDiceChoice = gameViewModel.shouldPromptDiceChoice
-  val shouldPromptRethrow = gameViewModel.shouldPromptRethrow
-  val shouldPromptBuyCard = gameViewModel.shouldPromptBuyCard
-  val shouldPromptPickPlayer = gameViewModel.shouldPromptPickPlayer
-  val shouldPromptAdditionalStep = gameViewModel.shouldPromptAdditionalStep
   val eventLog = gameViewModel.eventLog
   val eventLogTitle = gameViewModel.eventLogTitle
   val pendingInputMarker = gameViewModel.pendingInputMarker
-  var buyPromptVisible by remember(currentGameId) { mutableStateOf(false) }
-
-  LaunchedEffect(shouldPromptBuyCard, currentDiceResult, currentStep?.stepNumber) {
-    if (!shouldPromptBuyCard) {
-      buyPromptVisible = false
-      return@LaunchedEffect
-    }
-
-    buyPromptVisible = false
-    if (currentDiceResult != null) {
-      delay(buyPromptDelayMs)
-    }
-    buyPromptVisible = true
-  }
-
-  LaunchedEffect(
-      currentStep,
-      game.finished,
-      shouldPromptDiceChoice,
-      shouldPromptRethrow,
-      shouldPromptBuyCard,
-      shouldPromptAdditionalStep,
-      shouldPromptPickPlayer,
-      currentDiceResult) {
-        gameViewModel.advanceGame()
-      }
 
   Box(
       modifier = Modifier.fillMaxSize(),
@@ -108,63 +61,20 @@ fun GameScreen(
           alignment = alignment,
           modifier = Modifier.align(alignment.toAlignment()),
           isCurrent = game.currentPlayer == player,
-          selectable = shouldPromptPickPlayer && game.currentPlayer != player,
+          selectable = gameViewModel.isSelectablePickTarget(player),
           onSelect = {
-            if (shouldPromptPickPlayer) {
+            if (gameViewModel.isSelectablePickTarget(player)) {
               gameViewModel.submitPickPlayer(player)
             }
           },
       )
     }
-    Box(Modifier.align(Alignment.Center)) {
-      val player = game.currentPlayer ?: return
-      when {
-        shouldPromptDiceChoice -> {
-          DiceInputPrompt(
-              canRollTwoDice = true,
-              playerName = player.name,
-              onSelect = gameViewModel::submitDiceChoice)
-        }
-        shouldPromptRethrow -> {
-          RethrowPrompt(
-              playerName = player.name,
-              onSelect = gameViewModel::submitRethrowDecision,
-          )
-        }
-        shouldPromptBuyCard && buyPromptVisible -> {
-          BuyCardPrompt(
-              playerName = player.name,
-              options =
-                  gameViewModel.buyCardOptions.map { option ->
-                    BuyCardOptionUi(
-                        card = option.card,
-                        cardId = option.card.cardId,
-                        title = option.title,
-                        priceLabel = "Цена: ${option.price}",
-                        remainingLabel = "Осталось: ${option.remainingCopies}",
-                        enabled = option.enabled,
-                    )
-                  },
-              onSelect = gameViewModel::submitCardPurchase,
-              onSkip = gameViewModel::skipCardPurchase)
-        }
-        shouldPromptPickPlayer -> {
-          Card { Text("Выберите игрока, с которого хотите взять деньги") }
-        }
-        shouldPromptAdditionalStep -> {
-          AdditionalStepPrompt(
-              playerName = player.name,
-              onSelect = gameViewModel::submitAdditionalStep,
-          )
-        }
-        currentDiceResult != null -> {
-          Row { DiceRoll(currentDiceResult.diceThrown) }
-        }
-        else -> {
-          Text("Rolling...")
-        }
-      }
-    }
+    GamePrompts(
+        gameViewModel = gameViewModel,
+        currentPlayer = game.currentPlayer,
+        buyPromptDelayMs = buyPromptDelayMs,
+        modifier = Modifier.align(Alignment.Center),
+    )
     GameLogPanel(
         title = eventLogTitle,
         entries = eventLog,

@@ -152,6 +152,7 @@ class GameViewModel(
     get() {
       val step = currentPendingStep ?: return false
       return driver.needsAdditionalStepDecision(step.currentPlayer)
+    
     }
 
   fun submitAdditionalStep(doAdditionalStep: Boolean) {
@@ -161,6 +162,11 @@ class GameViewModel(
 
   fun submitPickPlayer(targetPlayer: Player) {
     driver.pickAndChargePlayer(checkNotNull(currentPendingStep?.currentPlayer), targetPlayer)
+  }
+
+  fun isSelectablePickTarget(player: Player): Boolean {
+    val step = currentPendingStep ?: return false
+    return driver.needsPickAndChargeDecision(step.currentPlayer) && step.currentPlayer != player
   }
 
   data class BuyCardOption(
