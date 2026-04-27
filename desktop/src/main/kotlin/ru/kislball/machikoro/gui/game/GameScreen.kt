@@ -114,7 +114,7 @@ fun GameScreen(
       )
     }
     Box(Modifier.align(Alignment.Center)) {
-      val player = checkNotNull(game.currentPlayer)
+      val player = game.currentPlayer ?: return
       when {
         shouldPromptDiceChoice -> {
           DiceInputPrompt(
