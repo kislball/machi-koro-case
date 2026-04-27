@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+
 plugins {
   id("buildlogic.kotlin-common-conventions")
   id("com.gradleup.shadow") version "9.4.1"
@@ -11,6 +13,14 @@ dependencies {
   implementation(compose.material3)
   implementation(compose.materialIconsExtended)
   testImplementation(kotlin("test"))
+}
+
+extensions.configure<DetektExtension> {
+  config.setFrom(
+      files(
+          "${rootProject.projectDir}/config/detekt/detekt.yml",
+          "${projectDir}/detekt.yml",
+      ))
 }
 
 compose.desktop { application { mainClass = "ru.kislball.machikoro.gui.MainKt" } }
