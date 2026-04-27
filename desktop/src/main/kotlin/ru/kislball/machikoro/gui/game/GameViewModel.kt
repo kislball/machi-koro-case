@@ -137,6 +137,17 @@ class GameViewModel(
       return driver.needsPickAndChargeDecision(step.currentPlayer)
     }
 
+  val shouldPromptAdditionalStep: Boolean
+    get() {
+      val step = currentPendingStep ?: return false
+      return driver.needsAdditionalStepDecision(step.currentPlayer)
+    }
+
+  fun submitAdditionalStep(doAdditionalStep: Boolean) {
+    driver.submitAdditionalStepDecision(
+        checkNotNull(currentPendingStep).currentPlayer, doAdditionalStep)
+  }
+
   fun submitPickPlayer(targetPlayer: Player) {
     driver.pickAndChargePlayer(checkNotNull(currentPendingStep?.currentPlayer), targetPlayer)
   }

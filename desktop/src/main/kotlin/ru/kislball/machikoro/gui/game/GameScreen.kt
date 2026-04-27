@@ -26,6 +26,7 @@ import ru.kislball.machikoro.gui.game.composables.GameLogPanel
 import ru.kislball.machikoro.gui.game.composables.PlayerDisplay
 import ru.kislball.machikoro.gui.game.composables.PlayerDisplayAlignment
 import ru.kislball.machikoro.gui.game.composables.toAlignment
+import ru.kislball.machikoro.gui.game.prompts.AdditionalStepPrompt
 import ru.kislball.machikoro.gui.game.prompts.BuyCardOptionUi
 import ru.kislball.machikoro.gui.game.prompts.BuyCardPrompt
 import ru.kislball.machikoro.gui.game.prompts.DiceInputPrompt
@@ -46,6 +47,7 @@ fun GameScreen(
   val shouldPromptDiceChoice = gameViewModel.shouldPromptDiceChoice
   val shouldPromptBuyCard = gameViewModel.shouldPromptBuyCard
   val shouldPromptPickPlayer = gameViewModel.shouldPromptPickPlayer
+  val shouldPromptAdditionalStep = gameViewModel.shouldPromptAdditionalStep
   val eventLog = gameViewModel.eventLog
   val eventLogTitle = gameViewModel.eventLogTitle
   val pendingInputMarker = gameViewModel.pendingInputMarker
@@ -65,7 +67,13 @@ fun GameScreen(
   }
 
   LaunchedEffect(
-      currentStep, game.finished, shouldPromptDiceChoice, shouldPromptBuyCard, shouldPromptPickPlayer, currentDiceResult) {
+      currentStep,
+      game.finished,
+      shouldPromptDiceChoice,
+      shouldPromptBuyCard,
+      shouldPromptAdditionalStep,
+      shouldPromptPickPlayer,
+      currentDiceResult) {
         gameViewModel.advanceGame()
       }
 
@@ -106,7 +114,7 @@ fun GameScreen(
       )
     }
     Box(Modifier.align(Alignment.Center)) {
-        val player = checkNotNull(game.currentPlayer)
+      val player = checkNotNull(game.currentPlayer)
       when {
         shouldPromptDiceChoice -> {
           DiceInputPrompt(
@@ -133,6 +141,12 @@ fun GameScreen(
         }
         shouldPromptPickPlayer -> {
           Card { Text("Выберите игрока, с которого хотите взять деньги") }
+        }
+        shouldPromptAdditionalStep -> {
+          AdditionalStepPrompt(
+              playerName = player.name,
+              onSelect = gameViewModel::submitAdditionalStep,
+          )
         }
         currentDiceResult != null -> {
           Row { DiceRoll(currentDiceResult.diceThrown) }
