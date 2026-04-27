@@ -106,16 +106,17 @@ fun GameScreen(
       )
     }
     Box(Modifier.align(Alignment.Center)) {
+        val player = checkNotNull(game.currentPlayer)
       when {
         shouldPromptDiceChoice -> {
           DiceInputPrompt(
               canRollTwoDice = true,
-              playerName = currentStep?.currentPlayer?.name ?: players.first().name,
+              playerName = player.name,
               onSelect = gameViewModel::submitDiceChoice)
         }
         shouldPromptBuyCard && buyPromptVisible -> {
           BuyCardPrompt(
-              playerName = currentStep?.currentPlayer?.name ?: players.first().name,
+              playerName = player.name,
               options =
                   gameViewModel.buyCardOptions.map { option ->
                     BuyCardOptionUi(
