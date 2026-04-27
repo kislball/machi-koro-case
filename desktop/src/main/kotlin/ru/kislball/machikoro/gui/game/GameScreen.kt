@@ -30,6 +30,7 @@ import ru.kislball.machikoro.gui.game.prompts.AdditionalStepPrompt
 import ru.kislball.machikoro.gui.game.prompts.BuyCardOptionUi
 import ru.kislball.machikoro.gui.game.prompts.BuyCardPrompt
 import ru.kislball.machikoro.gui.game.prompts.DiceInputPrompt
+import ru.kislball.machikoro.gui.game.prompts.RethrowPrompt
 
 @Composable
 fun GameScreen(
@@ -45,6 +46,7 @@ fun GameScreen(
   val currentStep = game.currentStepPhase
   val currentDiceResult = gameViewModel.currentDiceResult
   val shouldPromptDiceChoice = gameViewModel.shouldPromptDiceChoice
+  val shouldPromptRethrow = gameViewModel.shouldPromptRethrow
   val shouldPromptBuyCard = gameViewModel.shouldPromptBuyCard
   val shouldPromptPickPlayer = gameViewModel.shouldPromptPickPlayer
   val shouldPromptAdditionalStep = gameViewModel.shouldPromptAdditionalStep
@@ -70,6 +72,7 @@ fun GameScreen(
       currentStep,
       game.finished,
       shouldPromptDiceChoice,
+      shouldPromptRethrow,
       shouldPromptBuyCard,
       shouldPromptAdditionalStep,
       shouldPromptPickPlayer,
@@ -121,6 +124,12 @@ fun GameScreen(
               canRollTwoDice = true,
               playerName = player.name,
               onSelect = gameViewModel::submitDiceChoice)
+        }
+        shouldPromptRethrow -> {
+          RethrowPrompt(
+              playerName = player.name,
+              onSelect = gameViewModel::submitRethrowDecision,
+          )
         }
         shouldPromptBuyCard && buyPromptVisible -> {
           BuyCardPrompt(

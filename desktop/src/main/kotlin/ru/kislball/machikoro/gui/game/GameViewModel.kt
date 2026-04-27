@@ -125,10 +125,21 @@ class GameViewModel(
     driver.rollDice(step.currentPlayer, numDice)
   }
 
+  fun submitRethrowDecision(shouldRethrow: Boolean) {
+    val step = currentPendingStep ?: return
+    driver.submitRethrowDecision(step.currentPlayer, shouldRethrow)
+  }
+
   val shouldPromptBuyCard: Boolean
     get() {
       val step = currentPendingStep ?: return false
       return driver.needsBuyCardDecision(step.currentPlayer)
+    }
+
+  val shouldPromptRethrow: Boolean
+    get() {
+      val step = currentPendingStep ?: return false
+      return driver.needsRethrowDecision(step.currentPlayer)
     }
 
   val shouldPromptPickPlayer: Boolean
