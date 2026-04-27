@@ -152,7 +152,6 @@ class GameViewModel(
     get() {
       val step = currentPendingStep ?: return false
       return driver.needsAdditionalStepDecision(step.currentPlayer)
-    
     }
 
   fun submitAdditionalStep(doAdditionalStep: Boolean) {

@@ -1,4 +1,3 @@
-
 package ru.kislball.machikoro.gui.game.prompts
 
 import androidx.compose.foundation.layout.Column
