@@ -6,6 +6,8 @@ import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
 import ru.kislball.machikoro.actions.BuyCardAction
 import ru.kislball.machikoro.cards.common.Card
+import ru.kislball.machikoro.cards.common.CardIcon
+import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
 import ru.kislball.machikoro.facility.GameDriver
@@ -77,6 +79,28 @@ class GameViewModel(
 
   val currentDiceResult: DiceRollResult?
     get() = currentPendingStep?.results?.getOrNull()
+
+  data class SwapCardSelection(
+      val player: Player,
+      val card: Card,
+  )
+
+  private var selectedSwapSource by mutableStateOf<SwapCardSelection?>(null)
+
+  val shouldPromptSwapCards: Boolean
+    get() {
+      val step = currentPendingStep ?: return false
+      return driver.needsSwapCardsDecision(step.currentPlayer)
+    }
+
+  val swapPromptText: String?
+    get() {
+      if (!shouldPromptSwapCards) return null
+      return when (val source = selectedSwapSource) {
+        null -> localiser.localise("gui.game.prompt.swap.pick_opponent_card")
+        else -> localiser.localise("gui.game.prompt.swap.pick_own_card", source.player)
+      }
+    }
 
   val shouldPromptDiceChoice: Boolean
     get() {
@@ -163,9 +187,44 @@ class GameViewModel(
     driver.pickAndChargePlayer(checkNotNull(currentPendingStep?.currentPlayer), targetPlayer)
   }
 
+  fun submitSwapCards(from: Player, fromCard: Card, toCard: Card) {
+    val step = currentPendingStep ?: return
+    driver.swapCards(step.currentPlayer, SwapCardsInput(from, fromCard, toCard))
+    selectedSwapSource = null
+  }
+
+  fun selectSwapCard(player: Player, card: Card) {
+    val step = currentPendingStep ?: return
+    val currentPlayer = step.currentPlayer
+
+    if (!driver.needsSwapCardsDecision(currentPlayer) || !isExchangeableSwapCard(card)) return
+    if (!player.cards.contains(card)) return
+
+    if (player != currentPlayer) {
+      selectedSwapSource = SwapCardSelection(player, card)
+      return
+    }
+
+    val source = selectedSwapSource ?: return
+    submitSwapCards(source.player, source.card, card)
+  }
+
   fun isSelectablePickTarget(player: Player): Boolean {
     val step = currentPendingStep ?: return false
     return driver.needsPickAndChargeDecision(step.currentPlayer) && step.currentPlayer != player
+  }
+
+  fun isSelectableSwapCardOwner(player: Player): Boolean {
+    return player.cards.any { card -> isSelectableSwapCard(player, card) }
+  }
+
+  fun isSelectableSwapCard(player: Player, card: Card): Boolean {
+    val step = currentPendingStep ?: return false
+    val currentPlayer = step.currentPlayer
+    if (!driver.needsSwapCardsDecision(currentPlayer)) return false
+    if (!player.cards.contains(card)) return false
+    if (!isExchangeableSwapCard(card)) return false
+    return player != currentPlayer || selectedSwapSource != null
   }
 
   data class BuyCardOption(
@@ -220,6 +279,10 @@ class GameViewModel(
 
   private fun localiseCardName(card: Card): String {
     return runCatching { localiser.localise(card.cardNameKey) }.getOrDefault(card.cardId)
+  }
+
+  private fun isExchangeableSwapCard(card: Card): Boolean {
+    return card.type != CardType.SIGHT && card.icon != CardIcon.SPECIAL
   }
 
   private fun appendDiceResultIfNeeded() {

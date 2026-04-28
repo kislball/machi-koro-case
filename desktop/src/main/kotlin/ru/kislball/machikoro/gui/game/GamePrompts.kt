@@ -34,6 +34,7 @@ fun GamePrompts(
   val shouldPromptBuyCard = gameViewModel.shouldPromptBuyCard
   val shouldPromptPickPlayer = gameViewModel.shouldPromptPickPlayer
   val shouldPromptAdditionalStep = gameViewModel.shouldPromptAdditionalStep
+  val shouldPromptSwapCards = gameViewModel.shouldPromptSwapCards
   var buyPromptVisible by remember(gameViewModel.gameId) { mutableStateOf(false) }
 
   LaunchedEffect(shouldPromptBuyCard, currentDiceResult, currentStep?.stepNumber) {
@@ -57,6 +58,7 @@ fun GamePrompts(
       shouldPromptBuyCard,
       shouldPromptAdditionalStep,
       shouldPromptPickPlayer,
+      shouldPromptSwapCards,
       currentDiceResult) {
         gameViewModel.advanceGame()
       }
@@ -95,6 +97,9 @@ fun GamePrompts(
       }
       shouldPromptPickPlayer -> {
         Card { Text("Выберите игрока, с которого хотите взять деньги") }
+      }
+      shouldPromptSwapCards -> {
+        Card { Text(checkNotNull(gameViewModel.swapPromptText)) }
       }
       shouldPromptAdditionalStep -> {
         AdditionalStepPrompt(

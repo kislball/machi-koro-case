@@ -53,6 +53,12 @@ fun PlayerDisplayAlignment.isVertical() =
       PlayerDisplayAlignment.Bottom -> false
     }
 
+enum class PlayerDisplaySelectableState {
+  None,
+  Player,
+  Cards,
+}
+
 @Composable
 fun PlayerDisplay(
     name: String,
@@ -60,16 +66,24 @@ fun PlayerDisplay(
     cards: List<Card>,
     isCurrent: Boolean,
     alignment: PlayerDisplayAlignment,
-    selectable: Boolean,
+    selectable: PlayerDisplaySelectableState,
     onSelect: () -> Unit,
+    onCardSelected: (card: Card) -> Unit,
+    isCardSelectable: (card: Card) -> Boolean = { false },
     modifier: Modifier = Modifier,
 ) {
   val cardsScrollState = rememberScrollState()
   val cardsMaxFraction = 0.7F
+  val cardModifier: (Card) -> Modifier = { card ->
+    Modifier.clickable(
+        isCardSelectable(card),
+        onClick = { onCardSelected(card) },
+    )
+  }
   Box(
       modifier =
           modifier.clickable(
-              selectable,
+              selectable == PlayerDisplaySelectableState.Player,
               onClick = onSelect,
           ),
   ) {
@@ -87,7 +101,7 @@ fun PlayerDisplay(
               horizontalArrangement = Arrangement.Center,
               modifier =
                   Modifier.fillMaxWidth(cardsMaxFraction).horizontalScroll(cardsScrollState)) {
-                cards.forEach { CardImage(it) }
+                cards.forEach { CardImage(it, modifier = cardModifier(it)) }
               }
         }
       }
@@ -100,7 +114,7 @@ fun PlayerDisplay(
               horizontalArrangement = Arrangement.Center,
               modifier =
                   Modifier.fillMaxWidth(cardsMaxFraction).horizontalScroll(cardsScrollState)) {
-                cards.forEach { CardImage(it) }
+                cards.forEach { CardImage(it, modifier = cardModifier(it)) }
               }
           Spacer(Modifier.height(8.dp))
           Text(
@@ -118,7 +132,7 @@ fun PlayerDisplay(
               verticalArrangement = Arrangement.Center,
               modifier =
                   Modifier.fillMaxHeight(cardsMaxFraction).verticalScroll(cardsScrollState)) {
-                cards.forEach { CardImage(it) }
+                cards.forEach { CardImage(it, modifier = cardModifier(it)) }
               }
           Spacer(Modifier.width(8.dp))
           Text(
@@ -143,7 +157,7 @@ fun PlayerDisplay(
               verticalArrangement = Arrangement.Center,
               modifier =
                   Modifier.fillMaxHeight(cardsMaxFraction).verticalScroll(cardsScrollState)) {
-                cards.forEach { CardImage(it) }
+                cards.forEach { CardImage(it, modifier = cardModifier(it)) }
               }
         }
       }
@@ -168,7 +182,8 @@ fun PlayerDisplayPreview() {
         alignment = PlayerDisplayAlignment.Top,
         isCurrent = true,
         onSelect = {},
-        selectable = false,
+        selectable = PlayerDisplaySelectableState.Player,
+        onCardSelected = {},
     )
   }
 }

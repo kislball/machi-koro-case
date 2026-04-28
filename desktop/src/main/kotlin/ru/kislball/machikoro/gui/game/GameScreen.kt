@@ -16,6 +16,7 @@ import ru.kislball.machikoro.gui.AppViewModel
 import ru.kislball.machikoro.gui.game.composables.GameLogPanel
 import ru.kislball.machikoro.gui.game.composables.PlayerDisplay
 import ru.kislball.machikoro.gui.game.composables.PlayerDisplayAlignment
+import ru.kislball.machikoro.gui.game.composables.PlayerDisplaySelectableState
 import ru.kislball.machikoro.gui.game.composables.toAlignment
 
 @Composable
@@ -61,12 +62,20 @@ fun GameScreen(
           alignment = alignment,
           modifier = Modifier.align(alignment.toAlignment()),
           isCurrent = game.currentPlayer == player,
-          selectable = gameViewModel.isSelectablePickTarget(player),
+          selectable =
+              when {
+                gameViewModel.isSelectablePickTarget(player) -> PlayerDisplaySelectableState.Player
+                gameViewModel.isSelectableSwapCardOwner(player) ->
+                    PlayerDisplaySelectableState.Cards
+                else -> PlayerDisplaySelectableState.None
+              },
           onSelect = {
             if (gameViewModel.isSelectablePickTarget(player)) {
               gameViewModel.submitPickPlayer(player)
             }
           },
+          onCardSelected = { card -> gameViewModel.selectSwapCard(player, card) },
+          isCardSelectable = { card -> gameViewModel.isSelectableSwapCard(player, card) },
       )
     }
     GamePrompts(

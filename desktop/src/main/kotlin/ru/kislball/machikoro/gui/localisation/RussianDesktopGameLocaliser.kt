@@ -41,6 +41,11 @@ private val DESKTOP_GAME_LOCALE_MAP: Map<String, (Any) -> String> =
             { obj: Any ->
               "Ожидается выбор покупки от ${(obj as Player).name}"
             },
+        "gui.game.prompt.swap.pick_opponent_card" to { "Выберите карту соперника для обмена" },
+        "gui.game.prompt.swap.pick_own_card" to
+            { obj: Any ->
+              "Выберите свою карту для обмена с ${(obj as Player).name}"
+            },
         "gui.game.log.effect" to { obj: Any -> effectMessage(obj as Effect) },
         "gui.game.log.effect.effects.utility.compound" to { "Составной эффект применён" },
         "gui.game.log.effect.effects.utility.noop" to { "Пустой эффект применён" },
