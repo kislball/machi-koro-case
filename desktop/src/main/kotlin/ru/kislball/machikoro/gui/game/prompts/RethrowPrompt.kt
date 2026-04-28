@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ru.kislball.machikoro.gui.localisation.LocalAppLocaliser
 
 @Composable
 fun RethrowPrompt(
@@ -17,12 +18,17 @@ fun RethrowPrompt(
     onSelect: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+  val localiser = LocalAppLocaliser.current
   Card(modifier = modifier.width(340.dp)) {
     Column(modifier = Modifier.padding(10.dp)) {
-      Text("$playerName, хотите перебросить кости?")
+      Text(localiser.localise("gui.game.prompt.rethrow.title", playerName))
       Row {
-        Button(onClick = { onSelect(true) }) { Text("Перебросить") }
-        Button(onClick = { onSelect(false) }) { Text("Оставить") }
+        Button(onClick = { onSelect(true) }) {
+          Text(localiser.localise("gui.game.prompt.rethrow.confirm"))
+        }
+        Button(onClick = { onSelect(false) }) {
+          Text(localiser.localise("gui.game.prompt.rethrow.decline"))
+        }
       }
     }
   }

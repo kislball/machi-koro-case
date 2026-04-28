@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ru.kislball.machikoro.gui.localisation.LocalAppLocaliser
 import ru.kislball.machikoro.storage.TopEntry
 
 @Composable
@@ -32,13 +33,14 @@ fun TopPlayerEntry(
     totalWins: Int,
     position: Int,
 ) {
+  val localiser = LocalAppLocaliser.current
   Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp).fillMaxWidth()) {
-        Text("$position. $name")
+        Text(localiser.localise("gui.top.entry.name", position to name))
         Row {
-          Text("$totalWins")
+          Text(localiser.localise("gui.top.entry.wins", totalWins))
           Icon(Icons.Default.Star, contentDescription = null)
         }
       }
@@ -50,16 +52,19 @@ fun TopPlayers(
     onReturn: () -> Unit,
 ) {
   val scrollState = rememberScrollState()
+  val localiser = LocalAppLocaliser.current
 
   Box(modifier = Modifier.fillMaxSize()) {
     IconButton(onClick = onReturn, modifier = Modifier.align(Alignment.TopStart)) {
-      Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+      Icon(
+          Icons.AutoMirrored.Filled.ArrowBack,
+          contentDescription = localiser.localise("gui.action.back"))
     }
     Column(
         modifier = Modifier.align(Alignment.Center),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Text("Топ игроков", fontWeight = FontWeight.W600, fontSize = 24.sp)
+      Text(localiser.localise("gui.top.title"), fontWeight = FontWeight.W600, fontSize = 24.sp)
       Spacer(Modifier.height(10.dp))
       Column(
           modifier = Modifier.verticalScroll(scrollState).fillMaxHeight(0.7F).fillMaxWidth(0.9F)) {

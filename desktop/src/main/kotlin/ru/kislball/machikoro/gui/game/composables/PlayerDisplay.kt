@@ -28,6 +28,7 @@ import ru.kislball.machikoro.cards.standard.enterprises.TVCentreCard
 import ru.kislball.machikoro.cards.standard.sights.EntertainmentParkCard
 import ru.kislball.machikoro.cards.standard.sights.TVTowerCard
 import ru.kislball.machikoro.gui.cards.CardImage
+import ru.kislball.machikoro.gui.localisation.LocalAppLocaliser
 
 enum class PlayerDisplayAlignment {
   Top,
@@ -72,6 +73,8 @@ fun PlayerDisplay(
     isCardSelectable: (card: Card) -> Boolean = { false },
     modifier: Modifier = Modifier,
 ) {
+  val localiser = LocalAppLocaliser.current
+  val playerLabel = localiser.localise("gui.game.player.balance", name to balance)
   val cardsScrollState = rememberScrollState()
   val cardsMaxFraction = 0.7F
   val cardModifier: (Card) -> Modifier = { card ->
@@ -93,7 +96,7 @@ fun PlayerDisplay(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
           Text(
-              "$name ($balance)",
+              playerLabel,
               fontSize = 24.sp,
               textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
           Spacer(Modifier.height(8.dp))
@@ -118,7 +121,7 @@ fun PlayerDisplay(
               }
           Spacer(Modifier.height(8.dp))
           Text(
-              "$name ($balance)",
+              playerLabel,
               fontSize = 24.sp,
               textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
         }
@@ -136,7 +139,7 @@ fun PlayerDisplay(
               }
           Spacer(Modifier.width(8.dp))
           Text(
-              "$name ($balance)",
+              playerLabel,
               modifier = Modifier.rotate(90F),
               fontSize = 24.sp,
               textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)
@@ -148,7 +151,7 @@ fun PlayerDisplay(
             verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(
-              "$name ($balance)",
+              playerLabel,
               modifier = Modifier.rotate(90F),
               fontSize = 24.sp,
               textDecoration = if (isCurrent) TextDecoration.Underline else TextDecoration.None)

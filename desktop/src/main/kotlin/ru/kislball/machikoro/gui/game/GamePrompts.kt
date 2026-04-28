@@ -43,6 +43,7 @@ fun GamePrompts(
   val shouldPromptAdditionalStep = gameViewModel.shouldPromptAdditionalStep
   val shouldPromptSwapCards = gameViewModel.shouldPromptSwapCards
   val winner = gameViewModel.winner
+  val localiser = gameViewModel.localiser
   var buyPromptVisible by remember(gameViewModel.gameId) { mutableStateOf(false) }
 
   LaunchedEffect(shouldPromptBuyCard, currentDiceResult, currentStep?.stepNumber) {
@@ -79,9 +80,12 @@ fun GamePrompts(
             modifier = modifier.padding(16.dp),
         ) {
           Column {
-            Text("Игра окончена", fontSize = 16.sp, fontWeight = FontWeight.W500)
+            Text(
+                localiser.localise("gui.game.finished.title"),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W500)
             Spacer(Modifier.height(16.dp))
-            Text("Победитель: ${winner.name}")
+            Text(localiser.localise("gui.game.finished.winner", winner))
           }
         }
       }
@@ -99,23 +103,27 @@ fun GamePrompts(
       }
       shouldPromptBuyCard && buyPromptVisible -> {
         BuyCardPrompt(
-            playerName = player.name,
             options =
                 gameViewModel.buyCardOptions.map { option ->
                   BuyCardOptionUi(
                       card = option.card,
                       cardId = option.card.cardId,
                       title = option.title,
-                      priceLabel = "Цена: ${option.price}",
-                      remainingLabel = "Осталось: ${option.remainingCopies}",
+                      priceLabel = localiser.localise("gui.game.prompt.buy.price", option.price),
+                      remainingLabel =
+                          localiser.localise(
+                              "gui.game.prompt.buy.remaining", option.remainingCopies),
                       enabled = option.enabled,
                   )
                 },
+            title = localiser.localise("gui.game.prompt.buy.title", player.name),
+            description = localiser.localise("gui.game.prompt.buy.description"),
+            skipLabel = localiser.localise("gui.game.prompt.buy.skip"),
             onSelect = gameViewModel::submitCardPurchase,
             onSkip = gameViewModel::skipCardPurchase)
       }
       shouldPromptPickPlayer -> {
-        Card { Text("Выберите игрока, с которого хотите взять деньги") }
+        Card { Text(localiser.localise("gui.game.prompt.pick_player")) }
       }
       shouldPromptSwapCards -> {
         Card { Text(checkNotNull(gameViewModel.swapPromptText)) }
@@ -130,7 +138,7 @@ fun GamePrompts(
         Row { DiceRoll(currentDiceResult.diceThrown) }
       }
       else -> {
-        Text("Rolling...")
+        Text(localiser.localise("gui.game.prompt.rolling"))
       }
     }
   }

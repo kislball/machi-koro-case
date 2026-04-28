@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import ru.kislball.machikoro.gui.localisation.LocalAppLocaliser
 
 @Composable
 fun AdditionalStepPrompt(
@@ -16,12 +17,17 @@ fun AdditionalStepPrompt(
     onSelect: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+  val localiser = LocalAppLocaliser.current
   Card(modifier = modifier.width(920.dp)) {
     Column {
-      Text("$playerName, выпал дубль. Вы походить ещё раз")
+      Text(localiser.localise("gui.game.prompt.additional_step.title", playerName))
       Row {
-        Button(onClick = { onSelect(true) }) { Text("Хочу") }
-        Button(onClick = { onSelect(false) }) { Text("Пропуск") }
+        Button(onClick = { onSelect(true) }) {
+          Text(localiser.localise("gui.game.prompt.additional_step.confirm"))
+        }
+        Button(onClick = { onSelect(false) }) {
+          Text(localiser.localise("gui.game.prompt.additional_step.decline"))
+        }
       }
     }
   }

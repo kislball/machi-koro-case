@@ -18,6 +18,7 @@ import ru.kislball.machikoro.gui.game.composables.PlayerDisplay
 import ru.kislball.machikoro.gui.game.composables.PlayerDisplayAlignment
 import ru.kislball.machikoro.gui.game.composables.PlayerDisplaySelectableState
 import ru.kislball.machikoro.gui.game.composables.toAlignment
+import ru.kislball.machikoro.gui.localisation.LocalAppLocaliser
 
 @Composable
 fun GameScreen(
@@ -33,6 +34,7 @@ fun GameScreen(
   val eventLog = gameViewModel.eventLog
   val eventLogTitle = gameViewModel.eventLogTitle
   val pendingInputMarker = gameViewModel.pendingInputMarker
+  val localiser = LocalAppLocaliser.current
 
   Box(
       modifier = Modifier.fillMaxSize(),
@@ -43,7 +45,9 @@ fun GameScreen(
           onLeave()
         },
         modifier = Modifier.pointerHoverIcon(PointerIcon.Hand).align(Alignment.TopStart)) {
-          Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Leave")
+          Icon(
+              Icons.AutoMirrored.Filled.ArrowBack,
+              contentDescription = localiser.localise("gui.action.back"))
         }
 
     val alignments =

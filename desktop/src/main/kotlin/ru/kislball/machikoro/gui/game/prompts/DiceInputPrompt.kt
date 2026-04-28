@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.kislball.machikoro.gui.localisation.LocalAppLocaliser
 
 @Composable
 fun DiceInputPrompt(
@@ -23,9 +24,10 @@ fun DiceInputPrompt(
     onSelect: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+  val localiser = LocalAppLocaliser.current
   Column(modifier = modifier) {
     Text(
-        "$playerName, бросьте кости",
+        localiser.localise("gui.game.prompt.dice.title", playerName),
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth())
     Spacer(Modifier.height(8.dp))
@@ -33,11 +35,17 @@ fun DiceInputPrompt(
         modifier = Modifier.fillMaxWidth().padding(12.dp, 0.dp),
         horizontalArrangement = Arrangement.Center) {
           if (canRollTwoDice) {
-            Button(onClick = { onSelect(1) }) { Text("Бросить одну кость") }
+            Button(onClick = { onSelect(1) }) {
+              Text(localiser.localise("gui.game.prompt.dice.roll_one"))
+            }
             Spacer(Modifier.width(8.dp))
-            Button(onClick = { onSelect(2) }) { Text("Бросить две кости") }
+            Button(onClick = { onSelect(2) }) {
+              Text(localiser.localise("gui.game.prompt.dice.roll_two"))
+            }
           } else {
-            Button(onClick = { onSelect(1) }) { Text("Бросить кости") }
+            Button(onClick = { onSelect(1) }) {
+              Text(localiser.localise("gui.game.prompt.dice.roll"))
+            }
           }
         }
   }

@@ -21,10 +21,7 @@ import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.utilities.contains
 import ru.kislball.machikoro.game.utilities.getOrNull
 import ru.kislball.machikoro.gui.AppViewModel
-import ru.kislball.machikoro.gui.localisation.RussianDesktopGameLocaliser
-import ru.kislball.machikoro.localisation.CompoundLocaliser
 import ru.kislball.machikoro.localisation.Localiser
-import ru.kislball.machikoro.localisation.RussianLocaliser
 
 class GameViewModel(
     val app: AppViewModel,
@@ -36,8 +33,9 @@ class GameViewModel(
   }
 
   val driver = ObservableGameDriver(app.loadGame(gameId))
-  private val localiser: Localiser =
-      CompoundLocaliser(RussianDesktopGameLocaliser(), RussianLocaliser())
+  val localiser: Localiser
+    get() = app.uiState.localiser
+
   private var loggedDiceResultKey: Pair<Int, List<Int>>? = null
 
   var eventLog by mutableStateOf<List<String>>(emptyList())

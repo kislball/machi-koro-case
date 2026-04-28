@@ -34,8 +34,10 @@ data class BuyCardOptionUi(
 
 @Composable
 fun BuyCardPrompt(
-    playerName: String,
     options: List<BuyCardOptionUi>,
+    title: String,
+    description: String,
+    skipLabel: String,
     onSelect: (String) -> Unit,
     onSkip: () -> Unit,
     modifier: Modifier = Modifier,
@@ -46,13 +48,13 @@ fun BuyCardPrompt(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Text(
-          text = "Покупка для $playerName",
+          text = title,
           style = MaterialTheme.typography.headlineSmall,
           textAlign = TextAlign.Center,
       )
       Spacer(Modifier.height(8.dp))
       Text(
-          text = "Выберите карту или пропустите покупку",
+          text = description,
           style = MaterialTheme.typography.bodyMedium,
           textAlign = TextAlign.Center,
       )
@@ -78,7 +80,7 @@ fun BuyCardPrompt(
         }
       }
       Spacer(Modifier.height(16.dp))
-      TextButton(onClick = onSkip) { Text("Пропустить") }
+      TextButton(onClick = onSkip) { Text(skipLabel) }
     }
   }
 }

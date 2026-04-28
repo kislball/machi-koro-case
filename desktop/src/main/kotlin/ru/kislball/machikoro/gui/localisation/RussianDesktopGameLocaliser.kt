@@ -12,10 +12,38 @@ import ru.kislball.machikoro.effects.money.MoneyTransferType
 import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.localisation.CompoundLocaliser
+import ru.kislball.machikoro.localisation.Localiser
 import ru.kislball.machikoro.localisation.MapLocaliser
+import ru.kislball.machikoro.localisation.RussianLocaliser
 
 private val DESKTOP_GAME_LOCALE_MAP: Map<String, (Any) -> String> =
     mapOf(
+        "gui.app.title" to { "Machi Koro" },
+        "gui.action.back" to { "Назад" },
+        "gui.action.add_player" to { "Добавить игрока" },
+        "gui.action.remove_player" to { "Удалить игрока" },
+        "gui.management.leaderboard" to { "Таблица лидеров" },
+        "gui.management.new_game_name" to { "Название новой игры" },
+        "gui.management.create" to { "Создать" },
+        "gui.management.or" to { "или" },
+        "gui.management.create_dialog.title" to { obj: Any -> "Создание игры $obj" },
+        "gui.management.create_dialog.player_name" to { "Имя игрока" },
+        "gui.management.create_dialog.confirm" to { "OK" },
+        "gui.top.title" to { "Топ игроков" },
+        "gui.top.entry.name" to
+            { obj: Any ->
+              val (position, name) = obj as Pair<*, *>
+              "$position. $name"
+            },
+        "gui.top.entry.wins" to { obj: Any -> "$obj" },
+        "gui.game.finished.title" to { "Игра окончена" },
+        "gui.game.finished.winner" to { obj: Any -> "Победитель: ${(obj as Player).name}" },
+        "gui.game.player.balance" to
+            { obj: Any ->
+              val (name, balance) = obj as Pair<*, *>
+              "$name ($balance)"
+            },
         "gui.game.log.title" to { "События" },
         "gui.game.log.pending.roll_choice" to
             { obj: Any ->
@@ -46,6 +74,26 @@ private val DESKTOP_GAME_LOCALE_MAP: Map<String, (Any) -> String> =
             { obj: Any ->
               "Выберите свою карту для обмена с ${(obj as Player).name}"
             },
+        "gui.game.prompt.buy.title" to { obj: Any -> "Покупка для $obj" },
+        "gui.game.prompt.buy.description" to { "Выберите карту или пропустите покупку" },
+        "gui.game.prompt.buy.price" to { obj: Any -> "Цена: $obj" },
+        "gui.game.prompt.buy.remaining" to { obj: Any -> "Осталось: $obj" },
+        "gui.game.prompt.buy.skip" to { "Пропустить" },
+        "gui.game.prompt.pick_player" to { "Выберите игрока, с которого хотите взять деньги" },
+        "gui.game.prompt.rolling" to { "Бросок..." },
+        "gui.game.prompt.dice.title" to { obj: Any -> "$obj, бросьте кости" },
+        "gui.game.prompt.dice.roll_one" to { "Бросить одну кость" },
+        "gui.game.prompt.dice.roll_two" to { "Бросить две кости" },
+        "gui.game.prompt.dice.roll" to { "Бросить кости" },
+        "gui.game.prompt.rethrow.title" to { obj: Any -> "$obj, хотите перебросить кости?" },
+        "gui.game.prompt.rethrow.confirm" to { "Перебросить" },
+        "gui.game.prompt.rethrow.decline" to { "Оставить" },
+        "gui.game.prompt.additional_step.title" to
+            { obj: Any ->
+              "$obj, выпал дубль. Вы можете походить ещё раз"
+            },
+        "gui.game.prompt.additional_step.confirm" to { "Хочу" },
+        "gui.game.prompt.additional_step.decline" to { "Пропуск" },
         "gui.game.log.effect" to { obj: Any -> effectMessage(obj as Effect) },
         "gui.game.log.effect.effects.utility.compound" to { "Составной эффект применён" },
         "gui.game.log.effect.effects.utility.noop" to { "Пустой эффект применён" },
@@ -88,6 +136,9 @@ private val DESKTOP_GAME_LOCALE_MAP: Map<String, (Any) -> String> =
     )
 
 class RussianDesktopGameLocaliser : MapLocaliser(DESKTOP_GAME_LOCALE_MAP)
+
+fun russianDesktopLocaliser(): Localiser =
+    CompoundLocaliser(RussianDesktopGameLocaliser(), RussianLocaliser())
 
 @Suppress("UNCHECKED_CAST")
 private fun cardName(card: Card): String {

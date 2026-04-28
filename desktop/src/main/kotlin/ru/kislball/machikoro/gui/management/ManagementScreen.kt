@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.kislball.machikoro.gui.AppUiState
 import ru.kislball.machikoro.gui.AppViewModel
+import ru.kislball.machikoro.gui.localisation.LocalAppLocaliser
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -42,6 +43,7 @@ fun GameSelectionScreen(
   var newGameTitle by remember { mutableStateOf("") }
   val savedGamesScrollState = rememberScrollState()
   var isCreateGameDialogOpen by remember { mutableStateOf(false) }
+  val localiser = LocalAppLocaliser.current
 
   if (isCreateGameDialogOpen) {
     GameCreateDialog(
@@ -64,7 +66,7 @@ fun GameSelectionScreen(
       ) {
         Icon(
             Icons.Filled.Leaderboard,
-            contentDescription = "Leaderboard icon",
+            contentDescription = localiser.localise("gui.management.leaderboard"),
         )
       }
     }
@@ -74,7 +76,7 @@ fun GameSelectionScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-      Text("Machi Koro", fontSize = 24.sp)
+      Text(localiser.localise("gui.app.title"), fontSize = 24.sp)
       Spacer(Modifier.height(10.dp))
       Spacer(Modifier.height(14.dp))
       FlowRow(
@@ -85,18 +87,18 @@ fun GameSelectionScreen(
         TextField(
             value = newGameTitle,
             onValueChange = { newGameTitle = it },
-            label = { Text("Название новой игры") },
+            label = { Text(localiser.localise("gui.management.new_game_name")) },
         )
         Button(
             onClick = { isCreateGameDialogOpen = true },
             enabled = newGameTitle.isNotBlank(),
             modifier = Modifier.height(56.dp),
         ) {
-          Text("Создать")
+          Text(localiser.localise("gui.management.create"))
         }
       }
       Spacer(Modifier.height(18.dp))
-      Text("или", fontSize = 24.sp, color = Color.Gray)
+      Text(localiser.localise("gui.management.or"), fontSize = 24.sp, color = Color.Gray)
       Spacer(Modifier.height(18.dp))
       Column(
           modifier =

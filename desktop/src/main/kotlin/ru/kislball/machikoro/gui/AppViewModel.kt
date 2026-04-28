@@ -9,6 +9,8 @@ import ru.kislball.machikoro.cards.common.catalogId
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.facility.GameFactory
+import ru.kislball.machikoro.gui.localisation.russianDesktopLocaliser
+import ru.kislball.machikoro.localisation.Localiser
 import ru.kislball.machikoro.storage.GameStorage
 import ru.kislball.machikoro.storage.SavedGameSummary
 import ru.kislball.machikoro.storage.TopEntry
@@ -21,6 +23,7 @@ data class AppUiState(
     val currentScreen: Screen = Screen.GameSelection,
     val currentGame: ActiveGameSession? = null,
     val savedGames: List<SavedGameSummary> = emptyList(),
+    val localiser: Localiser = russianDesktopLocaliser(),
 ) {
   init {
     require(currentScreen != Screen.Game || currentGame != null) {

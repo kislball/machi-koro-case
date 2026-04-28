@@ -22,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import ru.kislball.machikoro.gui.localisation.LocalAppLocaliser
 
 data class GameCreateSubmission(
     val players: List<String>,
@@ -37,10 +38,11 @@ fun GameCreateDialog(
   val playerNames = remember { mutableStateListOf<String>() }
   var currentPlayerName by remember { mutableStateOf("") }
   val trimmedPlayerName = currentPlayerName.trim()
+  val localiser = LocalAppLocaliser.current
 
   AlertDialog(
       onDismissRequest = onDismiss,
-      title = { Text("Создание игры $name") },
+      title = { Text(localiser.localise("gui.management.create_dialog.title", name)) },
       text = {
         Column {
           Row(
@@ -50,7 +52,9 @@ fun GameCreateDialog(
                 TextField(
                     value = currentPlayerName,
                     onValueChange = { currentPlayerName = it },
-                    label = { Text("Имя игрока") },
+                    label = {
+                      Text(localiser.localise("gui.management.create_dialog.player_name"))
+                    },
                     modifier = Modifier.fillMaxWidth(0.85F),
                 )
                 Button(
@@ -67,7 +71,7 @@ fun GameCreateDialog(
                 ) {
                   Icon(
                       imageVector = Icons.Default.Add,
-                      contentDescription = "Добавить игрока",
+                      contentDescription = localiser.localise("gui.action.add_player"),
                   )
                 }
               }
@@ -75,6 +79,7 @@ fun GameCreateDialog(
             playerNames.forEach { playerName ->
               PlayerListItem(
                   playerName = playerName,
+                  removePlayerLabel = localiser.localise("gui.action.remove_player"),
                   onDelete = { playerNames.remove(playerName) },
               )
             }
@@ -86,7 +91,7 @@ fun GameCreateDialog(
             onClick = { onSubmit(GameCreateSubmission(playerNames.toList())) },
             enabled = playerNames.isNotEmpty(),
         ) {
-          Text("OK")
+          Text(localiser.localise("gui.management.create_dialog.confirm"))
         }
       },
   )
@@ -95,6 +100,7 @@ fun GameCreateDialog(
 @Composable
 fun PlayerListItem(
     playerName: String,
+    removePlayerLabel: String,
     onDelete: () -> Unit,
 ) {
   Row(
@@ -105,7 +111,7 @@ fun PlayerListItem(
         IconButton(onClick = onDelete) {
           Icon(
               imageVector = Icons.Default.Close,
-              contentDescription = "Удалить игрока",
+              contentDescription = removePlayerLabel,
           )
         }
       }
