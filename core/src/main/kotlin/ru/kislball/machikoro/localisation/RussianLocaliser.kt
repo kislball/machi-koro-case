@@ -105,6 +105,25 @@ private val RUSSIAN_LOCALE_MAP: Map<String, (Any) -> String> =
               val parts = obj as? List<Any> ?: listOf(obj)
               "Баланс игрока ${parts.getOrNull(0)} изменён на ${parts.getOrNull(1)}"
             },
-        "turn.current" to { obj: Any -> "Ход игрока ${(obj as Player).name}" })
+        "turn.current" to { obj: Any -> "Ход игрока ${(obj as Player).name}" },
+        "cards.cafe.name" to { "Кафе" },
+        "cards.family.name" to { "Семейный ресторан" },
+        "cards.wheat.name" to { "Пшеничное поле" },
+        "cards.farm.name" to { "Ферма" },
+        "cards.reserve.name" to { "Лес" },
+        "cards.mine.name" to { "Шахта" },
+        "cards.apples.name" to { "Яблоневый сад" },
+        "cards.bakery.name" to { "Пекарня" },
+        "cards.supermarket.name" to { "Супермаркет" },
+        "cards.cheese_factory.name" to { "Сыроварня" },
+        "cards.furniture.name" to { "Мебельная фабрика" },
+        "cards.vegetables.name" to { "Овощебаза" },
+        "cards.stadium.name" to { "Стадион" },
+        "cards.tv.name" to { "Телецентр" },
+        "cards.business.name" to { "Бизнес-центр" },
+        "cards.railway_station.name" to { "Вокзал" },
+        "cards.shopping_centre.name" to { "Торговый центр" },
+        "cards.tv_tower.name" to { "Радиовышка" },
+        "cards.entertainment_park.name" to { "Парк развлечений" })
 
 class RussianLocaliser : MapLocaliser(RUSSIAN_LOCALE_MAP)
