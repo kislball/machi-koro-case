@@ -42,6 +42,10 @@ class AppViewModel(
     return storage.load(id).driver
   }
 
+  fun top(): List<TopEntry> {
+    return storage.top()
+  }
+
   fun saveGame(id: String, catalogId: String, driver: GameDriver) {
     storage.save(id, driver, catalogId)
   }
