@@ -38,7 +38,7 @@ fun SavedGameListItem(
       modifier =
           Modifier.fillMaxWidth()
               .pointerHoverIcon(PointerIcon.Hand)
-              .clickable(onClick = onClick)
+              .clickable(onClick = onClick, enabled = savedGame.winnerName == null)
               .padding(16.dp),
   ) {
     Column {
