@@ -87,8 +87,8 @@ fun PlayerDisplay(
               horizontalArrangement = Arrangement.Center,
               modifier =
                   Modifier.fillMaxWidth(cardsMaxFraction).horizontalScroll(cardsScrollState)) {
-            cards.forEach { CardImage(it) }
-          }
+                cards.forEach { CardImage(it) }
+              }
         }
       }
 
@@ -100,8 +100,8 @@ fun PlayerDisplay(
               horizontalArrangement = Arrangement.Center,
               modifier =
                   Modifier.fillMaxWidth(cardsMaxFraction).horizontalScroll(cardsScrollState)) {
-            cards.forEach { CardImage(it) }
-          }
+                cards.forEach { CardImage(it) }
+              }
           Spacer(Modifier.height(8.dp))
           Text(
               "$name ($balance)",
@@ -118,8 +118,8 @@ fun PlayerDisplay(
               verticalArrangement = Arrangement.Center,
               modifier =
                   Modifier.fillMaxHeight(cardsMaxFraction).verticalScroll(cardsScrollState)) {
-            cards.forEach { CardImage(it) }
-          }
+                cards.forEach { CardImage(it) }
+              }
           Spacer(Modifier.width(8.dp))
           Text(
               "$name ($balance)",
@@ -143,8 +143,8 @@ fun PlayerDisplay(
               verticalArrangement = Arrangement.Center,
               modifier =
                   Modifier.fillMaxHeight(cardsMaxFraction).verticalScroll(cardsScrollState)) {
-            cards.forEach { CardImage(it) }
-          }
+                cards.forEach { CardImage(it) }
+              }
         }
       }
     }

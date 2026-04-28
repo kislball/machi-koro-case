@@ -1,6 +1,7 @@
 package ru.kislball.machikoro.gui.management
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -12,7 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Leaderboard
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -53,6 +58,16 @@ fun GameSelectionScreen(
 
   BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
     val savedGamesMaxHeight = maxHeight / 2
+    Box(modifier = Modifier.align(Alignment.TopEnd)) {
+      IconButton(
+          onClick = app::openTop,
+      ) {
+        Icon(
+            Icons.Filled.Leaderboard,
+            contentDescription = "Leaderboard icon",
+        )
+      }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),

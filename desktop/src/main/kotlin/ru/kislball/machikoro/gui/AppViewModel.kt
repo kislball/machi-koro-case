@@ -11,6 +11,7 @@ import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.facility.GameFactory
 import ru.kislball.machikoro.storage.GameStorage
 import ru.kislball.machikoro.storage.SavedGameSummary
+import ru.kislball.machikoro.storage.TopEntry
 
 data class ActiveGameSession(
     val id: String,
@@ -44,6 +45,15 @@ class AppViewModel(
 
   fun top(): List<TopEntry> {
     return storage.top()
+  }
+
+  fun openTop() {
+    uiState =
+        uiState.copy(
+            currentScreen = Screen.TopPlayers,
+            currentGame = null,
+            savedGames = storage.list(),
+        )
   }
 
   fun saveGame(id: String, catalogId: String, driver: GameDriver) {

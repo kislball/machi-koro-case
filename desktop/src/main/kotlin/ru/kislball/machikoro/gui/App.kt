@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import ru.kislball.machikoro.gui.game.GameScreen
 import ru.kislball.machikoro.gui.management.GameSelectionScreen
+import ru.kislball.machikoro.gui.top.TopPlayers
 
 @Composable
 fun App() {
@@ -30,6 +31,11 @@ fun App() {
                 currentGameId = requireNotNull(uiState.currentGame).id,
                 app = appViewModel,
                 onLeave = appViewModel::openManagement,
+            )
+        Screen.TopPlayers ->
+            TopPlayers(
+                appViewModel.top(),
+                onReturn = appViewModel::openManagement,
             )
       }
     }
