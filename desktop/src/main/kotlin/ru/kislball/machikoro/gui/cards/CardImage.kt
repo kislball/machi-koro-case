@@ -9,8 +9,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import ru.kislball.machikoro.cards.common.Card
 
-val CardImageWidth = 160.dp
-val CardImageHeight = 240.dp
+val CardImageWidth = 144.dp
+val CardImageHeight = 216.dp
 
 fun Card.imageResourcePath(): String {
   return "cards/${cardId.removePrefix("cards.")}.png"
