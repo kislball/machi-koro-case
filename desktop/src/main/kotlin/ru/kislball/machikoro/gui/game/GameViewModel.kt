@@ -43,6 +43,9 @@ class GameViewModel(
   var eventLog by mutableStateOf<List<String>>(emptyList())
     private set
 
+  val winner: Player?
+    get() = driver.game.winner
+
   val eventLogTitle: String
     get() = localiser.localise("gui.game.log.title")
 
