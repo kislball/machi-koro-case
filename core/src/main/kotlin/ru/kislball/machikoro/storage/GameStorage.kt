@@ -15,22 +15,32 @@ import ru.kislball.machikoro.exceptions.InvalidSaveNameException
 import ru.kislball.machikoro.exceptions.SaveNotFoundException
 import ru.kislball.machikoro.exceptions.UnknownCatalogException
 import ru.kislball.machikoro.facility.GameDriver
+import ru.kislball.machikoro.facility.GameExporter
 import ru.kislball.machikoro.facility.GameFactory
+import ru.kislball.machikoro.facility.GameImporter
 import ru.kislball.machikoro.facility.json.JSONExporter
 import ru.kislball.machikoro.facility.json.JSONImporter
 import ru.kislball.machikoro.facility.payload.GamePayload
+import ru.kislball.machikoro.facility.payload.GamePayloadMetadata
 
 class GameStorage(
     private val root: Path,
     private val defaultCatalogId: String,
     private val catalogResolver: CardCatalogResolver,
+    private val importer: GameImporter = JSONImporter(),
+    private val exporter: GameExporter = JSONExporter(),
+    private val fileExtension: String = "json",
 ) {
   init {
     root.createDirectories()
   }
 
   fun save(name: String, game: GameDriver, catalogId: String) {
-    fileFor(name).writeText(JSONExporter(catalogId).export(GamePayload(game.game)))
+    val payload = GamePayload(game.game)
+    val payloadWithCatalogId =
+        payload.copy(
+            metadata = (payload.metadata ?: GamePayloadMetadata()).copy(catalogId = catalogId))
+    fileFor(name).writeText(exporter.export(payloadWithCatalogId))
   }
 
   fun load(name: String): StoredGame {
@@ -39,8 +49,8 @@ class GameStorage(
       throw SaveNotFoundException(name)
     }
     val content = path.readText()
-    val payload = JSONImporter.parsePayload(content)
-    val catalogId = JSONImporter.parseCatalogId(content) ?: defaultCatalogId
+    val payload = importer.import(content)
+    val catalogId = payload.catalogId ?: defaultCatalogId
     if (catalogResolver[catalogId] == null) {
       throw UnknownCatalogException(catalogId)
     }
@@ -49,7 +59,7 @@ class GameStorage(
   }
 
   fun list(): List<SavedGameSummary> {
-    return root.listDirectoryEntries("*.json").map(::toSummary).sortedBy { it.name }
+    return root.listDirectoryEntries("*.$fileExtension").map(::toSummary).sortedBy { it.name }
   }
 
   fun delete(name: String) {
@@ -72,7 +82,7 @@ class GameStorage(
 
   private fun toSummary(path: Path): SavedGameSummary {
     val content = path.readText()
-    val payload = JSONImporter.parsePayload(content)
+    val payload = importer.import(content)
     val metadata = payload.metadata
     return SavedGameSummary(
         name = path.nameWithoutExtension,
@@ -81,7 +91,7 @@ class GameStorage(
             Files.readAttributes(path, BasicFileAttributes::class.java).creationTime().toInstant(),
         finished = metadata?.finished ?: (metadata?.winner != null),
         winnerName = metadata?.winner,
-        catalogId = JSONImporter.parseCatalogId(content) ?: defaultCatalogId,
+        catalogId = payload.catalogId ?: defaultCatalogId,
     )
   }
 
@@ -89,6 +99,6 @@ class GameStorage(
     if (name.isBlank()) {
       throw InvalidSaveNameException()
     }
-    return root.resolve("$name.json")
+    return root.resolve("$name.$fileExtension")
   }
 }
