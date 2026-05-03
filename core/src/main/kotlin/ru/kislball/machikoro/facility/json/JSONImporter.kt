@@ -5,6 +5,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.facility.GameImporter
+import ru.kislball.machikoro.facility.payload.GamePayload
+import ru.kislball.machikoro.facility.payload.PlayerPayload
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
@@ -14,7 +16,7 @@ class JSONImporter(val catalog: CardCatalog) : GameImporter {
 
   override fun import(content: String): Game {
     return try {
-      val parsed: GameJson = mapper.readValue(content)
+      val parsed: GamePayload = mapper.readValue(content)
       val players = parsed.players.map(::parsePlayer)
       val winner =
           parsed.metadata?.winner?.let { winnerName ->
@@ -28,7 +30,7 @@ class JSONImporter(val catalog: CardCatalog) : GameImporter {
     }
   }
 
-  private fun parsePlayer(rawPlayer: PlayerJson): Player {
+  private fun parsePlayer(rawPlayer: PlayerPayload): Player {
     val player = Player(rawPlayer.name)
     player.balance = rawPlayer.balance
     player.cards.addAll(rawPlayer.cards.map(::parseCard))
@@ -41,7 +43,7 @@ class JSONImporter(val catalog: CardCatalog) : GameImporter {
   companion object {
     private val mapper = jacksonObjectMapper()
 
-    fun parsePayload(content: String): GameJson {
+    fun parsePayload(content: String): GamePayload {
       return mapper.readValue(content)
     }
   }
