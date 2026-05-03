@@ -126,6 +126,14 @@ classDiagram
             +get(id: String) Card?
             +getCardList() List~Card~
         }
+        class CardCatalogDefinition {
+            +id: String
+            +catalog: CardCatalog
+        }
+        class CardCatalogResolver {
+            +get(id: String) CardCatalog?
+            +getCatalogList() List~CardCatalog~
+        }
         class CompoundCatalog
         class CardType {
             <<enum>>
@@ -189,14 +197,31 @@ classDiagram
     namespace GameFacility {
         class GameExporter {
             <<interface>>
-            +export(game: Game) String
+            +export(game: GamePayload) String
         }
         class GameImporter {
             <<interface>>
-            +import(content: String) Game
+            +import(content: String) GamePayload
         }
         class JSONExporter
         class JSONImporter
+        class GamePayload {
+            +players: List~PlayerPayload~
+            +metadata: GamePayloadMetadata?
+            +catalogResolver: CardCatalogResolver
+            +catalog: CardCatalog
+            +catalogId: String?
+        }
+        class GamePayloadMetadata {
+            +winner: String?
+            +catalogId: String?
+            +finished: Boolean?
+        }
+        class PlayerPayload {
+            +name: String
+            +balance: Int
+            +cards: List~String~
+        }
           class GameDriver {
              +game: Game
              +nextStep() PendingStepPhase
@@ -206,6 +231,32 @@ classDiagram
         class GameFactory {
             <<object>>
             +createDriver(catalog: CardCatalog, playerNames: List~String~) GameDriver
+            +createDriver(payload: GamePayload) GameDriver
+        }
+    }
+
+    namespace Storage {
+        class GameStorage {
+            +save(name: String, game: GameDriver, catalogId: String) void
+            +load(name: String) StoredGame
+            +list() List~SavedGameSummary~
+            +delete(name: String) void
+            +top() List~TopEntry~
+        }
+        class StoredGame {
+            +driver: GameDriver
+            +catalogId: String
+        }
+        class SavedGameSummary {
+            +name: String
+            +playerNames: List~String~
+            +finished: Boolean
+            +winnerName: String?
+            +catalogId: String
+        }
+        class TopEntry {
+            +playerName: String
+            +wins: Int
         }
     }
 
@@ -273,6 +324,8 @@ classDiagram
 
      CardCatalog <|-- CompoundCatalog
      StandardCatalog ..> CardCatalog : instance
+     CardCatalogResolver --> CardCatalogDefinition
+     CardCatalogDefinition --> CardCatalog
 
      Player "1" o-- "*" Card : owns
      Game "1" o-- "*" Player : contains
@@ -313,11 +366,26 @@ classDiagram
 
      JSONExporter ..|> GameExporter
      JSONImporter ..|> GameImporter
+     JSONExporter ..> GamePayload : serializes
+     JSONImporter ..> GamePayload : parses
+     GamePayload --> PlayerPayload
+     GamePayload --> GamePayloadMetadata
+     GamePayload --> CardCatalogResolver : resolves catalog
+     GamePayload ..> CardCatalog : catalog getter
      GameDriver --> Game
      GameFactory ..> Game : creates
      GameFactory ..> GameDriver : creates
+     GameFactory ..> GamePayload : imports
+     GameStorage --> GameImporter
+     GameStorage --> GameExporter
+     GameStorage --> CardCatalogResolver
+     GameStorage ..> GamePayload
+     GameStorage ..> GameFactory
+     GameStorage --> StoredGame
+     GameStorage --> SavedGameSummary
+     GameStorage --> TopEntry
+     StoredGame --> GameDriver
 ```
 
 Для описания дальнейшей логики используется диаграмма классов выше. Далее перечислены моменты.
-
 
