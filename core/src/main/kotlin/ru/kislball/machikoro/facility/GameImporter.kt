@@ -1,7 +1,7 @@
 package ru.kislball.machikoro.facility
 
-import ru.kislball.machikoro.game.Game
+import ru.kislball.machikoro.facility.payload.GamePayload
 
 interface GameImporter {
-  fun import(content: String): Game
+  fun import(s: String): GamePayload
 }

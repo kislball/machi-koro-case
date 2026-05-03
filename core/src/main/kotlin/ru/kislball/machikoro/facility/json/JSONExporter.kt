@@ -5,27 +5,23 @@ import ru.kislball.machikoro.facility.GameExporter
 import ru.kislball.machikoro.facility.payload.GamePayload
 import ru.kislball.machikoro.facility.payload.GamePayloadMetadata
 import ru.kislball.machikoro.facility.payload.PlayerPayload
-import ru.kislball.machikoro.game.Game
 
 class JSONExporter(
     private val catalogId: String? = null,
 ) : GameExporter {
   private val mapper = jacksonObjectMapper()
 
-  override fun export(game: Game): String {
-    val payload =
-        GamePayload(
-            players =
-                game.players.map { player ->
-                  PlayerPayload(
-                      name = player.name,
-                      balance = player.balance,
-                      cards = player.cards.map { it.cardId },
-                  )
-                },
-            metadata = GamePayloadMetadata(winner = game.winner?.name, catalogId = catalogId),
-        )
+  override fun export(g: GamePayload): String {
     return mapper.writeValueAsString(
-        payload.copy(metadata = payload.metadata?.copy(finished = game.finished)))
+        JsonExportGamePayload(
+            players = g.players,
+            metadata =
+                (g.metadata ?: GamePayloadMetadata()).copy(catalogId = catalogId ?: g.catalogId),
+        ))
   }
 }
+
+private data class JsonExportGamePayload(
+    val players: List<PlayerPayload>,
+    val metadata: GamePayloadMetadata? = null,
+)

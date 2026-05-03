@@ -113,9 +113,7 @@ class CLIApplication(
       val root = Path.of(System.getProperty("user.dir"), ".machikoro-cli")
       Files.createDirectories(root)
       val catalogs = CLICatalogRegistry.default()
-      return GameStorage(root, catalogs.defaultCatalogId) { catalogId ->
-        catalogs.get(catalogId)?.catalog
-      }
+      return GameStorage(root, catalogs.defaultCatalogId, catalogs.resolver)
     }
   }
 }

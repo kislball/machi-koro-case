@@ -12,6 +12,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.cards.common.CardCatalogDefinition
+import ru.kislball.machikoro.cards.common.CardCatalogResolver
 import ru.kislball.machikoro.cards.common.OverrideStarterCardsCatalog
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.facility.GameDriver
@@ -119,6 +121,10 @@ class GameStorageTest {
   private fun storageFor(
       catalogs: Map<String, CardCatalog> = mapOf("standard" to StandardCatalog)
   ): GameStorage {
-    return GameStorage(tempDir, "standard") { catalogId -> catalogs[catalogId] }
+    return GameStorage(
+        tempDir,
+        "standard",
+        CardCatalogResolver(catalogs.map { (id, catalog) -> CardCatalogDefinition(id, catalog) }),
+    )
   }
 }

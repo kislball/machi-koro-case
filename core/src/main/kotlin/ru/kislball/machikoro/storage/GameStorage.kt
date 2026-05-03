@@ -10,25 +10,27 @@ import kotlin.io.path.listDirectoryEntries
 import kotlin.io.path.nameWithoutExtension
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
-import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.cards.common.CardCatalogResolver
 import ru.kislball.machikoro.exceptions.InvalidSaveNameException
 import ru.kislball.machikoro.exceptions.SaveNotFoundException
 import ru.kislball.machikoro.exceptions.UnknownCatalogException
 import ru.kislball.machikoro.facility.GameDriver
+import ru.kislball.machikoro.facility.GameFactory
 import ru.kislball.machikoro.facility.json.JSONExporter
 import ru.kislball.machikoro.facility.json.JSONImporter
+import ru.kislball.machikoro.facility.payload.GamePayload
 
 class GameStorage(
     private val root: Path,
     private val defaultCatalogId: String,
-    private val catalogResolver: (String) -> CardCatalog?,
+    private val catalogResolver: CardCatalogResolver,
 ) {
   init {
     root.createDirectories()
   }
 
   fun save(name: String, game: GameDriver, catalogId: String) {
-    fileFor(name).writeText(JSONExporter(catalogId).export(game.game))
+    fileFor(name).writeText(JSONExporter(catalogId).export(GamePayload(game.game)))
   }
 
   fun load(name: String): StoredGame {
@@ -38,9 +40,12 @@ class GameStorage(
     }
     val content = path.readText()
     val payload = JSONImporter.parsePayload(content)
-    val catalogId = payload.metadata?.catalogId ?: defaultCatalogId
-    val catalog = catalogResolver(catalogId) ?: throw UnknownCatalogException(catalogId)
-    return StoredGame(GameDriver(JSONImporter(catalog).import(content)), catalogId)
+    val catalogId = JSONImporter.parseCatalogId(content) ?: defaultCatalogId
+    if (catalogResolver[catalogId] == null) {
+      throw UnknownCatalogException(catalogId)
+    }
+    payload.catalogResolver = catalogResolver
+    return StoredGame(GameFactory.createDriver(payload), catalogId)
   }
 
   fun list(): List<SavedGameSummary> {
@@ -76,7 +81,7 @@ class GameStorage(
             Files.readAttributes(path, BasicFileAttributes::class.java).creationTime().toInstant(),
         finished = metadata?.finished ?: (metadata?.winner != null),
         winnerName = metadata?.winner,
-        catalogId = metadata?.catalogId ?: defaultCatalogId,
+        catalogId = JSONImporter.parseCatalogId(content) ?: defaultCatalogId,
     )
   }
 
