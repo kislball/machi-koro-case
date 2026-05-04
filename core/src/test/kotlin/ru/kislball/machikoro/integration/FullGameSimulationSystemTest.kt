@@ -54,7 +54,7 @@ class FullGameSimulationSystemTest {
       }
 
       if (selectedCardId == null) throw NoFillerCardsAvailableException()
-      val finishedStep = driver.buyCard(player, selectedCardId!!)
+      val finishedStep = driver.buyCard(player, selectedCardId)
       assertNotNull(finishedStep)
     }
 
