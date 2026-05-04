@@ -21,7 +21,7 @@ internal fun managementCommands(session: CLISession): List<Command> {
           if (games.isEmpty()) {
             context.printLine("cli.games.empty")
           } else {
-            games.forEach(context::printRaw)
+            games.map { it.name }.forEach(context::printRaw)
           }
         }
       },
@@ -38,14 +38,19 @@ internal fun managementCommands(session: CLISession): List<Command> {
       object : Command("delete", CLIMode.MANAGEMENT) {
         override fun execute(arguments: List<String>, context: CommandContext) {
           require(arguments.size == 1) { "delete <name>" }
-          context.storage.delete(arguments.single())
+          withStorageErrors { context.storage.delete(arguments.single()) }
           context.printLine("cli.games.deleted", arguments.single())
         }
       },
       object : Command("load", CLIMode.MANAGEMENT) {
         override fun execute(arguments: List<String>, context: CommandContext) {
           require(arguments.size == 1) { "load <name>" }
-          val game = context.storage.load(arguments.single()).withObserver(context)
+          val game =
+              withStorageErrors {
+                    val loaded = context.storage.load(arguments.single())
+                    ActiveCliGame(loaded.driver, loaded.catalogId)
+                  }
+                  .withObserver(context)
           session.activeGame = game
           session.mode = CLIMode.GAME
           context.printLine("cli.games.loaded", arguments.single())

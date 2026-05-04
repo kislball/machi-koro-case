@@ -104,3 +104,11 @@ class LocalisationKeyNotFoundException(key: String) :
 
 class InvalidLocalisationInputException(key: String) :
     LocalisationException("exception.localisation.input_invalid")
+
+class SaveNotFoundException(val saveName: String) :
+    NoSuchElementException("Saved game not found: $saveName")
+
+class InvalidSaveNameException : IllegalArgumentException("Save name must not be blank")
+
+class UnknownCatalogException(val catalogId: String) :
+    IllegalArgumentException("Unknown catalog: $catalogId")

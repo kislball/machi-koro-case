@@ -35,15 +35,16 @@ import ru.kislball.machikoro.game.step.FinishedStepPhase
 import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.utilities.contains
 
-class GameDriver(val game: Game) {
-  fun observeEffects(observer: (Effect, PendingStepPhase) -> Unit) {
+@Suppress("TooManyFunctions")
+open class GameDriver(open val game: Game) {
+  open fun observeEffects(observer: (Effect, PendingStepPhase) -> Unit) {
     game.addEffectObserver { effect, stepPhase ->
       val pendingStep = stepPhase as? PendingStepPhase ?: return@addEffectObserver
       observer(effect, pendingStep)
     }
   }
 
-  fun nextStep(): PendingStepPhase {
+  open fun nextStep(): PendingStepPhase {
     val nextStep = game.nextStep()
     check(nextStep is PendingStepPhase) {
       WaitingStepTypeMismatchException(
@@ -52,7 +53,7 @@ class GameDriver(val game: Game) {
     return nextStep as PendingStepPhase
   }
 
-  fun rollDice(player: Player, numDice: Int): PendingStepPhase {
+  open fun rollDice(player: Player, numDice: Int): PendingStepPhase {
     check(!game.finished) { GameFinishedException() }
     val step = game.currentStepPhase
     val waitingStep: PendingStepPhase =
@@ -83,11 +84,11 @@ class GameDriver(val game: Game) {
     return waitingStep
   }
 
-  fun needsRethrowDecision(player: Player): Boolean {
+  open fun needsRethrowDecision(player: Player): Boolean {
     return currentInputMatches(player) { it is RethrowDiceInputEffect }
   }
 
-  fun needsRollDecision(player: Player): Boolean {
+  open fun needsRollDecision(player: Player): Boolean {
     val current = game.currentStepPhase as? PendingStepPhase ?: return false
     if (current.currentPlayer != player) return false
     if (game.inputEffects.peek() != null) return false
@@ -96,38 +97,38 @@ class GameDriver(val game: Game) {
     return player.canThrowTwoDice()
   }
 
-  fun needsPickAndChargeDecision(player: Player): Boolean {
+  open fun needsPickAndChargeDecision(player: Player): Boolean {
     return currentInputMatches(player) { it is PickAndChargeUserInputEffect }
   }
 
-  fun needsSwapCardsDecision(player: Player): Boolean {
+  open fun needsSwapCardsDecision(player: Player): Boolean {
     return currentInputMatches(player) { it is SwapCardsInputEffect }
   }
 
-  fun needsAdditionalStepDecision(player: Player): Boolean {
+  open fun needsAdditionalStepDecision(player: Player): Boolean {
     return currentInputMatches(player) { it is GivePlayerAdditionalStepInputEffect }
   }
 
-  fun needsBuyCardDecision(player: Player): Boolean {
+  open fun needsBuyCardDecision(player: Player): Boolean {
     return currentInputMatches(player) { it is BuyCardInputEffect }
   }
 
-  fun submitRethrowDecision(player: Player, shouldRethrow: Boolean): PendingStepPhase {
+  open fun submitRethrowDecision(player: Player, shouldRethrow: Boolean): PendingStepPhase {
     finishStep(ProvideRethrowDecisionAction(player, shouldRethrow))
     return currentPendingStep
   }
 
-  fun pickAndChargePlayer(player: Player, targetPlayer: Player): PendingStepPhase {
+  open fun pickAndChargePlayer(player: Player, targetPlayer: Player): PendingStepPhase {
     finishStep(PickAndChargePlayerAction(player, targetPlayer))
     return currentPendingStep
   }
 
-  fun swapCards(player: Player, input: SwapCardsInput): PendingStepPhase {
+  open fun swapCards(player: Player, input: SwapCardsInput): PendingStepPhase {
     finishStep(SwapCardsAction(player, input))
     return currentPendingStep
   }
 
-  fun submitAdditionalStepDecision(
+  open fun submitAdditionalStepDecision(
       player: Player,
       shouldTakeAdditionalStep: Boolean,
   ): PendingStepPhase {
@@ -135,11 +136,11 @@ class GameDriver(val game: Game) {
     return currentPendingStep
   }
 
-  fun buyCard(player: Player, cardId: String): FinishedStepPhase? {
+  open fun buyCard(player: Player, cardId: String): FinishedStepPhase? {
     return finishStep(BuyCardInputAction(player, cardId))
   }
 
-  fun skipCardPurchase(player: Player): FinishedStepPhase? {
+  open fun skipCardPurchase(player: Player): FinishedStepPhase? {
     return finishStep(BuyCardInputAction(player, null))
   }
 

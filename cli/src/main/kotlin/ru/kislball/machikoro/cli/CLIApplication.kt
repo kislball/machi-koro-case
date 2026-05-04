@@ -10,7 +10,6 @@ import ru.kislball.machikoro.cli.io.CLIIO
 import ru.kislball.machikoro.cli.io.StdCLIIO
 import ru.kislball.machikoro.cli.session.CLIMode
 import ru.kislball.machikoro.cli.session.CLISession
-import ru.kislball.machikoro.cli.storage.CLIStorage
 import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
@@ -22,10 +21,12 @@ import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.utilities.getOrNull
 import ru.kislball.machikoro.localisation.localiseOrKey
+import ru.kislball.machikoro.storage.GameStorage
+import ru.kislball.machikoro.storage.GameStorageFactory
 
 class CLIApplication(
     private val io: CLIIO = StdCLIIO,
-    private val storage: CLIStorage = CLIStorage.default(),
+    private val storage: GameStorage = defaultStorage(),
     catalogs: CLICatalogRegistry = CLICatalogRegistry.default(),
 ) {
   private val session = CLISession()
@@ -63,6 +64,7 @@ class CLIApplication(
   private fun flushGameState() {
     val game = session.activeGame ?: return
     context.autoAdvance.advance(game)
+    appendResultLogs(game)
     game.effectLog.forEach(context::printRaw)
     game.effectLog.clear()
 
@@ -71,7 +73,6 @@ class CLIApplication(
       context.printLine("cli.awaiting.roll", current.currentPlayer)
       return
     }
-    current.results.getOrNull<DiceRollResult>()?.let { context.printLine("cli.dice.current", it) }
     val input = game.driver.game.inputEffects.peek()
     when (input) {
       is RethrowDiceInputEffect -> context.printLine("cli.awaiting.rethrow", input.player)
@@ -81,6 +82,16 @@ class CLIApplication(
       is GivePlayerAdditionalStepInputEffect ->
           context.printLine("cli.awaiting.additional_step", input.player)
     }
+  }
+
+  private fun appendResultLogs(game: ru.kislball.machikoro.cli.session.ActiveCliGame) {
+    val current = game.driver.game.currentStepPhase as? PendingStepPhase ?: return
+    val result = current.results.getOrNull<DiceRollResult>() ?: return
+    val resultKey = current.stepNumber to result.diceThrown
+    if (game.loggedDiceResultKey == resultKey) return
+
+    game.loggedDiceResultKey = resultKey
+    game.effectLog.add(context.localiser.localise("cli.result.dice.current", result))
   }
 
   private fun printPrompt() {
@@ -94,5 +105,13 @@ class CLIApplication(
               )
         }
     io.writeLine(prompt)
+  }
+
+  companion object {
+    private fun defaultStorage(): GameStorage {
+      val root = "${System.getProperty("user.dir")}/.machikoro-cli"
+      val catalogs = CLICatalogRegistry.default()
+      return GameStorageFactory.json(root, catalogs.defaultCatalogId, catalogs.resolver)
+    }
   }
 }

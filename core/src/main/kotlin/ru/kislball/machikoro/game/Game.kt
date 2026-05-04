@@ -21,6 +21,7 @@ class Game(
     players: List<Player>,
     val gameFinishedTrigger: Triggerable,
     winner: Player? = null,
+    finished: Boolean = winner != null,
 ) {
   constructor(players: List<Player>) : this(StandardCatalog, players, SightsCollectedTrigger())
 
@@ -56,9 +57,7 @@ class Game(
 
   init {
     require(players.isNotEmpty()) { EmptyPlayersListException() }
-    if (winner != null) {
-      finished = true
-    }
+    this.finished = finished
   }
 
   fun getTriggerables(): Sequence<Pair<Triggerable, Player?>> {

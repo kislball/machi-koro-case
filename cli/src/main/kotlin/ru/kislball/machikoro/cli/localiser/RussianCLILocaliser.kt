@@ -1,7 +1,6 @@
 package ru.kislball.machikoro.cli.localiser
 
 import ru.kislball.machikoro.cards.common.Card
-import ru.kislball.machikoro.cli.storage.TopEntry
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.GrantCardEffect
 import ru.kislball.machikoro.effects.cards.RemoveCardEffect
@@ -14,6 +13,7 @@ import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepEffect
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.localisation.MapLocaliser
+import ru.kislball.machikoro.storage.TopEntry
 
 private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
     mapOf(
@@ -100,6 +100,11 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
             },
         "cli.effect.effects.order.additional_step.execute" to { "Назначен дополнительный ход" },
         "cli.effect.effects.game_finished" to { "Игра завершена" },
+        "cli.result.dice.current" to
+            { obj: Any ->
+              val result = obj as DiceRollResult
+              "Кости: ${result.diceThrown.joinToString(", ")}"
+            },
         "cli.dice.current" to
             { obj: Any ->
               val result = obj as DiceRollResult

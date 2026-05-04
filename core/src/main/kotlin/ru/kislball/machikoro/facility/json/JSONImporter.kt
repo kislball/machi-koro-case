@@ -1,47 +1,60 @@
 package ru.kislball.machikoro.facility.json
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import ru.kislball.machikoro.cards.common.CardCatalog
-import ru.kislball.machikoro.facility.GameImporter
-import ru.kislball.machikoro.game.Game
-import ru.kislball.machikoro.game.Player
-import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
+import ru.kislball.machikoro.facility.payload.GamePayload
+import ru.kislball.machikoro.facility.payload.GamePayloadMetadata
+import ru.kislball.machikoro.facility.payload.PlayerPayload
 
-class JSONImporter(val catalog: CardCatalog) : GameImporter {
+class JSONImporter {
   private val mapper = jacksonObjectMapper()
 
-  override fun import(content: String): Game {
+  fun import(s: String): GamePayload {
     return try {
-      val parsed: GameJson = mapper.readValue(content)
-      val players = parsed.players.map(::parsePlayer)
-      val winner =
-          parsed.metadata?.winner?.let { winnerName ->
-            players.firstOrNull { it.name == winnerName }
-                ?: throw IllegalArgumentException("Invalid winner: $winnerName")
-          }
-      Game(catalog, players, SightsCollectedTrigger(), winner)
+      mapper.readValue<JsonImportGamePayload>(s).toPayload()
     } catch (exception: JsonProcessingException) {
       throw IllegalArgumentException("Invalid JSON content", exception)
     }
   }
 
-  private fun parsePlayer(rawPlayer: PlayerJson): Player {
-    val player = Player(rawPlayer.name)
-    player.balance = rawPlayer.balance
-    player.cards.addAll(rawPlayer.cards.map(::parseCard))
-    return player
-  }
-
-  private fun parseCard(kindName: String) =
-      catalog[kindName] ?: throw IllegalArgumentException("Invalid card kind: $kindName")
-
   companion object {
-    private val mapper = jacksonObjectMapper()
+    fun parsePayload(content: String): GamePayload {
+      return JSONImporter().import(content)
+    }
 
-    fun parsePayload(content: String): GameJson {
-      return mapper.readValue(content)
+    fun parseCatalogId(content: String): String? {
+      return parsePayload(content).catalogId
     }
   }
 }
+
+private data class JsonImportGamePayload(
+    val players: List<PlayerPayload>,
+    val metadata: JsonGamePayloadMetadata? = null,
+    @param:JsonProperty("catalogId") private val topLevelCatalogId: String? = null,
+) {
+  val catalogId: String?
+    get() = topLevelCatalogId ?: metadata?.catalogId
+
+  fun toPayload(): GamePayload {
+    return GamePayload(
+        players = players,
+        metadata =
+            metadata?.let {
+              GamePayloadMetadata(
+                  winner = it.winner,
+                  catalogId = catalogId,
+                  finished = it.finished,
+              )
+            },
+    )
+  }
+}
+
+private data class JsonGamePayloadMetadata(
+    val winner: String? = null,
+    val finished: Boolean? = null,
+    val catalogId: String? = null,
+)

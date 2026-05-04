@@ -66,6 +66,18 @@ class TriggerTest {
   }
 
   @Test
+  fun `dice triggers match roll sum for two dice`() {
+    val player = Player("p1")
+    val game = Game(listOf(player))
+    val step = testStep(game, player).apply { results.set(DiceRollResult(player, listOf(3, 4))) }
+
+    assertTrue(AnyDiceTrigger(7).isTriggered(step, null))
+    assertTrue(PlayerDiceTrigger(player, 7).isTriggered(step, null))
+    assertFalse(AnyDiceTrigger(3).isTriggered(step, null))
+    assertFalse(PlayerDiceTrigger(player, 4).isTriggered(step, null))
+  }
+
+  @Test
   fun `and trigger requires all nested triggers`() {
     val step = testStep(Game(listOf(Player("p1"))), Player("p1"))
 

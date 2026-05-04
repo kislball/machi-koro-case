@@ -14,7 +14,7 @@ class PossessorDiceTrigger(private val dicePredicate: (List<Int>) -> Boolean) :
     return rolled.player == owner && dicePredicate(rolled.diceThrown)
   }
 
-  constructor(singleDice: Int) : this({ singleDice in it })
+  constructor(singleDice: Int) : this({ rolled -> rolled.sum() == singleDice })
 
-  constructor(dice: List<Int>) : this({ rolled -> rolled.any { it in dice } })
+  constructor(dice: List<Int>) : this({ rolled -> rolled.sum() in dice })
 }

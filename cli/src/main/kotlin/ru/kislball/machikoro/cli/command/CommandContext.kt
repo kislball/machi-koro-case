@@ -5,14 +5,14 @@ import ru.kislball.machikoro.cli.game.GameAutoAdvance
 import ru.kislball.machikoro.cli.io.CLIIO
 import ru.kislball.machikoro.cli.localiser.RussianCLILocaliser
 import ru.kislball.machikoro.cli.session.CLISession
-import ru.kislball.machikoro.cli.storage.CLIStorage
 import ru.kislball.machikoro.localisation.CompoundLocaliser
 import ru.kislball.machikoro.localisation.Localiser
 import ru.kislball.machikoro.localisation.RussianLocaliser
+import ru.kislball.machikoro.storage.GameStorage
 
 class CommandContext(
     val io: CLIIO,
-    val storage: CLIStorage,
+    val storage: GameStorage,
     val session: CLISession,
     val autoAdvance: GameAutoAdvance,
     val catalogs: CLICatalogRegistry,

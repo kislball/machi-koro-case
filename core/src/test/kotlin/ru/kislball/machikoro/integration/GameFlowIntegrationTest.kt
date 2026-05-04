@@ -7,11 +7,14 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
+import ru.kislball.machikoro.cards.common.CardCatalogDefinition
+import ru.kislball.machikoro.cards.common.CardCatalogResolver
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.exceptions.GameException
 import ru.kislball.machikoro.facility.GameFactory
 import ru.kislball.machikoro.facility.json.JSONExporter
 import ru.kislball.machikoro.facility.json.JSONImporter
+import ru.kislball.machikoro.facility.payload.GamePayload
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 
@@ -45,8 +48,10 @@ class GameFlowIntegrationTest {
 
     val game = Game(listOf(alice, bob))
 
-    val exported = JSONExporter().export(game)
-    val imported = JSONImporter(catalog).import(exported)
+    val exported = JSONExporter().export(GamePayload(game))
+    val payload = JSONImporter().import(exported)
+    payload.catalogResolver = CardCatalogResolver(CardCatalogDefinition("standard", catalog))
+    val imported = GameFactory.createDriver(payload).game
 
     val importedPlayers = imported.players
     assertEquals(listOf("alice", "bob"), importedPlayers.map { it.name })

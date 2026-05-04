@@ -54,7 +54,7 @@ class FullGameSimulationSystemTest {
       }
 
       if (selectedCardId == null) throw NoFillerCardsAvailableException()
-      val finishedStep = driver.buyCard(player, selectedCardId!!)
+      val finishedStep = driver.buyCard(player, selectedCardId)
       assertNotNull(finishedStep)
     }
 
@@ -110,7 +110,7 @@ class FullGameSimulationSystemTest {
     assertTrue(driver.game.inputEffects.peek() is RethrowDiceInputEffect)
     aliceTurn.results.set(IntermediateRollResult(DiceRollResult(alice, listOf(3, 3))))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
-    assertEquals(loopAliceBeforeAlice + 1, alice.balance)
+    assertEquals(loopAliceBeforeAlice, alice.balance)
     assertEquals(loopAliceBeforeBob, bob.balance)
 
     assertTrue(driver.game.inputEffects.peek() is GivePlayerAdditionalStepInputEffect)
