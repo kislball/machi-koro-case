@@ -28,6 +28,7 @@ classDiagram
     }
 
     class GameStorage {
+        <<abstract>>
         +save(name: String, game: GameDriver, catalogId: String)
         +load(name: String) StoredGame
         +list() List~SavedGameSummary~
@@ -86,11 +87,18 @@ classDiagram
         +require(id: String) CLICatalogDefinition
     }
 
+    class GameStorageFactory {
+        <<object>>
+        +json(root: String, defaultCatalogId: String, catalogResolver: CardCatalogResolver) GameStorage
+    }
+
+    class JsonGameStorage
     class GameDriver
 
     Main ..> CLIApplication
     CLIApplication ..> CLIIO
     CLIApplication ..> GameStorage
+    CLIApplication ..> GameStorageFactory : default JSON storage
     CLIApplication ..> CLISession
     CLIApplication ..> CommandContext
     CLIApplication ..> Command
@@ -101,6 +109,8 @@ classDiagram
     CommandContext ..> CLICatalogRegistry
     CLISession ..> ActiveCliGame
     ActiveCliGame ..> GameDriver
+    JsonGameStorage --|> GameStorage
+    GameStorageFactory ..> JsonGameStorage
     GameStorage ..> StoredGame
     GameStorage ..> SavedGameSummary
     StoredGame ..> GameDriver
@@ -124,12 +134,13 @@ classDiagram
 - После каждой команды `CLIApplication` вызывает `flushGameState()`: продвигает игру дальше, печатает effect log и показывает ожидаемый input effect, если он есть.
 
 ### Каталоги и сохранения
-- Сохранения хранятся в `core` через `GameStorage`.
-- CLI использует `GameStorage` и превращает `StoredGame` в `ActiveCliGame`.
+- Сохранения доступны CLI через абстрактный `GameStorage`.
+- По умолчанию `CLIApplication` создаёт JSON-хранилище через `GameStorageFactory.json(root: String, ...)`.
+- CLI использует только `GameStorage` и превращает `StoredGame` в `ActiveCliGame`.
 - `CLICatalogRegistry` хранит доступные каталоги и каталог по умолчанию.
 - При `start` CLI создаёт игру на каталоге по умолчанию.
 - При `save` в JSON пишутся `catalogId` и `finished`.
-- При `load` storage читает `catalogId` из JSON и загружает игру с нужным `CardCatalog`.
+- При `load` JSON-хранилище читает `catalogId` из файла и загружает игру с нужным `CardCatalog`.
 - `GameStorage.list()` возвращает не только имя, но и краткую информацию: игроков, `createdAt`, `finished`, `winnerName` и `catalogId`.
 - Если в старом сохранении нет поля `finished`, оно вычисляется по `winner`.
 

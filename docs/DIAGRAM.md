@@ -195,16 +195,12 @@ classDiagram
     }
 
     namespace GameFacility {
-        class GameExporter {
-            <<interface>>
+        class JSONExporter {
             +export(game: GamePayload) String
         }
-        class GameImporter {
-            <<interface>>
+        class JSONImporter {
             +import(content: String) GamePayload
         }
-        class JSONExporter
-        class JSONImporter
         class GamePayload {
             +players: List~PlayerPayload~
             +metadata: GamePayloadMetadata?
@@ -237,12 +233,18 @@ classDiagram
 
     namespace Storage {
         class GameStorage {
+            <<abstract>>
             +save(name: String, game: GameDriver, catalogId: String) void
             +load(name: String) StoredGame
             +list() List~SavedGameSummary~
             +delete(name: String) void
             +top() List~TopEntry~
         }
+        class GameStorageFactory {
+            <<object>>
+            +json(root: String, defaultCatalogId: String, catalogResolver: CardCatalogResolver) GameStorage
+        }
+        class JsonGameStorage
         class StoredGame {
             +driver: GameDriver
             +catalogId: String
@@ -364,8 +366,6 @@ classDiagram
      AwaitInputEffect ..> InputEffectsQueue : enqueue
      ProvideInputEffect ..> InputEffectsQueue : dequeue
 
-     JSONExporter ..|> GameExporter
-     JSONImporter ..|> GameImporter
      JSONExporter ..> GamePayload : serializes
      JSONImporter ..> GamePayload : parses
      GamePayload --> PlayerPayload
@@ -376,16 +376,17 @@ classDiagram
      GameFactory ..> Game : creates
      GameFactory ..> GameDriver : creates
      GameFactory ..> GamePayload : imports
-     GameStorage --> GameImporter
-     GameStorage --> GameExporter
      GameStorage --> CardCatalogResolver
      GameStorage ..> GamePayload
      GameStorage ..> GameFactory
      GameStorage --> StoredGame
      GameStorage --> SavedGameSummary
      GameStorage --> TopEntry
+     JsonGameStorage --|> GameStorage
+     JsonGameStorage --> JSONImporter
+     JsonGameStorage --> JSONExporter
+     GameStorageFactory ..> JsonGameStorage
      StoredGame --> GameDriver
 ```
 
 Для описания дальнейшей логики используется диаграмма классов выше. Далее перечислены моменты.
-
