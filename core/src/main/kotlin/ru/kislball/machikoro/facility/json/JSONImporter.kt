@@ -4,15 +4,14 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import ru.kislball.machikoro.facility.GameImporter
 import ru.kislball.machikoro.facility.payload.GamePayload
 import ru.kislball.machikoro.facility.payload.GamePayloadMetadata
 import ru.kislball.machikoro.facility.payload.PlayerPayload
 
-class JSONImporter : GameImporter {
+class JSONImporter {
   private val mapper = jacksonObjectMapper()
 
-  override fun import(s: String): GamePayload {
+  fun import(s: String): GamePayload {
     return try {
       mapper.readValue<JsonImportGamePayload>(s).toPayload()
     } catch (exception: JsonProcessingException) {

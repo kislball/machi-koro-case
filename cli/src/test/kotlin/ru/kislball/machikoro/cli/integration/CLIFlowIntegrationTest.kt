@@ -26,6 +26,7 @@ import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.storage.GameStorage
+import ru.kislball.machikoro.storage.GameStorageFactory
 
 class CLIFlowIntegrationTest {
   private val tempDir = createTempDirectory("machikoro-cli-integration")
@@ -343,9 +344,7 @@ class CLIFlowIntegrationTest {
   }
 
   private fun storageFor(catalogs: CLICatalogRegistry): GameStorage {
-    return GameStorage(tempDir, catalogs.defaultCatalogId) { catalogId ->
-      catalogs.get(catalogId)?.catalog
-    }
+    return GameStorageFactory.json(tempDir.toString(), catalogs.defaultCatalogId, catalogs.resolver)
   }
 
   private fun testCatalog(card: Card): CardCatalog {

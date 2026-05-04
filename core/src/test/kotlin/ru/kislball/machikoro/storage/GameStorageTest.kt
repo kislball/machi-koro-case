@@ -4,7 +4,6 @@ package ru.kislball.machikoro.storage
 
 import kotlin.io.path.createTempDirectory
 import kotlin.io.path.deleteRecursively
-import kotlin.io.path.exists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.test.AfterTest
@@ -18,12 +17,7 @@ import ru.kislball.machikoro.cards.common.CardCatalogResolver
 import ru.kislball.machikoro.cards.common.OverrideStarterCardsCatalog
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.facility.GameDriver
-import ru.kislball.machikoro.facility.GameExporter
 import ru.kislball.machikoro.facility.GameFactory
-import ru.kislball.machikoro.facility.GameImporter
-import ru.kislball.machikoro.facility.json.JSONExporter
-import ru.kislball.machikoro.facility.json.JSONImporter
-import ru.kislball.machikoro.facility.payload.GamePayload
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
@@ -82,6 +76,34 @@ class GameStorageTest {
   }
 
   @Test
+  fun `top can be overridden by storage implementation`() {
+    val storage =
+        object : GameStorage("standard", CardCatalogResolver.default) {
+          override fun save(name: String, game: GameDriver, catalogId: String) {
+            error("save should not be called")
+          }
+
+          override fun load(name: String): StoredGame {
+            error("load should not be called")
+          }
+
+          override fun list(): List<SavedGameSummary> {
+            error("list should not be called")
+          }
+
+          override fun delete(name: String) {
+            error("delete should not be called")
+          }
+
+          override fun top(): List<TopEntry> {
+            return listOf(TopEntry("cached", 7))
+          }
+        }
+
+    assertEquals(listOf(TopEntry("cached", 7)), storage.top())
+  }
+
+  @Test
   fun `storage loads saves with catalog id from json`() {
     val customCatalog =
         OverrideStarterCardsCatalog(
@@ -124,44 +146,11 @@ class GameStorageTest {
     assertTrue(loaded.driver.game.finished)
   }
 
-  @Test
-  fun `storage accepts custom importer exporter and extension`() {
-    val importer =
-        object : GameImporter {
-          override fun import(s: String): GamePayload {
-            return JSONImporter().import(s.removePrefix("custom\n"))
-          }
-        }
-    val exporter =
-        object : GameExporter {
-          override fun export(g: GamePayload): String {
-            return "custom\n${JSONExporter().export(g)}"
-          }
-        }
-    val storage =
-        GameStorage(
-            tempDir,
-            "standard",
-            CardCatalogResolver.default,
-            importer,
-            exporter,
-            fileExtension = "save",
-        )
-
-    storage.save("demo", GameFactory.createDriver(StandardCatalog, listOf("alice")), "standard")
-
-    val path = tempDir.resolve("demo.save")
-    assertTrue(path.exists())
-    assertTrue(path.readText().startsWith("custom\n"))
-    assertEquals(listOf("demo"), storage.list().map { it.name })
-    assertEquals("alice", storage.load("demo").driver.game.players.single().name)
-  }
-
   private fun storageFor(
       catalogs: Map<String, CardCatalog> = mapOf("standard" to StandardCatalog)
   ): GameStorage {
-    return GameStorage(
-        tempDir,
+    return GameStorageFactory.json(
+        tempDir.toString(),
         "standard",
         CardCatalogResolver(catalogs.map { (id, catalog) -> CardCatalogDefinition(id, catalog) }),
     )

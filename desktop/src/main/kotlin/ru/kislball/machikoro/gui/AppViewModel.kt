@@ -3,8 +3,6 @@ package ru.kislball.machikoro.gui
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import java.nio.file.Files
-import java.nio.file.Path
 import ru.kislball.machikoro.cards.common.CardCatalogDefinition
 import ru.kislball.machikoro.cards.common.CardCatalogResolver
 import ru.kislball.machikoro.cards.common.catalogId
@@ -14,6 +12,7 @@ import ru.kislball.machikoro.facility.GameFactory
 import ru.kislball.machikoro.gui.localisation.russianDesktopLocaliser
 import ru.kislball.machikoro.localisation.Localiser
 import ru.kislball.machikoro.storage.GameStorage
+import ru.kislball.machikoro.storage.GameStorageFactory
 import ru.kislball.machikoro.storage.SavedGameSummary
 import ru.kislball.machikoro.storage.TopEntry
 
@@ -106,9 +105,8 @@ class AppViewModel(
     private const val STANDARD_CATALOG_ID = "standard"
 
     private fun defaultStorage(): GameStorage {
-      val root = Path.of(System.getProperty("user.dir"), ".machikoro-cli")
-      Files.createDirectories(root)
-      return GameStorage(
+      val root = "${System.getProperty("user.dir")}/.machikoro-cli"
+      return GameStorageFactory.json(
           root,
           STANDARD_CATALOG_ID,
           CardCatalogResolver(CardCatalogDefinition(STANDARD_CATALOG_ID, StandardCatalog)),

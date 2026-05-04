@@ -1,7 +1,5 @@
 package ru.kislball.machikoro.cli
 
-import java.nio.file.Files
-import java.nio.file.Path
 import ru.kislball.machikoro.cli.catalog.CLICatalogRegistry
 import ru.kislball.machikoro.cli.command.CommandContext
 import ru.kislball.machikoro.cli.command.gameCommands
@@ -24,6 +22,7 @@ import ru.kislball.machikoro.game.step.PendingStepPhase
 import ru.kislball.machikoro.game.utilities.getOrNull
 import ru.kislball.machikoro.localisation.localiseOrKey
 import ru.kislball.machikoro.storage.GameStorage
+import ru.kislball.machikoro.storage.GameStorageFactory
 
 class CLIApplication(
     private val io: CLIIO = StdCLIIO,
@@ -110,10 +109,9 @@ class CLIApplication(
 
   companion object {
     private fun defaultStorage(): GameStorage {
-      val root = Path.of(System.getProperty("user.dir"), ".machikoro-cli")
-      Files.createDirectories(root)
+      val root = "${System.getProperty("user.dir")}/.machikoro-cli"
       val catalogs = CLICatalogRegistry.default()
-      return GameStorage(root, catalogs.defaultCatalogId, catalogs.resolver)
+      return GameStorageFactory.json(root, catalogs.defaultCatalogId, catalogs.resolver)
     }
   }
 }
