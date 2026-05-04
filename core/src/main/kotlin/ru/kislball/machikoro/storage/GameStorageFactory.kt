@@ -1,8 +1,9 @@
 package ru.kislball.machikoro.storage
 
 import ru.kislball.machikoro.cards.common.CardCatalogResolver
-import ru.kislball.machikoro.facility.json.JSONExporter
-import ru.kislball.machikoro.facility.json.JSONImporter
+import ru.kislball.machikoro.storage.json.JSONExporter
+import ru.kislball.machikoro.storage.json.JSONImporter
+import ru.kislball.machikoro.storage.json.JsonGameStorage
 
 object GameStorageFactory {
   fun json(

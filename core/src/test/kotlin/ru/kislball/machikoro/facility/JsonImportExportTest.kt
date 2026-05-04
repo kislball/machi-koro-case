@@ -8,8 +8,8 @@ import ru.kislball.machikoro.StubCard
 import ru.kislball.machikoro.cards.common.CardCatalog
 import ru.kislball.machikoro.cards.common.CardCatalogDefinition
 import ru.kislball.machikoro.cards.common.CardCatalogResolver
-import ru.kislball.machikoro.facility.json.JSONExporter
-import ru.kislball.machikoro.facility.json.JSONImporter
+import ru.kislball.machikoro.storage.json.JSONExporter
+import ru.kislball.machikoro.storage.json.JSONImporter
 import ru.kislball.machikoro.facility.payload.GamePayload
 import ru.kislball.machikoro.facility.payload.PlayerPayload
 import ru.kislball.machikoro.game.Game
