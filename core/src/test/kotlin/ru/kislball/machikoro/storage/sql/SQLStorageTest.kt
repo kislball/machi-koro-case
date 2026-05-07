@@ -69,6 +69,20 @@ class SQLStorageTest {
   }
 
   @Test
+  fun `saving the same game name overwrites the keyed save without ambiguity`() {
+    val storage = storageFor()
+    val first = GameFactory.createDriver(StandardCatalog, listOf("alice", "bob"))
+    val second = GameFactory.createDriver(StandardCatalog, listOf("carol", "dave"))
+
+    storage.save("same", first, "standard")
+    storage.save("same", second, "standard")
+
+    assertEquals(listOf("same"), storage.list().map { it.name })
+    assertEquals(listOf("carol", "dave"), storage.list().single().playerNames)
+    assertEquals(listOf("carol", "dave"), storage.load("same").driver.game.players.map { it.name })
+  }
+
+  @Test
   fun `top counts wins from winner metadata`() {
     val storage = storageFor()
     val alice = Player("alice")

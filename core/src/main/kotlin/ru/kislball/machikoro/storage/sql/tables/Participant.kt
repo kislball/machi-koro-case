@@ -4,9 +4,10 @@ import org.jetbrains.exposed.v1.core.ReferenceOption
 import org.jetbrains.exposed.v1.core.Table
 
 object Participant : Table("participants") {
-  val paricipantId = integer("id").autoIncrement().uniqueIndex()
-  val playerId = reference("player_id", Player.id)
-  val gameId = reference("game_id", Game.id, onDelete = ReferenceOption.CASCADE)
+  val gameName = reference("game_name", Game.name, onDelete = ReferenceOption.CASCADE)
+  val playerName = reference("player_name", Player.name)
   val cards = text("cards")
   val balance = integer("balance")
+
+  override val primaryKey = PrimaryKey(gameName, playerName)
 }

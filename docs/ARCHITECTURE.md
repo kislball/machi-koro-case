@@ -91,6 +91,7 @@
 - `GameStorageFactory.h2(databasePath: String, ...)` подключает H2 database и создаёт SQL-хранилище.
 - `JsonGameStorage` — внутренняя файловая JSON-реализация.
 - `SQLStorage` — реализация на Exposed/JDBC. Она хранит игры, игроков и участников в таблицах `games`, `players`, `participants`.
+- В SQL-схеме имя сохранения (`games.name`) и имя игрока (`players.name`) являются primary key. Участник игры задаётся парой `participants.game_name + participants.player_name`.
 - `JSONImporter` и `JSONExporter` — конкретные JSON-сериализаторы
 - JSON-метаданные сохранения сейчас включают:
   - `catalogId` для восстановления нужного каталога карт
@@ -99,6 +100,7 @@
 - Дата создания не хранится в JSON. `JsonGameStorage.list()` берёт её из метаданных файла (`creationTime`).
 - Если в старом файле нет поля `finished`, используется правило `winner != null`.
 - SQL-хранилище хранит `createdAt`, `finished`, `winner` и `catalog` в таблице `games`.
+- Победитель в SQL хранится как имя игрока (`games.winner -> players.name`).
 - При использовании `GameStorageFactory.create(StorageBackend.SQL, root, ...)` H2-файл создаётся по пути `${root}/machikoro.mv.db`.
 - JSON и SQL backend'ы не мигрируют данные друг в друга автоматически. При переключении backend'а интерфейс показывает сохранения выбранного хранилища.
 
