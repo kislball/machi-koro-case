@@ -9,10 +9,13 @@ import ru.kislball.machikoro.localisation.CompoundLocaliser
 import ru.kislball.machikoro.localisation.Localiser
 import ru.kislball.machikoro.localisation.RussianLocaliser
 import ru.kislball.machikoro.storage.GameStorage
+import ru.kislball.machikoro.storage.StorageBackend
 
 class CommandContext(
     val io: CLIIO,
-    val storage: GameStorage,
+    var storage: GameStorage,
+    var storageBackend: StorageBackend,
+    val storageFactory: (StorageBackend) -> GameStorage,
     val session: CLISession,
     val autoAdvance: GameAutoAdvance,
     val catalogs: CLICatalogRegistry,
@@ -34,5 +37,10 @@ class CommandContext(
 
   fun printRaw(text: String) {
     io.writeLine(text)
+  }
+
+  fun switchStorage(backend: StorageBackend) {
+    storageBackend = backend
+    storage = storageFactory(backend)
   }
 }

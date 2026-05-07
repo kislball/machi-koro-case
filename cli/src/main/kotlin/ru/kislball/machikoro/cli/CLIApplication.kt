@@ -23,15 +23,33 @@ import ru.kislball.machikoro.game.utilities.getOrNull
 import ru.kislball.machikoro.localisation.localiseOrKey
 import ru.kislball.machikoro.storage.GameStorage
 import ru.kislball.machikoro.storage.GameStorageFactory
+import ru.kislball.machikoro.storage.StorageBackend
 
 class CLIApplication(
     private val io: CLIIO = StdCLIIO,
-    private val storage: GameStorage = defaultStorage(),
-    catalogs: CLICatalogRegistry = CLICatalogRegistry.default(),
+    storage: GameStorage? = null,
+    private val catalogs: CLICatalogRegistry = CLICatalogRegistry.default(),
+    private val storageRoot: String = defaultStorageRoot(),
+    initialStorageBackend: StorageBackend = StorageBackend.JSON,
 ) {
   private val session = CLISession()
-  private val context = CommandContext(io, storage, session, GameAutoAdvance(), catalogs)
+  private var storageBackend = initialStorageBackend
+  private val context =
+      CommandContext(
+          io,
+          storage ?: storageFor(storageBackend),
+          storageBackend,
+          ::storageFor,
+          session,
+          GameAutoAdvance(),
+          catalogs,
+      )
   private val commands = managementCommands(session) + gameCommands(session)
+
+  fun switchStorage(backend: StorageBackend) {
+    context.switchStorage(backend)
+    storageBackend = backend
+  }
 
   fun run() {
     while (!session.shouldExit) {
@@ -108,10 +126,17 @@ class CLIApplication(
   }
 
   companion object {
-    private fun defaultStorage(): GameStorage {
-      val root = "${System.getProperty("user.dir")}/.machikoro-cli"
-      val catalogs = CLICatalogRegistry.default()
-      return GameStorageFactory.json(root, catalogs.defaultCatalogId, catalogs.resolver)
+    private fun defaultStorageRoot(): String {
+      return "${System.getProperty("user.dir")}/.machikoro-cli"
     }
+  }
+
+  private fun storageFor(backend: StorageBackend): GameStorage {
+    return GameStorageFactory.create(
+        backend,
+        storageRoot,
+        catalogs.defaultCatalogId,
+        catalogs.resolver,
+    )
   }
 }

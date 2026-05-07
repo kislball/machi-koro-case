@@ -23,10 +23,13 @@ import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
 import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
 import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
+import ru.kislball.machikoro.facility.GameDriver
+import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.step.StepPhase
 import ru.kislball.machikoro.storage.GameStorage
 import ru.kislball.machikoro.storage.GameStorageFactory
+import ru.kislball.machikoro.triggers.special.SightsCollectedTrigger
 
 class CLIFlowIntegrationTest {
   private val tempDir = createTempDirectory("machikoro-cli-integration")
@@ -318,6 +321,115 @@ class CLIFlowIntegrationTest {
     assertTrue(io.output.any { it.contains("Ожидается решение о дополнительном ходе для alice") })
   }
 
+  @Test
+  fun `run shows top from finished saves and deletes a save from management mode`() {
+    val catalogs = CLICatalogRegistry.default()
+    val storage = storageFor(catalogs)
+    storage.save("alice-1", finishedGame(winnerName = "alice"), "standard")
+    storage.save("alice-2", finishedGame(winnerName = "alice"), "standard")
+    storage.save("bob-1", finishedGame(winnerName = "bob"), "standard")
+    val io = ScriptedCLIIO(mutableListOf("top", "delete bob-1", "list", "exit"))
+    val app = CLIApplication(io, storage, catalogs)
+
+    app.run()
+
+    assertContainsInOrder(
+        io.output,
+        listOf(
+            "management> ",
+            "alice: 2",
+            "bob: 1",
+            "management> ",
+            "Игра удалена: bob-1",
+            "management> ",
+            "alice-1",
+            "alice-2",
+        ),
+    )
+    assertTrue(io.output.none { it == "bob-1" })
+  }
+
+  @Test
+  fun `run stays in management mode after missing save regression`() {
+    val catalogs = CLICatalogRegistry.default()
+    val storage = storageFor(catalogs)
+    storage.save("existing", finishedGame(winnerName = "alice"), "standard")
+    val io = ScriptedCLIIO(mutableListOf("load missing", "list", "exit"))
+    val app = CLIApplication(io, storage, catalogs)
+
+    app.run()
+
+    assertContainsInOrder(
+        io.output,
+        listOf(
+            "management> ",
+            "Игра не найдена: missing",
+            "management> ",
+            "existing",
+        ),
+    )
+  }
+
+  @Test
+  fun `run switches between json and sql h2 storage backends`() {
+    val catalogs = CLICatalogRegistry.default()
+    val io =
+        ScriptedCLIIO(
+            mutableListOf(
+                "storage sql",
+                "start",
+                "alice,bob",
+                "save sql-game",
+                "exit",
+                "list",
+                "storage json",
+                "list",
+                "exit",
+            ))
+    val app = CLIApplication(io, catalogs = catalogs, storageRoot = tempDir.toString())
+
+    app.run()
+
+    assertContainsInOrder(
+        io.output,
+        listOf(
+            "management> ",
+            "Хранилище выбрано: sql",
+            "management> ",
+            "Игра сохранена: sql-game",
+            "Выход в режим управления",
+            "management> ",
+            "sql-game",
+            "management> ",
+            "Хранилище выбрано: json",
+            "management> ",
+            "Нет сохранённых игр",
+        ),
+    )
+    assertTrue(tempDir.resolve("machikoro.mv.db").exists())
+  }
+
+  @Test
+  fun `run rejects unknown storage backend without leaving management mode`() {
+    val catalogs = CLICatalogRegistry.default()
+    val storage = storageFor(catalogs)
+    storage.save("existing", finishedGame(winnerName = "alice"), "standard")
+    val io = ScriptedCLIIO(mutableListOf("storage xml", "list", "exit"))
+    val app = CLIApplication(io, storage, catalogs)
+
+    app.run()
+
+    assertContainsInOrder(
+        io.output,
+        listOf(
+            "management> ",
+            "Неизвестное хранилище: xml",
+            "management> ",
+            "existing",
+        ),
+    )
+  }
+
   private fun assertContainsInOrder(output: List<String>, expectedParts: List<String>) {
     var currentIndex = 0
     for (expectedPart in expectedParts) {
@@ -359,6 +471,13 @@ class CLIFlowIntegrationTest {
         )
       }
     }
+  }
+
+  private fun finishedGame(winnerName: String): GameDriver {
+    val alice = Player("alice")
+    val bob = Player("bob")
+    val winner = if (winnerName == "alice") alice else bob
+    return GameDriver(Game(StandardCatalog, listOf(alice, bob), SightsCollectedTrigger(), winner))
   }
 
   private class TestBasicCard(cardId: String) :

@@ -28,6 +28,8 @@ private val CLI_LOCALE_MAP: Map<String, (Any) -> String> =
         "cli.games.saved" to { obj: Any -> "Игра сохранена: $obj" },
         "cli.games.loaded" to { obj: Any -> "Игра загружена: $obj" },
         "cli.games.deleted" to { obj: Any -> "Игра удалена: $obj" },
+        "cli.storage.selected" to { obj: Any -> "Хранилище выбрано: $obj" },
+        "cli.storage.unknown" to { obj: Any -> "Неизвестное хранилище: $obj" },
         "cli.game.exited" to { "Выход в режим управления" },
         "cli.start.players_prompt" to { "Введите имена игроков через запятую" },
         "cli.start.players_invalid" to { "Нужно указать хотя бы одного игрока" },
