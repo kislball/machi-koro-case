@@ -76,7 +76,8 @@
 
 При добавлении нового способа хранения:
 - реализуйте новый наследник `GameStorage`
-- создайте его через фабрику 
+- добавьте значение в `StorageBackend`, если способ хранения должен выбираться из CLI/GUI
+- создайте его через `GameStorageFactory`
 - используйте `GamePayload` 
 - переопределите `top()`, если хранилище может посчитать таблицу побед эффективнее, чем через `list()`
 
@@ -84,8 +85,12 @@
 
 - `GameStorage` — абстракция хранилища сохранений. Она работает с `GameDriver`, `StoredGame`, `SavedGameSummary` и `TopEntry`.
 - CLI, desktop и другие интерфейсы зависят только от `GameStorage`, а не от конкретного JSON-хранилища.
-- `GameStorageFactory.json(root: String, ...)` создаёт стандартное файловое JSON-хранилище
-- `JsonGameStorage` — внутренняя файловая реализация
+- `StorageBackend` описывает выбираемые пользователем backend'ы: `JSON` и `SQL`.
+- `GameStorageFactory.create(backend, root, ...)` создаёт хранилище по выбранному backend'у.
+- `GameStorageFactory.json(root: String, ...)` создаёт стандартное файловое JSON-хранилище.
+- `GameStorageFactory.h2(databasePath: String, ...)` подключает H2 database и создаёт SQL-хранилище.
+- `JsonGameStorage` — внутренняя файловая JSON-реализация.
+- `SQLStorage` — реализация на Exposed/JDBC. Она хранит игры, игроков и участников в таблицах `games`, `players`, `participants`.
 - `JSONImporter` и `JSONExporter` — конкретные JSON-сериализаторы
 - JSON-метаданные сохранения сейчас включают:
   - `catalogId` для восстановления нужного каталога карт
@@ -93,3 +98,14 @@
   - `finished` как явный флаг завершённой игры
 - Дата создания не хранится в JSON. `JsonGameStorage.list()` берёт её из метаданных файла (`creationTime`).
 - Если в старом файле нет поля `finished`, используется правило `winner != null`.
+- SQL-хранилище хранит `createdAt`, `finished`, `winner` и `catalog` в таблице `games`.
+- При использовании `GameStorageFactory.create(StorageBackend.SQL, root, ...)` H2-файл создаётся по пути `${root}/machikoro.mv.db`.
+- JSON и SQL backend'ы не мигрируют данные друг в друга автоматически. При переключении backend'а интерфейс показывает сохранения выбранного хранилища.
+
+## Выбор хранилища в интерфейсах
+
+- CLI стартует с JSON-хранилищем и может переключиться командой `storage sql` или `storage json` в режиме управления.
+- `CommandContext` хранит текущий `GameStorage`, выбранный `StorageBackend` и фабрику, через которую команда `storage` пересоздаёт хранилище.
+- Desktop GUI хранит выбранный backend в `AppUiState.storageBackend`.
+- На экране выбора игры GUI показывает кнопку текущего хранилища. Нажатие переключает `JSON <-> SQL`, возвращает приложение на экран выбора игры и обновляет список сохранений из нового backend'а.
+- Подписи GUI для хранилища локализуются ключами `gui.storage.current`, `gui.storage.json`, `gui.storage.sql`.

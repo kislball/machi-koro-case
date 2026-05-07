@@ -14,7 +14,6 @@ classDiagram
 
     class CLIApplication {
         -io: CLIIO
-        -storage: GameStorage
         -session: CLISession
         -context: CommandContext
         +run()
@@ -65,9 +64,11 @@ classDiagram
     class CommandContext {
         +io: CLIIO
         +storage: GameStorage
+        +storageBackend: StorageBackend
         +session: CLISession
         +autoAdvance: GameAutoAdvance
         +catalogs: CLICatalogRegistry
+        +switchStorage(backend: StorageBackend)
     }
 
     class Command {
@@ -89,28 +90,41 @@ classDiagram
 
     class GameStorageFactory {
         <<object>>
+        +create(backend: StorageBackend, root: String, defaultCatalogId: String, catalogResolver: CardCatalogResolver) GameStorage
         +json(root: String, defaultCatalogId: String, catalogResolver: CardCatalogResolver) GameStorage
+        +h2(databasePath: String, defaultCatalogId: String, catalogResolver: CardCatalogResolver) GameStorage
+    }
+
+    class StorageBackend {
+        <<enumeration>>
+        JSON
+        SQL
+        +parse(raw: String) StorageBackend?
     }
 
     class JsonGameStorage
+    class SQLStorage
     class GameDriver
 
     Main ..> CLIApplication
     CLIApplication ..> CLIIO
-    CLIApplication ..> GameStorage
-    CLIApplication ..> GameStorageFactory : default JSON storage
+    CLIApplication ..> GameStorageFactory
+    CLIApplication ..> StorageBackend : starts with JSON
     CLIApplication ..> CLISession
     CLIApplication ..> CommandContext
     CLIApplication ..> Command
     CommandContext ..> CLIIO
     CommandContext ..> GameStorage
+    CommandContext ..> StorageBackend
     CommandContext ..> CLISession
     CommandContext ..> GameAutoAdvance
     CommandContext ..> CLICatalogRegistry
     CLISession ..> ActiveCliGame
     ActiveCliGame ..> GameDriver
     JsonGameStorage --|> GameStorage
+    SQLStorage --|> GameStorage
     GameStorageFactory ..> JsonGameStorage
+    GameStorageFactory ..> SQLStorage
     GameStorage ..> StoredGame
     GameStorage ..> SavedGameSummary
     StoredGame ..> GameDriver
@@ -135,14 +149,22 @@ classDiagram
 
 ### Каталоги и сохранения
 - Сохранения доступны CLI через абстрактный `GameStorage`.
-- По умолчанию `CLIApplication` создаёт JSON-хранилище через `GameStorageFactory.json(root: String, ...)`.
+- По умолчанию `CLIApplication` создаёт JSON-хранилище через `GameStorageFactory.create(StorageBackend.JSON, root, ...)`.
+- Команда `storage sql` переключает CLI на H2/SQL-хранилище.
+- Команда `storage json` переключает CLI обратно на JSON-хранилище.
+- Неизвестный backend, например `storage xml`, не меняет текущее хранилище и печатает ошибку.
 - CLI использует только `GameStorage` и превращает `StoredGame` в `ActiveCliGame`.
+- Текущий backend и фабрика хранилищ находятся в `CommandContext`, поэтому команды используют актуальное хранилище после переключения.
 - `CLICatalogRegistry` хранит доступные каталоги и каталог по умолчанию.
 - При `start` CLI создаёт игру на каталоге по умолчанию.
-- При `save` в JSON пишутся `catalogId` и `finished`.
-- При `load` JSON-хранилище читает `catalogId` из файла и загружает игру с нужным `CardCatalog`.
+- При `save` сохраняются `catalogId` и `finished`; JSON пишет их в файл, SQL хранит их в таблицах H2.
+- При `load` хранилище читает `catalogId` и загружает игру с нужным `CardCatalog`.
 - `GameStorage.list()` возвращает не только имя, но и краткую информацию: игроков, `createdAt`, `finished`, `winnerName` и `catalogId`.
 - Если в старом сохранении нет поля `finished`, оно вычисляется по `winner`.
+- По умолчанию root сохранений CLI: `${user.dir}/.machikoro-cli`.
+- JSON backend хранит сохранения как отдельные `*.json` файлы.
+- SQL backend через H2 хранит данные в `${root}/machikoro.mv.db`.
+- JSON и SQL backend'ы показывают разные списки сохранений, потому что данные не мигрируются между ними автоматически.
 
 ## Режим игры
 1. `save <name>` --- сохранить игру под данным названием
@@ -165,3 +187,4 @@ classDiagram
 4. `delete <name>` --- удалить игру
 5. `exit` --- выйти из игры
 6. `start` --- создание новой игры
+7. `storage <sql|json>` --- переключить backend сохранений
