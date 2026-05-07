@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -60,6 +61,12 @@ fun GameSelectionScreen(
 
   BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
     val savedGamesMaxHeight = maxHeight / 2
+    Box(modifier = Modifier.align(Alignment.TopStart).padding(8.dp)) {
+      val storageLabel = localiser.localise("gui.storage.${uiState.storageBackend.cliName}")
+      Button(onClick = app::toggleStorage) {
+        Text(localiser.localise("gui.storage.current", storageLabel))
+      }
+    }
     Box(modifier = Modifier.align(Alignment.TopEnd)) {
       IconButton(
           onClick = app::openTop,
