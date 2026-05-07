@@ -1,7 +1,7 @@
 package ru.kislball.machikoro.storage.sql
 
 import java.time.OffsetDateTime
-import org.jetbrains.exposed.v1.core.JoinType
+import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
@@ -35,7 +35,7 @@ class SQLStorage(
     transaction {
       val payload = payloadFor(game, catalogId)
       val createdAt = getCreatedAt(name)
-      delete(name)
+      deleteInTransaction(name)
 
       val gameId =
           Game.insert {
@@ -61,39 +61,49 @@ class SQLStorage(
   }
 
   override fun load(name: String): StoredGame {
-    val game =
-        Game.join(
-                Participant,
-                JoinType.INNER,
-                Game.winner,
-                Participant.paricipantId,
-            )
-            .join(
-                Player,
-                JoinType.INNER,
-                Participant.playerId,
-                Player.id,
-            )
-            .selectAll()
-            .firstOrNull() ?: throw SaveNotFoundException(name)
-    val meta =
-        GamePayloadMetadata(
-            game[Player.name],
-            game[Game.catalog],
-            finished = game[Game.finished],
-        )
-    require(meta.catalogId != null)
+    return transaction {
+      val gameRow =
+          Game.selectAll().where { Game.name eq name }.firstOrNull()
+              ?: throw SaveNotFoundException(name)
+      val gameId = gameRow[Game.id]
+      val winnerName = gameRow[Game.winner]?.let { participantId -> getPlayerName(participantId) }
+      val meta =
+          GamePayloadMetadata(
+              winnerName,
+              gameRow[Game.catalog],
+              finished = gameRow[Game.finished],
+          )
+      require(meta.catalogId != null)
 
-    val participants =
-        Participant.join(Player, JoinType.INNER, Player.id, Participant.playerId).selectAll().map {
-          PlayerPayload(it[Player.name], it[Participant.balance], it[Participant.cards].split(','))
-        }
-    val gamePayload =
-        GamePayload(
-            participants,
-            meta,
-        )
-    return toStoredGame(gamePayload)
+      val participants =
+          participantRows(gameId).map {
+            PlayerPayload(
+                it[Player.name], it[Participant.balance], parseCards(it[Participant.cards]))
+          }
+      val gamePayload =
+          GamePayload(
+              participants,
+              meta,
+          )
+      toStoredGame(gamePayload)
+    }
+  }
+
+  private fun participantRows(gameId: Int) =
+      Participant.innerJoin(Player)
+          .select(Player.name, Participant.balance, Participant.cards)
+          .where { Participant.gameId eq gameId }
+
+  private fun parseCards(cards: String): List<String> {
+    return if (cards.isBlank()) emptyList() else cards.split(',')
+  }
+
+  private fun getPlayerName(participantId: Int): String? {
+    return Participant.innerJoin(Player)
+        .select(Player.name)
+        .where { Participant.paricipantId eq participantId }
+        .firstOrNull()
+        ?.get(Player.name)
   }
 
   private fun getCreatedAt(name: String): OffsetDateTime? {
@@ -109,37 +119,26 @@ class SQLStorage(
   }
 
   override fun list(): List<SavedGameSummary> {
-    return Game.join(
-            Participant,
-            JoinType.LEFT,
-            Game.winner,
-            Participant.paricipantId,
+    return transaction {
+      Game.selectAll().orderBy(Game.id to SortOrder.ASC).map { gameRow ->
+        val gameId = gameRow[Game.id]
+        SavedGameSummary(
+            name = gameRow[Game.name],
+            playerNames = participantRows(gameId).map { it[Player.name] },
+            createdAt = gameRow[Game.createdAt].toInstant(),
+            finished = gameRow[Game.finished],
+            winnerName = gameRow[Game.winner]?.let { getPlayerName(it) },
+            catalogId = gameRow[Game.catalog],
         )
-        .join(
-            Player,
-            JoinType.LEFT,
-            Participant.playerId,
-            Player.id,
-        )
-        .selectAll()
-        .map { gameRow ->
-          SavedGameSummary(
-              name = gameRow[Game.name],
-              playerNames =
-                  Participant.join(Player, JoinType.INNER, Player.id, Participant.playerId)
-                      .select(Player.name)
-                      .where { Game.id eq gameRow[Game.id] }
-                      .map { it[Game.name] },
-              createdAt = gameRow[Game.createdAt].toInstant(),
-              finished = gameRow[Game.finished],
-              winnerName = gameRow[Player.name],
-              catalogId = gameRow[Game.catalog],
-          )
-        }
-        .toList()
+      }
+    }
   }
 
   override fun delete(name: String) {
+    transaction { deleteInTransaction(name) }
+  }
+
+  private fun deleteInTransaction(name: String) {
     Game.deleteWhere { Game.name eq name }
   }
 }
