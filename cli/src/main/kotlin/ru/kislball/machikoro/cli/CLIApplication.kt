@@ -30,26 +30,19 @@ class CLIApplication(
     storage: GameStorage? = null,
     private val catalogs: CLICatalogRegistry = CLICatalogRegistry.default(),
     private val storageRoot: String = defaultStorageRoot(),
-    initialStorageBackend: StorageBackend = StorageBackend.JSON,
 ) {
   private val session = CLISession()
-  private var storageBackend = initialStorageBackend
   private val context =
       CommandContext(
           io,
-          storage ?: storageFor(storageBackend),
-          storageBackend,
+          storage ?: storageFor(StorageBackend.JSON),
+          StorageBackend.JSON,
           ::storageFor,
           session,
           GameAutoAdvance(),
           catalogs,
       )
   private val commands = managementCommands(session) + gameCommands(session)
-
-  fun switchStorage(backend: StorageBackend) {
-    context.switchStorage(backend)
-    storageBackend = backend
-  }
 
   fun run() {
     while (!session.shouldExit) {
