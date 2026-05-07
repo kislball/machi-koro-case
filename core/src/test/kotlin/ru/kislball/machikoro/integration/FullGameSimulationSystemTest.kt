@@ -1,10 +1,13 @@
 package ru.kislball.machikoro.integration
 
+import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.jetbrains.exposed.v1.jdbc.Database
+import ru.kislball.machikoro.cards.common.CardCatalogResolver
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
 import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
@@ -16,6 +19,7 @@ import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.markers.canRethrowDice
 import ru.kislball.machikoro.game.markers.canThrowTwoDice
 import ru.kislball.machikoro.game.step.PendingStepPhase
+import ru.kislball.machikoro.storage.sql.SQLStorage
 
 class FullGameSimulationSystemTest {
   private val fillerCards =
@@ -171,5 +175,50 @@ class FullGameSimulationSystemTest {
     assertNotNull(driver.game.currentStepPhase)
     assertNotNull(driver.game.steps.last())
     assertTrue(driver.game.inputEffects.peek() == null)
+  }
+
+  @Test
+  fun `saved sql checkpoint can be loaded and continued to a winner`() {
+    Database.connect(
+        url = "jdbc:h2:mem:${UUID.randomUUID()};DB_CLOSE_DELAY=-1",
+        driver = "org.h2.Driver",
+    )
+    val storage = SQLStorage("standard", CardCatalogResolver.default)
+    val driver = GameFactory.createDriver(StandardCatalog, listOf("alice"), initialBalance = 100)
+    val alice = driver.game.players.single()
+
+    driver.rollDice(alice, 1)
+    driver.buyCard(alice, "cards.railway_station")
+    driver.nextStep()
+    driver.rollDice(alice, 1)
+    driver.buyCard(alice, "cards.shopping_centre")
+    storage.save("checkpoint", driver, "standard")
+
+    val loadedDriver = storage.load("checkpoint").driver
+    val loadedAlice = loadedDriver.game.players.single()
+    assertEquals(
+        listOf(
+            "cards.wheat",
+            "cards.bakery",
+            "cards.railway_station",
+            "cards.shopping_centre",
+        ),
+        loadedAlice.cards.map { it.cardId },
+    )
+
+    loadedDriver.rollDice(loadedAlice, 1)
+    loadedDriver.buyCard(loadedAlice, "cards.entertainment_park")
+    loadedDriver.nextStep()
+    loadedDriver.rollDice(loadedAlice, 1)
+    loadedDriver.buyCard(loadedAlice, "cards.tv_tower")
+    storage.save("checkpoint", loadedDriver, "standard")
+
+    assertTrue(loadedDriver.game.finished)
+    assertEquals("alice", loadedDriver.game.winner?.name)
+    val summary = storage.list().single()
+    assertEquals("checkpoint", summary.name)
+    assertTrue(summary.finished)
+    assertEquals("alice", summary.winnerName)
+    assertEquals("alice", storage.load("checkpoint").driver.game.winner?.name)
   }
 }
