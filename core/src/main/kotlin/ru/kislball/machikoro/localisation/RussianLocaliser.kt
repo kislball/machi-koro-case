@@ -30,6 +30,11 @@ private val RUSSIAN_LOCALE_MAP: Map<String, (Any) -> String> =
         "exception.input.pending" to { obj: Any -> "Ожидается ввод" },
         "exception.card.not_found" to { obj: Any -> "Карта ${obj} не найдена" },
         "exception.card.not_enough" to { obj: Any -> "Карты типа $obj больше не доступны" },
+        "exception.card.cannot_purchase" to
+            { obj: Any ->
+              val parts = obj as? List<Any> ?: listOf(obj)
+              "Игрок ${parts.getOrNull(0)} не может купить карту ${parts.getOrNull(1) ?: obj}"
+            },
         "exception.step.not_finishable" to { obj: Any -> "Шаг не может быть завершён" },
         "exception.player.card_missing" to
             { obj: Any ->

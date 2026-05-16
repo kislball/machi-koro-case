@@ -19,6 +19,10 @@ class EntertainmentParkCard :
     ) {
   override fun getPrice(s: StepPhase): Int = 16
 
+  override fun canPurchase(player: Player): Boolean {
+    return player.cards.none { it.cardId == cardId }
+  }
+
   override fun getEffect(s: StepPhase, possessor: Player?): Effect {
     val p = possessor ?: throw PossessorNotSetException()
     return GivePlayerAdditionalStepInputEffect.getAwaiter(p)
