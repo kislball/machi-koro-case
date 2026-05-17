@@ -17,6 +17,10 @@ class TVTowerCard :
 
   override fun getPrice(s: StepPhase): Int = 22
 
+  override fun canPurchase(player: Player): Boolean {
+    return player.cards.none { it.cardId == cardId }
+  }
+
   override fun getEffect(s: StepPhase, possessor: Player?): Effect {
     val p = possessor ?: throw PossessorNotSetException()
     return object : Effect("effects.sights.tv_tower.enable_rethrow") {

@@ -14,6 +14,10 @@ class TVCentreCard :
     Card(cardId = "cards.tv", type = CardType.ENTERPRISE, icon = CardIcon.SPECIAL) {
   override fun getPrice(s: StepPhase): Int = 7
 
+  override fun canPurchase(player: Player): Boolean {
+    return player.cards.none { it.cardId == cardId }
+  }
+
   private val trigger = PossessorDiceTrigger(listOf(7))
 
   override fun getEffect(s: StepPhase, possessor: Player?): Effect {

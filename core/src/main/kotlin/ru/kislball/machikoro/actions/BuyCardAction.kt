@@ -5,6 +5,7 @@ import ru.kislball.machikoro.effects.cards.GrantCardEffect
 import ru.kislball.machikoro.effects.money.MoneyTransferEffect
 import ru.kislball.machikoro.effects.money.MoneyTransferType
 import ru.kislball.machikoro.effects.utility.CompoundEffect
+import ru.kislball.machikoro.exceptions.CardCannotBePurchasedException
 import ru.kislball.machikoro.exceptions.CardNotFoundException
 import ru.kislball.machikoro.exceptions.DiceNotRolledException
 import ru.kislball.machikoro.exceptions.InsufficientFundsException
@@ -32,6 +33,7 @@ class BuyCardAction(game: Game, player: Player, id: String) :
     require(s.game.countCardsOfKind(card) < card.totalCards) {
       NotEnoughCardsException(card.cardId)
     }
+    require(card.canPurchase(player)) { CardCannotBePurchasedException(player.name, card.cardId) }
     require(player == s.currentPlayer) { PlayerNotCurrentException(player.name) }
   }
 

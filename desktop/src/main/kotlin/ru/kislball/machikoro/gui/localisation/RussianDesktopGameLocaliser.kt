@@ -30,6 +30,9 @@ private val DESKTOP_GAME_LOCALE_MAP: Map<String, (Any) -> String> =
         "gui.management.create_dialog.title" to { obj: Any -> "Создание игры $obj" },
         "gui.management.create_dialog.player_name" to { "Имя игрока" },
         "gui.management.create_dialog.confirm" to { "OK" },
+        "gui.storage.current" to { obj: Any -> "Хранилище: $obj" },
+        "gui.storage.json" to { "JSON" },
+        "gui.storage.sql" to { "SQL" },
         "gui.top.title" to { "Топ игроков" },
         "gui.top.entry.name" to
             { obj: Any ->

@@ -7,5 +7,9 @@ plugins { id("buildlogic.kotlin-library-conventions") }
 dependencies {
   implementation("org.apache.commons:commons-text")
   implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.3")
+  implementation(libs.exposed.core)
+  implementation(libs.exposed.jdbc)
+  implementation(libs.exposed.javatime)
+  implementation(libs.h2)
   testImplementation(kotlin("test"))
 }

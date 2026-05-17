@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.storage
+package ru.kislball.machikoro.storage.json
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -14,8 +14,9 @@ import ru.kislball.machikoro.cards.common.CardCatalogResolver
 import ru.kislball.machikoro.exceptions.InvalidSaveNameException
 import ru.kislball.machikoro.exceptions.SaveNotFoundException
 import ru.kislball.machikoro.facility.GameDriver
-import ru.kislball.machikoro.facility.json.JSONExporter
-import ru.kislball.machikoro.facility.json.JSONImporter
+import ru.kislball.machikoro.storage.GameStorage
+import ru.kislball.machikoro.storage.SavedGameSummary
+import ru.kislball.machikoro.storage.StoredGame
 
 class JsonGameStorage(
     root: String,

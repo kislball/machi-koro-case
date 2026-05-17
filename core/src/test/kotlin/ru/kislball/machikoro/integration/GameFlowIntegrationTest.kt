@@ -12,11 +12,11 @@ import ru.kislball.machikoro.cards.common.CardCatalogResolver
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.exceptions.GameException
 import ru.kislball.machikoro.facility.GameFactory
-import ru.kislball.machikoro.facility.json.JSONExporter
-import ru.kislball.machikoro.facility.json.JSONImporter
 import ru.kislball.machikoro.facility.payload.GamePayload
 import ru.kislball.machikoro.game.Game
 import ru.kislball.machikoro.game.Player
+import ru.kislball.machikoro.storage.json.JSONExporter
+import ru.kislball.machikoro.storage.json.JSONImporter
 
 class GameFlowIntegrationTest {
   @Test
@@ -84,5 +84,47 @@ class GameFlowIntegrationTest {
     assertTrue(driver.game.finished)
     assertEquals(player, driver.game.winner)
     assertFailsWith<GameException> { driver.rollDice(player, 1) }
+  }
+
+  @Test
+  fun `finished game survives export import and remains closed for new turns`() {
+    val driver = GameFactory.createDriver(StandardCatalog, listOf("alice"), initialBalance = 100)
+    val player = driver.game.players.single()
+
+    listOf(
+            "cards.railway_station",
+            "cards.shopping_centre",
+            "cards.entertainment_park",
+            "cards.tv_tower",
+        )
+        .forEach { cardId ->
+          driver.rollDice(player, 1)
+          driver.buyCard(player, cardId)
+          if (!driver.game.finished) {
+            driver.nextStep()
+          }
+        }
+
+    val exported = JSONExporter().export(GamePayload(driver.game))
+    val payload = JSONImporter().import(exported)
+    payload.catalogResolver = CardCatalogResolver.default
+    val importedDriver = GameFactory.createDriver(payload)
+
+    assertTrue(importedDriver.game.finished)
+    assertEquals("alice", importedDriver.game.winner?.name)
+    assertEquals(
+        listOf(
+            "cards.wheat",
+            "cards.bakery",
+            "cards.railway_station",
+            "cards.shopping_centre",
+            "cards.entertainment_park",
+            "cards.tv_tower",
+        ),
+        importedDriver.game.players.single().cards.map { it.cardId },
+    )
+    assertFailsWith<GameException> {
+      importedDriver.rollDice(importedDriver.game.players.single(), 1)
+    }
   }
 }

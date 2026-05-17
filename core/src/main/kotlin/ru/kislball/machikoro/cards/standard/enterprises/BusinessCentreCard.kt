@@ -13,6 +13,10 @@ import ru.kislball.machikoro.triggers.dice.PossessorDiceTrigger
 class BusinessCentreCard : Card("cards.business", CardType.ENTERPRISE, 4, CardIcon.SPECIAL) {
   override fun getPrice(s: StepPhase): Int = 8
 
+  override fun canPurchase(player: Player): Boolean {
+    return player.cards.none { it.cardId == cardId }
+  }
+
   private val trigger = PossessorDiceTrigger(8)
 
   override fun getEffect(s: StepPhase, possessor: Player?): Effect {

@@ -19,6 +19,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
+import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
+import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
+import ru.kislball.machikoro.effects.input.InputEffect
+import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
+import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
 import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.gui.composables.DiceRoll
 import ru.kislball.machikoro.gui.game.prompts.AdditionalStepPrompt
@@ -28,6 +34,7 @@ import ru.kislball.machikoro.gui.game.prompts.DiceInputPrompt
 import ru.kislball.machikoro.gui.game.prompts.RethrowPrompt
 
 @Composable
+@Suppress("CyclomaticComplexMethod")
 fun GamePrompts(
     gameViewModel: GameViewModel,
     currentPlayer: Player?,
@@ -36,18 +43,21 @@ fun GamePrompts(
 ) {
   val currentStep = gameViewModel.driver.game.currentStepPhase
   val currentDiceResult = gameViewModel.currentDiceResult
-  val shouldPromptDiceChoice = gameViewModel.shouldPromptDiceChoice
-  val shouldPromptRethrow = gameViewModel.shouldPromptRethrow
-  val shouldPromptBuyCard = gameViewModel.shouldPromptBuyCard
-  val shouldPromptPickPlayer = gameViewModel.shouldPromptPickPlayer
-  val shouldPromptAdditionalStep = gameViewModel.shouldPromptAdditionalStep
-  val shouldPromptSwapCards = gameViewModel.shouldPromptSwapCards
+  val promptPlayer = gameViewModel.currentPendingStep?.currentPlayer
+  val diceChoicePromptPending =
+      promptPlayer?.let { gameViewModel.driver.needsRollDecision(it) } ?: false
+  val rethrowPromptPending = gameViewModel.shouldAnswer<RethrowDiceInputEffect>()
+  val buyCardPromptPending = gameViewModel.shouldAnswer<BuyCardInputEffect>()
+  val pickPlayerPromptPending = gameViewModel.shouldAnswer<PickAndChargeUserInputEffect>()
+  val additionalStepPromptPending =
+      gameViewModel.shouldAnswer<GivePlayerAdditionalStepInputEffect>()
+  val swapCardsPromptPending = gameViewModel.shouldAnswer<SwapCardsInputEffect>()
   val winner = gameViewModel.winner
   val localiser = gameViewModel.localiser
   var buyPromptVisible by remember(gameViewModel.gameId) { mutableStateOf(false) }
 
-  LaunchedEffect(shouldPromptBuyCard, currentDiceResult, currentStep?.stepNumber) {
-    if (!shouldPromptBuyCard) {
+  LaunchedEffect(buyCardPromptPending, currentDiceResult, currentStep?.stepNumber) {
+    if (!buyCardPromptPending) {
       buyPromptVisible = false
       return@LaunchedEffect
     }
@@ -62,12 +72,12 @@ fun GamePrompts(
   LaunchedEffect(
       currentStep,
       gameViewModel.driver.game.finished,
-      shouldPromptDiceChoice,
-      shouldPromptRethrow,
-      shouldPromptBuyCard,
-      shouldPromptAdditionalStep,
-      shouldPromptPickPlayer,
-      shouldPromptSwapCards,
+      diceChoicePromptPending,
+      rethrowPromptPending,
+      buyCardPromptPending,
+      additionalStepPromptPending,
+      pickPlayerPromptPending,
+      swapCardsPromptPending,
       currentDiceResult) {
         gameViewModel.advanceGame()
       }
@@ -89,19 +99,19 @@ fun GamePrompts(
           }
         }
       }
-      shouldPromptDiceChoice -> {
+      diceChoicePromptPending -> {
         DiceInputPrompt(
             canRollTwoDice = true,
             playerName = player.name,
             onSelect = gameViewModel::submitDiceChoice)
       }
-      shouldPromptRethrow -> {
+      rethrowPromptPending -> {
         RethrowPrompt(
             playerName = player.name,
             onSelect = gameViewModel::submitRethrowDecision,
         )
       }
-      shouldPromptBuyCard && buyPromptVisible -> {
+      buyCardPromptPending && buyPromptVisible -> {
         BuyCardPrompt(
             options =
                 gameViewModel.buyCardOptions.map { option ->
@@ -122,13 +132,13 @@ fun GamePrompts(
             onSelect = gameViewModel::submitCardPurchase,
             onSkip = gameViewModel::skipCardPurchase)
       }
-      shouldPromptPickPlayer -> {
+      pickPlayerPromptPending -> {
         Card { Text(localiser.localise("gui.game.prompt.pick_player")) }
       }
-      shouldPromptSwapCards -> {
+      swapCardsPromptPending -> {
         Card { Text(checkNotNull(gameViewModel.swapPromptText)) }
       }
-      shouldPromptAdditionalStep -> {
+      additionalStepPromptPending -> {
         AdditionalStepPrompt(
             playerName = player.name,
             onSelect = gameViewModel::submitAdditionalStep,
@@ -142,4 +152,9 @@ fun GamePrompts(
       }
     }
   }
+}
+
+private inline fun <reified T : InputEffect<*>> GameViewModel.shouldAnswer(): Boolean {
+  val player = currentPendingStep?.currentPlayer ?: return false
+  return driver.shouldAnswer<T>(player)
 }

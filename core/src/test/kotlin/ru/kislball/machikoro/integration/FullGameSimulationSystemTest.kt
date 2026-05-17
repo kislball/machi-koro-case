@@ -1,10 +1,13 @@
 package ru.kislball.machikoro.integration
 
+import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import org.jetbrains.exposed.v1.jdbc.Database
+import ru.kislball.machikoro.cards.common.CardCatalogResolver
 import ru.kislball.machikoro.cards.standard.StandardCatalog
 import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
 import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
@@ -16,6 +19,7 @@ import ru.kislball.machikoro.game.Player
 import ru.kislball.machikoro.game.markers.canRethrowDice
 import ru.kislball.machikoro.game.markers.canThrowTwoDice
 import ru.kislball.machikoro.game.step.PendingStepPhase
+import ru.kislball.machikoro.storage.sql.SQLStorage
 
 class FullGameSimulationSystemTest {
   private val fillerCards =
@@ -88,7 +92,7 @@ class FullGameSimulationSystemTest {
     val step4AliceBeforeAlice = alice.balance
     val step4AliceBeforeBob = bob.balance
     driver.rollDice(alice, 1)
-    assertTrue(driver.needsRethrowDecision(alice))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(alice))
     val step4Turn = driver.game.currentStepPhase as PendingStepPhase
     step4Turn.results.set(IntermediateRollResult(DiceRollResult(alice, listOf(2))))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
@@ -106,7 +110,7 @@ class FullGameSimulationSystemTest {
     val loopAliceBeforeAlice = alice.balance
     val loopAliceBeforeBob = bob.balance
     val aliceTurn = driver.rollDice(alice, 2)
-    assertTrue(driver.needsRethrowDecision(alice))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(alice))
     assertTrue(driver.game.inputEffects.peek() is RethrowDiceInputEffect)
     aliceTurn.results.set(IntermediateRollResult(DiceRollResult(alice, listOf(3, 3))))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
@@ -127,7 +131,7 @@ class FullGameSimulationSystemTest {
     val additionalStepBeforeAlice = alice.balance
     val additionalStepBeforeBob = bob.balance
     driver.rollDice(alice, 1)
-    assertTrue(driver.needsRethrowDecision(alice))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(alice))
     additionalStep.results.set(IntermediateRollResult(DiceRollResult(alice, listOf(1))))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
     assertEquals(additionalStepBeforeAlice + 1, alice.balance)
@@ -141,7 +145,7 @@ class FullGameSimulationSystemTest {
 
     driver.nextStep()
     driver.rollDice(alice, 1)
-    assertTrue(driver.needsRethrowDecision(alice))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(alice))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
     buyAnyAvailableFillerCard(alice)
     assertTrue(alice.canRethrowDice())
@@ -153,7 +157,7 @@ class FullGameSimulationSystemTest {
 
     driver.nextStep()
     driver.rollDice(alice, 1)
-    assertTrue(driver.needsRethrowDecision(alice))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(alice))
     assertTrue(driver.game.inputEffects.peek() is RethrowDiceInputEffect)
     driver.submitRethrowDecision(alice, shouldRethrow = false)
     buyAnyAvailableFillerCard(alice)
@@ -171,5 +175,50 @@ class FullGameSimulationSystemTest {
     assertNotNull(driver.game.currentStepPhase)
     assertNotNull(driver.game.steps.last())
     assertTrue(driver.game.inputEffects.peek() == null)
+  }
+
+  @Test
+  fun `saved sql checkpoint can be loaded and continued to a winner`() {
+    Database.connect(
+        url = "jdbc:h2:mem:${UUID.randomUUID()};DB_CLOSE_DELAY=-1",
+        driver = "org.h2.Driver",
+    )
+    val storage = SQLStorage("standard", CardCatalogResolver.default)
+    val driver = GameFactory.createDriver(StandardCatalog, listOf("alice"), initialBalance = 100)
+    val alice = driver.game.players.single()
+
+    driver.rollDice(alice, 1)
+    driver.buyCard(alice, "cards.railway_station")
+    driver.nextStep()
+    driver.rollDice(alice, 1)
+    driver.buyCard(alice, "cards.shopping_centre")
+    storage.save("checkpoint", driver, "standard")
+
+    val loadedDriver = storage.load("checkpoint").driver
+    val loadedAlice = loadedDriver.game.players.single()
+    assertEquals(
+        listOf(
+            "cards.wheat",
+            "cards.bakery",
+            "cards.railway_station",
+            "cards.shopping_centre",
+        ),
+        loadedAlice.cards.map { it.cardId },
+    )
+
+    loadedDriver.rollDice(loadedAlice, 1)
+    loadedDriver.buyCard(loadedAlice, "cards.entertainment_park")
+    loadedDriver.nextStep()
+    loadedDriver.rollDice(loadedAlice, 1)
+    loadedDriver.buyCard(loadedAlice, "cards.tv_tower")
+    storage.save("checkpoint", loadedDriver, "standard")
+
+    assertTrue(loadedDriver.game.finished)
+    assertEquals("alice", loadedDriver.game.winner?.name)
+    val summary = storage.list().single()
+    assertEquals("checkpoint", summary.name)
+    assertTrue(summary.finished)
+    assertEquals("alice", summary.winnerName)
+    assertEquals("alice", storage.load("checkpoint").driver.game.winner?.name)
   }
 }

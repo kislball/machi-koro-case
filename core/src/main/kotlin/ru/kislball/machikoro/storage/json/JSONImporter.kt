@@ -1,4 +1,4 @@
-package ru.kislball.machikoro.facility.json
+package ru.kislball.machikoro.storage.json
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.core.JsonProcessingException

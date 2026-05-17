@@ -20,6 +20,10 @@ class RailwayStationCard :
 
   override fun getPrice(s: StepPhase): Int = 4
 
+  override fun canPurchase(player: Player): Boolean {
+    return player.cards.none { it.cardId == cardId }
+  }
+
   override fun getEffect(s: StepPhase, possessor: Player?): Effect {
     val p = possessor ?: throw PossessorNotSetException()
     return object : Effect("effects.sights.railway_station.enable_two_dice") {

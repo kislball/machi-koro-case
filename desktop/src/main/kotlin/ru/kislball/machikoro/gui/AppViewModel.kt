@@ -14,6 +14,7 @@ import ru.kislball.machikoro.localisation.Localiser
 import ru.kislball.machikoro.storage.GameStorage
 import ru.kislball.machikoro.storage.GameStorageFactory
 import ru.kislball.machikoro.storage.SavedGameSummary
+import ru.kislball.machikoro.storage.StorageBackend
 import ru.kislball.machikoro.storage.TopEntry
 
 data class ActiveGameSession(
@@ -25,6 +26,7 @@ data class AppUiState(
     val currentGame: ActiveGameSession? = null,
     val savedGames: List<SavedGameSummary> = emptyList(),
     val localiser: Localiser = russianDesktopLocaliser(),
+    val storageBackend: StorageBackend = StorageBackend.JSON,
 ) {
   init {
     require(currentScreen != Screen.Game || currentGame != null) {
@@ -34,9 +36,11 @@ data class AppUiState(
 }
 
 class AppViewModel(
-    private val storage: GameStorage = defaultStorage(),
+    initialStorageBackend: StorageBackend = StorageBackend.JSON,
+    private val storageFactory: (StorageBackend) -> GameStorage = ::defaultStorage,
+    private var storage: GameStorage = storageFactory(initialStorageBackend),
 ) {
-  var uiState by mutableStateOf(AppUiState())
+  var uiState by mutableStateOf(AppUiState(storageBackend = initialStorageBackend))
     private set
 
   init {
@@ -101,12 +105,28 @@ class AppViewModel(
     uiState = uiState.copy(savedGames = storage.list())
   }
 
+  fun toggleStorage() {
+    switchStorage(uiState.storageBackend.next())
+  }
+
+  fun switchStorage(backend: StorageBackend) {
+    storage = storageFactory(backend)
+    uiState =
+        uiState.copy(
+            currentScreen = Screen.GameSelection,
+            currentGame = null,
+            storageBackend = backend,
+            savedGames = storage.list(),
+        )
+  }
+
   companion object {
     private const val STANDARD_CATALOG_ID = "standard"
 
-    private fun defaultStorage(): GameStorage {
+    private fun defaultStorage(backend: StorageBackend): GameStorage {
       val root = "${System.getProperty("user.dir")}/.machikoro-cli"
-      return GameStorageFactory.json(
+      return GameStorageFactory.create(
+          backend,
           root,
           STANDARD_CATALOG_ID,
           CardCatalogResolver(CardCatalogDefinition(STANDARD_CATALOG_ID, StandardCatalog)),

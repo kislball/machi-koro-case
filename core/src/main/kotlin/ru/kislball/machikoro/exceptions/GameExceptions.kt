@@ -48,6 +48,9 @@ class CardNotFoundException(val cardId: String) : CardException("exception.card.
 
 class NotEnoughCardsException(val cardId: String) : CardException("exception.card.not_enough")
 
+class CardCannotBePurchasedException(val playerName: String, val cardId: String) :
+    CardException("exception.card.cannot_purchase")
+
 class StepNotFinishableException : StepException("exception.step.not_finishable")
 
 class PlayerDoesNotHaveCardException(val playerName: String, val cardId: String) :

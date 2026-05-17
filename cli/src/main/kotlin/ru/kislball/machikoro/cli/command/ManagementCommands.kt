@@ -7,6 +7,7 @@ import ru.kislball.machikoro.cli.session.CLISession
 import ru.kislball.machikoro.effects.Effect
 import ru.kislball.machikoro.facility.GameFactory
 import ru.kislball.machikoro.game.step.PendingStepPhase
+import ru.kislball.machikoro.storage.StorageBackend
 
 internal fun managementCommands(session: CLISession): List<Command> {
   return listOf(
@@ -40,6 +41,16 @@ internal fun managementCommands(session: CLISession): List<Command> {
           require(arguments.size == 1) { "delete <name>" }
           withStorageErrors { context.storage.delete(arguments.single()) }
           context.printLine("cli.games.deleted", arguments.single())
+        }
+      },
+      object : Command("storage", CLIMode.MANAGEMENT) {
+        override fun execute(arguments: List<String>, context: CommandContext) {
+          require(arguments.size == 1) { "storage <sql|json>" }
+          val backend =
+              StorageBackend.parse(arguments.single())
+                  ?: throw CLIException("cli.storage.unknown", arguments.single())
+          context.switchStorage(backend)
+          context.printLine("cli.storage.selected", backend.cliName)
         }
       },
       object : Command("load", CLIMode.MANAGEMENT) {
