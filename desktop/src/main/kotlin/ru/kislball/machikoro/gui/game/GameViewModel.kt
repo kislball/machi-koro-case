@@ -9,7 +9,12 @@ import ru.kislball.machikoro.cards.common.Card
 import ru.kislball.machikoro.cards.common.CardIcon
 import ru.kislball.machikoro.cards.common.CardType
 import ru.kislball.machikoro.effects.Effect
+import ru.kislball.machikoro.effects.cards.buy.BuyCardInputEffect
 import ru.kislball.machikoro.effects.cards.swap.SwapCardsInput
+import ru.kislball.machikoro.effects.cards.swap.SwapCardsInputEffect
+import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
+import ru.kislball.machikoro.effects.money.PickAndChargeUserInputEffect
+import ru.kislball.machikoro.effects.order.GivePlayerAdditionalStepInputEffect
 import ru.kislball.machikoro.facility.GameDriver
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
@@ -53,16 +58,17 @@ class GameViewModel(
       val player = step.currentPlayer
 
       return when {
-        shouldPromptDiceChoice -> localiser.localise("gui.game.log.pending.roll_choice", player)
-        driver.needsRethrowDecision(player) ->
+        driver.needsRollDecision(player) ->
+            localiser.localise("gui.game.log.pending.roll_choice", player)
+        driver.shouldAnswer<RethrowDiceInputEffect>(player) ->
             localiser.localise("gui.game.log.pending.rethrow", player)
-        driver.needsPickAndChargeDecision(player) ->
+        driver.shouldAnswer<PickAndChargeUserInputEffect>(player) ->
             localiser.localise("gui.game.log.pending.pick_player", player)
-        driver.needsSwapCardsDecision(player) ->
+        driver.shouldAnswer<SwapCardsInputEffect>(player) ->
             localiser.localise("gui.game.log.pending.swap", player)
-        driver.needsAdditionalStepDecision(player) ->
+        driver.shouldAnswer<GivePlayerAdditionalStepInputEffect>(player) ->
             localiser.localise("gui.game.log.pending.additional_step", player)
-        driver.needsBuyCardDecision(player) ->
+        driver.shouldAnswer<BuyCardInputEffect>(player) ->
             localiser.localise("gui.game.log.pending.buy_card", player)
         else -> null
       }
@@ -88,28 +94,14 @@ class GameViewModel(
 
   private var selectedSwapSource by mutableStateOf<SwapCardSelection?>(null)
 
-  val shouldPromptSwapCards: Boolean
-    get() {
-      val step = currentPendingStep ?: return false
-      return driver.needsSwapCardsDecision(step.currentPlayer)
-    }
-
   val swapPromptText: String?
     get() {
-      if (!shouldPromptSwapCards) return null
+      val step = currentPendingStep ?: return null
+      if (!driver.shouldAnswer<SwapCardsInputEffect>(step.currentPlayer)) return null
       return when (val source = selectedSwapSource) {
         null -> localiser.localise("gui.game.prompt.swap.pick_opponent_card")
         else -> localiser.localise("gui.game.prompt.swap.pick_own_card", source.player)
       }
-    }
-
-  val shouldPromptDiceChoice: Boolean
-    get() {
-      val step = currentPendingStep ?: return false
-      return step.currentPlayer.canThrowTwoDice() &&
-          driver.game.inputEffects.peek() == null &&
-          !step.results.contains<DiceRollResult>() &&
-          !step.results.contains<IntermediateRollResult>()
     }
 
   suspend fun advanceGame() {
@@ -155,30 +147,6 @@ class GameViewModel(
     driver.submitRethrowDecision(step.currentPlayer, shouldRethrow)
   }
 
-  val shouldPromptBuyCard: Boolean
-    get() {
-      val step = currentPendingStep ?: return false
-      return driver.needsBuyCardDecision(step.currentPlayer)
-    }
-
-  val shouldPromptRethrow: Boolean
-    get() {
-      val step = currentPendingStep ?: return false
-      return driver.needsRethrowDecision(step.currentPlayer)
-    }
-
-  val shouldPromptPickPlayer: Boolean
-    get() {
-      val step = currentPendingStep ?: return false
-      return driver.needsPickAndChargeDecision(step.currentPlayer)
-    }
-
-  val shouldPromptAdditionalStep: Boolean
-    get() {
-      val step = currentPendingStep ?: return false
-      return driver.needsAdditionalStepDecision(step.currentPlayer)
-    }
-
   fun submitAdditionalStep(doAdditionalStep: Boolean) {
     driver.submitAdditionalStepDecision(
         checkNotNull(currentPendingStep).currentPlayer, doAdditionalStep)
@@ -198,7 +166,10 @@ class GameViewModel(
     val step = currentPendingStep ?: return
     val currentPlayer = step.currentPlayer
 
-    if (!driver.needsSwapCardsDecision(currentPlayer) || !isExchangeableSwapCard(card)) return
+    if (!driver.shouldAnswer<SwapCardsInputEffect>(currentPlayer) ||
+        !isExchangeableSwapCard(card)) {
+      return
+    }
     if (!player.cards.contains(card)) return
 
     if (player != currentPlayer) {
@@ -212,7 +183,8 @@ class GameViewModel(
 
   fun isSelectablePickTarget(player: Player): Boolean {
     val step = currentPendingStep ?: return false
-    return driver.needsPickAndChargeDecision(step.currentPlayer) && step.currentPlayer != player
+    return driver.shouldAnswer<PickAndChargeUserInputEffect>(step.currentPlayer) &&
+        step.currentPlayer != player
   }
 
   fun isSelectableSwapCardOwner(player: Player): Boolean {
@@ -222,7 +194,7 @@ class GameViewModel(
   fun isSelectableSwapCard(player: Player, card: Card): Boolean {
     val step = currentPendingStep ?: return false
     val currentPlayer = step.currentPlayer
-    if (!driver.needsSwapCardsDecision(currentPlayer)) return false
+    if (!driver.shouldAnswer<SwapCardsInputEffect>(currentPlayer)) return false
     if (!player.cards.contains(card)) return false
     if (!isExchangeableSwapCard(card)) return false
     return player != currentPlayer || selectedSwapSource != null
@@ -331,34 +303,9 @@ class GameViewModel(
       return super.rollDice(player, numDice).also { refresh() }
     }
 
-    override fun needsRethrowDecision(player: Player): Boolean {
-      version
-      return super.needsRethrowDecision(player)
-    }
-
     override fun needsRollDecision(player: Player): Boolean {
       version
       return super.needsRollDecision(player)
-    }
-
-    override fun needsPickAndChargeDecision(player: Player): Boolean {
-      version
-      return super.needsPickAndChargeDecision(player)
-    }
-
-    override fun needsSwapCardsDecision(player: Player): Boolean {
-      version
-      return super.needsSwapCardsDecision(player)
-    }
-
-    override fun needsAdditionalStepDecision(player: Player): Boolean {
-      version
-      return super.needsAdditionalStepDecision(player)
-    }
-
-    override fun needsBuyCardDecision(player: Player): Boolean {
-      version
-      return super.needsBuyCardDecision(player)
     }
 
     override fun submitRethrowDecision(player: Player, shouldRethrow: Boolean): PendingStepPhase {

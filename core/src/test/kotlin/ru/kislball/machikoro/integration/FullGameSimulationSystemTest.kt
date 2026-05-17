@@ -92,7 +92,7 @@ class FullGameSimulationSystemTest {
     val step4AliceBeforeAlice = alice.balance
     val step4AliceBeforeBob = bob.balance
     driver.rollDice(alice, 1)
-    assertTrue(driver.needsRethrowDecision(alice))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(alice))
     val step4Turn = driver.game.currentStepPhase as PendingStepPhase
     step4Turn.results.set(IntermediateRollResult(DiceRollResult(alice, listOf(2))))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
@@ -110,7 +110,7 @@ class FullGameSimulationSystemTest {
     val loopAliceBeforeAlice = alice.balance
     val loopAliceBeforeBob = bob.balance
     val aliceTurn = driver.rollDice(alice, 2)
-    assertTrue(driver.needsRethrowDecision(alice))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(alice))
     assertTrue(driver.game.inputEffects.peek() is RethrowDiceInputEffect)
     aliceTurn.results.set(IntermediateRollResult(DiceRollResult(alice, listOf(3, 3))))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
@@ -131,7 +131,7 @@ class FullGameSimulationSystemTest {
     val additionalStepBeforeAlice = alice.balance
     val additionalStepBeforeBob = bob.balance
     driver.rollDice(alice, 1)
-    assertTrue(driver.needsRethrowDecision(alice))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(alice))
     additionalStep.results.set(IntermediateRollResult(DiceRollResult(alice, listOf(1))))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
     assertEquals(additionalStepBeforeAlice + 1, alice.balance)
@@ -145,7 +145,7 @@ class FullGameSimulationSystemTest {
 
     driver.nextStep()
     driver.rollDice(alice, 1)
-    assertTrue(driver.needsRethrowDecision(alice))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(alice))
     driver.submitRethrowDecision(alice, shouldRethrow = false)
     buyAnyAvailableFillerCard(alice)
     assertTrue(alice.canRethrowDice())
@@ -157,7 +157,7 @@ class FullGameSimulationSystemTest {
 
     driver.nextStep()
     driver.rollDice(alice, 1)
-    assertTrue(driver.needsRethrowDecision(alice))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(alice))
     assertTrue(driver.game.inputEffects.peek() is RethrowDiceInputEffect)
     driver.submitRethrowDecision(alice, shouldRethrow = false)
     buyAnyAvailableFillerCard(alice)

@@ -8,6 +8,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import ru.kislball.machikoro.cards.standard.StandardCatalog
+import ru.kislball.machikoro.effects.dice.RethrowDiceInputEffect
 import ru.kislball.machikoro.exceptions.GameException
 import ru.kislball.machikoro.game.DiceRollResult
 import ru.kislball.machikoro.game.Game
@@ -18,7 +19,7 @@ import ru.kislball.machikoro.game.utilities.getOrNull
 
 class GameDriverRethrowTest {
   @Test
-  fun `needsRethrowDecision is true after roll when player can rethrow`() {
+  fun `shouldAnswer RethrowDiceInputEffect is true after roll when player can rethrow`() {
     val player = Player("p1")
     player.setCanRethrowDice(true)
     val game = Game(listOf(player))
@@ -28,7 +29,7 @@ class GameDriverRethrowTest {
 
     assertNull(rolled.results.getOrNull<DiceRollResult>())
     assertNotNull(rolled.results.getOrNull<IntermediateRollResult>())
-    assertTrue(driver.needsRethrowDecision(player))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(player))
   }
 
   @Test
@@ -44,7 +45,7 @@ class GameDriverRethrowTest {
     assertEquals(rolled, updated)
     assertNotNull(updated.results.getOrNull<DiceRollResult>())
     assertNull(updated.results.getOrNull<IntermediateRollResult>())
-    assertFalse(driver.needsRethrowDecision(player))
+    assertFalse(driver.shouldAnswer<RethrowDiceInputEffect>(player))
   }
 
   @Test
@@ -59,7 +60,7 @@ class GameDriverRethrowTest {
   }
 
   @Test
-  fun `needsRethrowDecision is true when player owns TV Tower`() {
+  fun `shouldAnswer RethrowDiceInputEffect is true when player owns TV Tower`() {
     val player = Player("p1")
     player.cards.add(StandardCatalog["cards.tv_tower"]!!)
     val game = Game(listOf(player))
@@ -69,6 +70,6 @@ class GameDriverRethrowTest {
 
     assertNull(rolled.results.getOrNull<DiceRollResult>())
     assertNotNull(rolled.results.getOrNull<IntermediateRollResult>())
-    assertTrue(driver.needsRethrowDecision(player))
+    assertTrue(driver.shouldAnswer<RethrowDiceInputEffect>(player))
   }
 }
